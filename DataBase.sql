@@ -31,15 +31,17 @@ CREATE TABLE Tipo (
 
 
 CREATE TABLE Usuario (
-	Id INT NOT NULL,
+	Id VARCHAR(15) NOT NULL,
 	Administrador BIT NOT NULL,
 	Nombre VARCHAR(30) NOT NULL,
-	Nickname VARCHAR(30) NOT NULL,
-	Contrasena CHAR(8) NOT NULL,
+	Username VARCHAR(30) NOT NULL,
+	Contrasena VARCHAR(50) NOT NULL,
 	Correo VARCHAR(50) NOT NULL,
 	Nacionalidad int NOT NULL,
 	Estado BIT NOT NULL,
 	Avatar int NOT NULL,
+	Ranking int NOT NULL,
+	Monedas int NOT NULL,
 	CONSTRAINT PK_Usuario PRIMARY KEY (Id)
 );
 
