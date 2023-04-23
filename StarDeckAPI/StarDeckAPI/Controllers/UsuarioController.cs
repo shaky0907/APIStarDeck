@@ -68,7 +68,7 @@ namespace StarDeckAPI.Controllers
         }
 
         [HttpGet]
-        [Route("lista")]
+        [Route("lista/jugador")]
         public string Get()
         {
             string query = @"
@@ -78,7 +78,60 @@ namespace StarDeckAPI.Controllers
 
             string json = execquery(query);
             List<Usuario> usuarios = JsonConvert.DeserializeObject<List<Usuario>>(json);
-            json = JsonConvert.SerializeObject(usuarios, Formatting.Indented);
+            List<UsuarioAPI> usuariosAPI = new List<UsuarioAPI>();
+
+            foreach (var u in usuarios)
+            {
+
+                string querypais = @"
+                                select * from dbo.Paises
+                                where Id = " + u.Nacionalidad + @"
+                                ";
+
+                string jsonpais = execquery(querypais);
+                List<Pais> pais = JsonConvert.DeserializeObject<List<Pais>>(jsonpais);
+                string paisName = "";
+
+                if (pais.Count() != 0)
+                {
+                    paisName = pais[0].Nombre;
+                }
+
+                string queryavatar = @"
+                                select * from dbo.Avatar
+                                where Id = '" + u.Avatar + @"'
+                                ";
+
+                string jsonavatar = execquery(queryavatar);
+                List<Avatar> avatar = JsonConvert.DeserializeObject<List<Avatar>>(jsonavatar);
+                string image = "";
+
+                if (avatar.Count() != 0)
+                {
+                    image = avatar[0].Imagen;
+                }
+
+
+
+                UsuarioAPI usapi = new UsuarioAPI();
+                usapi.Id = u.Id;
+                usapi.Nombre = u.Nombre;
+                usapi.Username = u.Username;
+                usapi.Administrador = false;
+                usapi.Contrasena = u.Contrasena;
+                usapi.Estado = u.Estado;
+                usapi.Nacionalidad = paisName;
+                usapi.Avatar = image;
+                usapi.Ranking = u.Ranking;
+                usapi.Monedas = u.Monedas;
+                usapi.Correo = u.Correo;
+
+                usuariosAPI.Add(usapi);
+            }
+
+
+
+            json = JsonConvert.SerializeObject(usuariosAPI, Formatting.Indented);
 
 
             return json;
@@ -130,8 +183,6 @@ namespace StarDeckAPI.Controllers
                 {
                     paisint = pais[0].Id;
                 }
-
-
 
 
                 string query = @"
