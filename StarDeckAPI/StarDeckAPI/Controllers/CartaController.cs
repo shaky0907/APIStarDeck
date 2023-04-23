@@ -23,7 +23,7 @@ namespace StarDeckAPI.Controllers
         {
             _configuration = configuration;
         }
-        
+
         private string execquery(string query)
         {
             DataTable table = new DataTable();
@@ -57,7 +57,7 @@ namespace StarDeckAPI.Controllers
 
             while (sb.Length < idLength)
             {
-                char c = (char) random.Next('0', 'z' + 1);
+                char c = (char)random.Next('0', 'z' + 1);
                 if (Char.IsLetterOrDigit(c) && sb[sb.Length - 1] != c)
                 {
                     sb.Append(c);
@@ -68,8 +68,20 @@ namespace StarDeckAPI.Controllers
         }
 
 
+        [HttpGet]
+        [Route("razas")]
+        public string getrazas()
+        {
+            string query = @"
+                    select * from dbo.Raza
+                    ";
 
 
+            string json = execquery(query);
+            List<Raza> razas = JsonConvert.DeserializeObject<List<Raza>>(json);
+            json = JsonConvert.SerializeObject(razas, Formatting.Indented);
+            return json;
+        }
 
         [HttpGet]
         [Route("lista")]
