@@ -87,21 +87,35 @@ namespace StarDeckAPI.Controllers
 
 
         [HttpPost]
-        [Route("guardar")]
-        public JsonResult Post(Usuario usuario)
+        [Route("guardarJugador")]
+        public JsonResult Post(UsuarioAPI usuario)
         {
             //crear Id
-            usuario.Id = GenerateRandomId();
+            string Id = GenerateRandomId();
             //
 
+            //Get Pais ID
+            string queryraza = @"
+                                select * from dbo.Raza
+                                where Nombre = '" + usuario.Nacionalidad + @"'
+                                ";
+
+            string jsonpais = execquery(queryraza);
+            List<Pais> pais = JsonConvert.DeserializeObject<List<Pais>>(jsonpais);
+            int paisint = 0;
+
+            if (pais.Count() != 0)
+            {
+                paisint = pais[0].Id;
+            }
 
             /*
             string query = @"
                     insert into dbo.Usuario values 
-                    ('" + usuario.Id + "','" + usuario.Administrador + "','" + usuario.Nombre + "','" + usuario.Contrasena + "','" + usuario.Correo + "','" +  + "','" + true + "','" + usuario.Descripcion + "','" + usuario.Tipo + @"')
+                    ('" + Id + "','" + usuario.Administrador + "','" + usuario.Nombre + "','" + usuario.Contrasena + "','" + usuario.Correo + "'," + paisint + ",'" + true + "','" + usuario.Descripcion + "','" + usuario.Descripcion + "','" + usuario.Tipo + @"')
                     ";
-
             */
+            
             //string json = execquery(query);
             
             return new JsonResult(usuario.Id);
