@@ -51,8 +51,9 @@ CREATE TABLE Paises(
 	CONSTRAINT PK_Paises PRIMARY KEY (Id)
 );
 
+
 CREATE TABLE Avatar(
-	Id INT NOT NULL,
+	Id INT NOT NULL IDENTITY(1,1),
 	Imagen VARCHAR(MAX) NOT NULL,
 	CONSTRAINT PK_Avatar PRIMARY KEY (Id)
 );
@@ -77,6 +78,7 @@ ADD CONSTRAINT FK_Usuario_Avatar
 FOREIGN KEY (Avatar) REFERENCES Avatar (Id);
 
 
+use StarDeck
 
 drop table Carta
 drop table Raza
