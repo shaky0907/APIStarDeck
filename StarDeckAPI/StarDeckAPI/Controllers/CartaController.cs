@@ -83,6 +83,66 @@ namespace StarDeckAPI.Controllers
             return json;
         }
 
+        private List<Carta> GenerateRandomCartas(List<Carta> inputCards,int count)
+        {
+            if (inputCards.Count() < count)
+            {
+                throw new ArgumentException("The input list must contain at least 15 cards.");
+            }
+
+            List<Carta> selectedCards = new List<Carta>();
+
+            while (selectedCards.Count() < count)
+            {
+                int randomIndex = random.Next(inputCards.Count());
+                Carta randomCard = inputCards[randomIndex];
+
+                if (!selectedCards.Contains(randomCard))
+                {
+                    selectedCards.Add(randomCard);
+                }
+            }
+
+            return selectedCards;
+        }
+
+
+
+        [HttpGet]
+        [Route("getnewDeck")]
+        public string getnewCartas()
+        {
+            string queryBasicas = @"
+                    select * from dbo.Carta
+                    where Tipo = 5
+                    ";
+
+            //Conseguir 15 cartas basicas
+            string jsonbasicas = execquery(queryBasicas);
+            List<Carta> cartasbasicas = JsonConvert.DeserializeObject<List<Carta>>(jsonbasicas);
+
+            List<Carta> cartasTotales = GenerateRandomCartas(cartasbasicas,15);
+
+            string queryrn = @"
+                    select * from dbo.Carta
+                    where Tipo = 3 OR Tipo = 4
+                    ";
+
+            string jsonbrn = execquery(queryBasicas);
+            List<Carta> cartasrn = JsonConvert.DeserializeObject<List<Carta>>(jsonbasicas);
+
+            List<Carta> cartasrestantes = GenerateRandomCartas(cartasrn, 9);
+
+
+            cartasTotales.AddRange(cartasrestantes);
+            string json = JsonConvert.SerializeObject(cartasrestantes, Formatting.Indented);
+
+            return json;
+        }
+
+
+
+
         [HttpGet]
         [Route("lista")]
         public string Get()
