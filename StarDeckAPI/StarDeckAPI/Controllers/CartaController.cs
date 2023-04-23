@@ -128,13 +128,65 @@ namespace StarDeckAPI.Controllers
                     where Tipo = 3 OR Tipo = 4
                     ";
 
-            string jsonbrn = execquery(queryBasicas);
+            string jsonbrn = execquery(queryrn);
             List<Carta> cartasrn = JsonConvert.DeserializeObject<List<Carta>>(jsonbasicas);
 
             List<Carta> cartasrestantes = GenerateRandomCartas(cartasrn, 9);
 
 
+
             cartasTotales.AddRange(cartasrestantes);
+
+            List<CartaAPI> cartasapi = new List<CartaAPI>();
+
+            foreach (var c in cartasTotales)
+            {
+
+
+                //Get Raza ID
+                string queryraza = @"
+                                select * from dbo.Raza
+                                where Id = " + c.Raza + @"
+                                ";
+
+                string jsonraza = execquery(queryraza);
+                List<Raza> raza = JsonConvert.DeserializeObject<List<Raza>>(jsonraza);
+                string razaName = "";
+
+                if (raza.Count() != 0)
+                {
+                    razaName = raza[0].Nombre;
+                }
+                //get Tipo ID
+                string querytipo = @"
+                                select * from dbo.Tipo
+                                where Id = " + c.Tipo + @"
+                                ";
+
+                string jsontipo = execquery(querytipo);
+                List<Tipo> tipo = JsonConvert.DeserializeObject<List<Tipo>>(jsontipo);
+
+                string tipoName = "";
+                if (tipo.Count() != 0)
+                {
+                    tipoName = tipo[0].Nombre;
+                }
+
+
+                CartaAPI capi = new CartaAPI();
+
+                capi.Id = c.Id;
+                capi.Nombre = c.N_Personaje;
+                capi.Energia = c.Energia;
+                capi.Costo = c.C_batalla;
+                capi.Imagen = c.Imagen;
+                capi.Estado = c.Activa;
+                capi.Descripcion = c.Descripcion;
+                capi.Raza = razaName;
+                capi.Tipo = tipoName;
+
+            }
+
             string json = JsonConvert.SerializeObject(cartasrestantes, Formatting.Indented);
 
             return json;
