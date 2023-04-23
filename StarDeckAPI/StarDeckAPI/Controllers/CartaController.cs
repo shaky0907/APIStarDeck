@@ -128,8 +128,8 @@ namespace StarDeckAPI.Controllers
                     where Tipo = 3 OR Tipo = 4
                     ";
 
-            string jsonbrn = execquery(queryrn);
-            List<Carta> cartasrn = JsonConvert.DeserializeObject<List<Carta>>(jsonbasicas);
+            string jsonrn = execquery(queryrn);
+            List<Carta> cartasrn = JsonConvert.DeserializeObject<List<Carta>>(jsonrn);
 
             List<Carta> cartasrestantes = GenerateRandomCartas(cartasrn, 9);
 
@@ -185,9 +185,11 @@ namespace StarDeckAPI.Controllers
                 capi.Raza = razaName;
                 capi.Tipo = tipoName;
 
+                cartasapi.Add(capi);
+
             }
 
-            string json = JsonConvert.SerializeObject(cartasrestantes, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(cartasapi, Formatting.Indented);
 
             return json;
         }
