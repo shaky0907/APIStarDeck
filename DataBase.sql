@@ -51,6 +51,14 @@ CREATE TABLE Paises(
 	CONSTRAINT PK_Paises PRIMARY KEY (Id)
 );
 
+CREATE TABLE Avatar(
+	Id INT NOT NULL,
+	Imagen VARCHAR(MAX) NOT NULL,
+	CONSTRAINT PK_Avatar PRIMARY KEY (Id)
+);
+
+
+
 --Constraints
 ALTER TABLE Carta 
 ADD CONSTRAINT FK_Carta_Tipo 
@@ -64,6 +72,10 @@ ALTER TABLE Usuario
 ADD CONSTRAINT FK_Usuario_Nacionalidad
 FOREIGN KEY (Nacionalidad) REFERENCES Paises (Id);
 
+ALTER TABLE Usuario
+ADD CONSTRAINT FK_Usuario_Avatar
+FOREIGN KEY (Avatar) REFERENCES Avatar (Id);
+
 
 
 drop table Carta
@@ -71,3 +83,4 @@ drop table Raza
 drop table Tipo
 drop table Paises
 drop table Usuario
+drop table Avatar
