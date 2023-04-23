@@ -20,3 +20,5 @@ VALUES (1, 'Estados Unidos'),
        (2, 'México'),
        (3, 'Costa Rica');
 
+INsert INTO AVATAR (Imagen)
+Values('wufquidqhiuhiwudhqiuwhiduqhwd');

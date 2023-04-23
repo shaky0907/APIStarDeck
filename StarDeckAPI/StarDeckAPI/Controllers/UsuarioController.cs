@@ -92,33 +92,59 @@ namespace StarDeckAPI.Controllers
         {
             //crear Id
             string Id = GenerateRandomId();
-            //
 
-            //Get Pais ID
-            string queryraza = @"
-                                select * from dbo.Raza
+
+            string userquery = @"
+                                select * from dbo.Usuario
+                                where Username =  '" + usuario.Username +  @"'";
+            string jsonusuarios = execquery(userquery);
+            List<Usuario> usernames = JsonConvert.DeserializeObject<List<Usuario>>(jsonusuarios);
+
+            string correoquery = @"
+                                select * from dbo.Usuario
+                                where Correo =  '" + usuario.Correo + @"'";
+            string jsoncorreo = execquery(correoquery);
+            List<Usuario> correos = JsonConvert.DeserializeObject<List<Usuario>>(jsoncorreo);
+
+            if (correos.Count() != 0)
+            {
+                return new JsonResult("1");
+            }
+            else if( usernames.Count() != 0)
+            {
+                return new JsonResult("2");
+            }
+            else
+            {
+                //Get Pais ID
+                string querypais = @"
+                                select * from dbo.Paises
                                 where Nombre = '" + usuario.Nacionalidad + @"'
                                 ";
 
-            string jsonpais = execquery(queryraza);
-            List<Pais> pais = JsonConvert.DeserializeObject<List<Pais>>(jsonpais);
-            int paisint = 0;
+                string jsonpais = execquery(querypais);
+                List<Pais> pais = JsonConvert.DeserializeObject<List<Pais>>(jsonpais);
+                int paisint = 0;
 
-            if (pais.Count() != 0)
-            {
-                paisint = pais[0].Id;
-            }
+                if (pais.Count() != 0)
+                {
+                    paisint = pais[0].Id;
+                }
 
-            /*
-            string query = @"
+
+
+
+                string query = @"
                     insert into dbo.Usuario values 
-                    ('" + Id + "','" + usuario.Administrador + "','" + usuario.Nombre + "','" + usuario.Contrasena + "','" + usuario.Correo + "'," + paisint + ",'" + true + "','" + usuario.Descripcion + "','" + usuario.Descripcion + "','" + usuario.Tipo + @"')
+                    ('" + Id + "','" + false + "','" + usuario.Nombre + "','" + usuario.Username + "','" + usuario.Contrasena + "','" + usuario.Correo + "'," + paisint + ",'" + true + "'," + 1 + "," + 0 + "," + 20 + @")
                     ";
-            */
+
+
+                string json = execquery(query);
+
+                return new JsonResult(Id);
+            }
             
-            //string json = execquery(query);
-            
-            return new JsonResult(usuario.Id);
         }
 
         [HttpDelete]
