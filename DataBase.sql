@@ -297,4 +297,3 @@ drop table CartasXTurnoXPlaneta
 drop table Estado_Partida
 drop table UsuarioXPartida
 drop table PlanetasXPartida
-

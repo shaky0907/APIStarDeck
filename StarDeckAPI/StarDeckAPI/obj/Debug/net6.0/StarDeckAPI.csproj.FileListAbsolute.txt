@@ -1,0 +1,86 @@
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\appsettings.Development.json
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\appsettings.json
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\StarDeckAPI.exe
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\StarDeckAPI.deps.json
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\StarDeckAPI.runtimeconfig.json
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\StarDeckAPI.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\StarDeckAPI.pdb
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Microsoft.OpenApi.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\System.Data.SqlClient.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\runtimes\win-arm64\native\sni.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\runtimes\win-x64\native\sni.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\runtimes\win-x86\native\sni.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.csproj.AssemblyReference.cache
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.AssemblyInfoInputs.cache
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.AssemblyInfo.cs
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.csproj.CoreCompileInputs.cache
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\staticwebassets\msbuild.StarDeckAPI.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\staticwebassets\msbuild.build.StarDeckAPI.props
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\staticwebassets\msbuild.buildMultiTargeting.StarDeckAPI.props
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\staticwebassets\msbuild.buildTransitive.StarDeckAPI.props
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\staticwebassets.pack.json
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\staticwebassets.build.json
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\staticwebassets.development.json
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\scopedcss\bundle\StarDeckAPI.styles.css
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.csproj.CopyComplete
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\refint\StarDeckAPI.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.pdb
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.genruntimeconfig.cache
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\ref\StarDeckAPI.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Microsoft.AspNetCore.JsonPatch.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
+C:\Users\david\OneDrive\Documents\TEC\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Swashbuckle.AspNetCore.Newtonsoft.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\appsettings.Development.json
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\appsettings.json
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\StarDeckAPI.exe
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\StarDeckAPI.deps.json
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\StarDeckAPI.runtimeconfig.json
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\StarDeckAPI.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\StarDeckAPI.pdb
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Microsoft.AspNetCore.JsonPatch.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Microsoft.OpenApi.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Newtonsoft.Json.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Newtonsoft.Json.Bson.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Swashbuckle.AspNetCore.Newtonsoft.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\System.Data.SqlClient.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\runtimes\win-arm64\native\sni.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\runtimes\win-x64\native\sni.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\runtimes\win-x86\native\sni.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\runtimes\unix\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\bin\Debug\net6.0\runtimes\win\lib\netcoreapp2.1\System.Data.SqlClient.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.csproj.AssemblyReference.cache
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.AssemblyInfoInputs.cache
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.AssemblyInfo.cs
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.csproj.CoreCompileInputs.cache
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.MvcApplicationPartsAssemblyInfo.cache
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\staticwebassets\msbuild.StarDeckAPI.Microsoft.AspNetCore.StaticWebAssets.props
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\staticwebassets\msbuild.build.StarDeckAPI.props
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\staticwebassets\msbuild.buildMultiTargeting.StarDeckAPI.props
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\staticwebassets\msbuild.buildTransitive.StarDeckAPI.props
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\staticwebassets.pack.json
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\staticwebassets.build.json
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\staticwebassets.development.json
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\scopedcss\bundle\StarDeckAPI.styles.css
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.csproj.CopyComplete
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\refint\StarDeckAPI.dll
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.pdb
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\StarDeckAPI.genruntimeconfig.cache
+C:\Users\quigo\OneDrive - Estudiantes ITCR\TEC 2023\I Semestre\Espe\APIStarDeck\StarDeckAPI\StarDeckAPI\obj\Debug\net6.0\ref\StarDeckAPI.dll

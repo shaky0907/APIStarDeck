@@ -42,4 +42,3 @@ VALUES (1, 'Emparejando'),
 		(2, 'En curso'),
 		(3, 'Finalizada');
 
-
