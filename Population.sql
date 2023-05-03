@@ -6,8 +6,7 @@ VALUES (1, 'Ultra-Rara'),
        (3, 'Rara'),
        (4, 'Normal'),
        (5, 'Básica');
-<<<<<<< Updated upstream
-=======
+
 
 
 INSERT INTO Raza (Id, Nombre)
@@ -43,4 +42,4 @@ VALUES (1, 'Emparejando'),
 		(2, 'En curso'),
 		(3, 'Finalizada');
 
->>>>>>> Stashed changes
+
