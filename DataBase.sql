@@ -39,9 +39,6 @@ CREATE TABLE Tipo (
 	CONSTRAINT PK_Tipo PRIMARY KEY (Id)
 );
 
-<<<<<<< Updated upstream
-=======
-
 CREATE TABLE Usuario (
 	Id VARCHAR(15) NOT NULL,
 	Administrador BIT NOT NULL,
@@ -188,7 +185,6 @@ CREATE TABLE PlanetasXPartida(
 );
 
 
->>>>>>> Stashed changes
 --Constraints
 ALTER TABLE Carta 
 ADD CONSTRAINT FK_Carta_Tipo 
@@ -198,12 +194,6 @@ ALTER TABLE Carta
 ADD CONSTRAINT FK_Carta_Raza 
 FOREIGN KEY (Raza) REFERENCES Raza (Id);
 
-<<<<<<< Updated upstream
-
-drop table Carta
-drop table Raza
-drop table Tipo
-=======
 ALTER TABLE Usuario
 ADD CONSTRAINT FK_Usuario_Actividad
 FOREIGN KEY (Id_actividad) REFERENCES Actividad (Id);
@@ -307,4 +297,4 @@ drop table CartasXTurnoXPlaneta
 drop table Estado_Partida
 drop table UsuarioXPartida
 drop table PlanetasXPartida
->>>>>>> Stashed changes
+
