@@ -171,6 +171,7 @@ CREATE TABLE UsuarioXPartida(
 
 	Id_Usuario VARCHAR(15),
 	Id_Partida VARCHAR(15),
+	Id_Master BIT,
 	Ganador BIT,
 	Monedas_ingreso INT,
 	Monedas_apuesta INT

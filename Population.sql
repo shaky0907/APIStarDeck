@@ -63,3 +63,24 @@ INSERT INTO Carta(Id, N_personaje, Energia, C_batalla, Imagen, Raza, Activa, Des
 	VALUES(1, 'Carta1', 20, 5, 'imagen1', 1, 1, 'Es la primera carta', 1),
 		(2, 'Carta2', 30, 4, 'imagen2', 1, 1, 'Es la segunda carta', 1),
 		(3, 'Carta3', 50, 7, 'imagen3', 1, 1, 'Es la tercera carta', 1);
+
+
+SELECT * FROM Partida
+
+
+SELECT * FROM UsuarioXPartida
+
+SELECT * FROM PlanetasXPartida
+
+SELECT * FROM Usuario
+
+DELETE FROM UsuarioXPartida
+
+DELETE FROM PlanetasXPartida
+
+DELETE FROM Partida
+
+DELETE FROM Usuario WHERE Id = 123126
+
+DELETE FROM Usuario WHERE Id = 123125
+
