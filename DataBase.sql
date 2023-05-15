@@ -22,6 +22,7 @@ CREATE TABLE CartaXUsuario (
 
 	Id_usuario VARCHAR(15) NOT NULL,
 	Id_carta VARCHAR(15) NOT NULL
+	CONSTRAINT PK_Ids_cxus PRIMARY KEY (Id_usuario, Id_carta)
 
 );
 
@@ -60,7 +61,6 @@ CREATE TABLE Actividad (
 	
 	Id int NOT NULL,
 	Nombre_act VARCHAR(20) NOT NULL,
-
 	CONSTRAINT PK_Actividad PRIMARY KEY (Id)
 
 );
@@ -95,6 +95,7 @@ CREATE TABLE CartasXDeck(
 
 	Id_Deck VARCHAR(15) NOT NULL,
 	Id_Carta VARCHAR(15) NOT NULL
+	CONSTRAINT PK_Ids_cxd PRIMARY KEY (Id_Deck, Id_Carta)
 );
 
 CREATE TABLE Planeta(
@@ -144,6 +145,7 @@ CREATE TABLE TurnoXUsuario(
 	Energia_inicial INT,
 	Energia_gastada INT,
 	Revela_primero BIT
+	CONSTRAINT PK_Ids_txu PRIMARY KEY (Id_turno, Id_Usuario)
 	
 );
 
@@ -152,7 +154,7 @@ CREATE TABLE CartasXTurnoXPlaneta(
 	Id_Carta VARCHAR(15),
 	Id_Turno VARCHAR(15),
 	Id_Planeta VARCHAR(15)
-
+	CONSTRAINT PK_Ids_cxtxp PRIMARY KEY (Id_Carta, Id_Turno, Id_Planeta)
 );
 
 
@@ -172,7 +174,7 @@ CREATE TABLE UsuarioXPartida(
 	Ganador BIT,
 	Monedas_ingreso INT,
 	Monedas_apuesta INT
-
+	CONSTRAINT PK_Ids_uxp PRIMARY KEY (Id_Usuario, Id_Partida)
 
 );
 
@@ -181,6 +183,7 @@ CREATE TABLE PlanetasXPartida(
 
 	Id_Planeta VARCHAR(15),
 	Id_Partida VARCHAR(15)
+	CONSTRAINT PK_Ids_pxp PRIMARY KEY (Id_Planeta, Id_Partida)
 
 );
 
