@@ -34,13 +34,14 @@ namespace StarDeckAPI.Controllers
                 {
                     Partida partida = apiDBContext.Partida.ToList().Where(x => x.Id == uxp.Id_Partida).First();
                     bool uxp_check_master = apiDBContext.UsuarioXPartida.ToList().Where(x => x.Id_Usuario == Id).First().Id_Master;
-                    matchmakingResponse.Id_Master = uxp_check_master;
+                    
                     if ((partida.Estado == 1) && (!uxp_check_master)) 
                     {
                         partida.Estado = 2;
                         alreadypaired = true;
                         apiDBContext.Update(partida);
                         apiDBContext.SaveChanges();
+                        matchmakingResponse.Id_Partida = partida.Id;
                         break;
 
                         
@@ -51,6 +52,7 @@ namespace StarDeckAPI.Controllers
                         alreadystarted = true;
                         apiDBContext.Update(partida);
                         apiDBContext.SaveChanges();
+                        matchmakingResponse.Id_Partida = partida.Id;
                         break;
                     }
                     
@@ -101,6 +103,7 @@ namespace StarDeckAPI.Controllers
                             Estado = 1,
                             Fecha_hora = DateTime.Now
                         };
+                        matchmakingResponse.Id_Partida = idPartida;
                         apiDBContext.Add(partidanueva);
                         apiDBContext.SaveChanges();
 
@@ -201,6 +204,7 @@ namespace StarDeckAPI.Controllers
                         Estado = 1,
                         Fecha_hora = DateTime.Now
                     };
+                    matchmakingResponse.Id_Partida = idPartida;
                     apiDBContext.Add(partidanueva);
                     apiDBContext.SaveChanges();
 
@@ -291,6 +295,15 @@ namespace StarDeckAPI.Controllers
             apiDBContext.SaveChanges();
             return Ok(user);
 
+        }
+
+        [HttpGet]
+        [Route("getPartida/{Id}")]
+
+        public IActionResult getPartida([FromRoute] string Id)
+        {
+            Partida partida = apiDBContext.Partida.ToList().Where(x => x.Id == Id).First();
+            return Ok(partida);
         }
     
     }

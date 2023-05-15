@@ -11,7 +11,7 @@
          4: Esta en 1 o 2 pero ya paso el estado dependiendo de si es jugador 1 o 2 respectivamente
          */
         public string Id;
-        public bool Id_Master;
+        public string Id_Partida;
 
     }
 }
