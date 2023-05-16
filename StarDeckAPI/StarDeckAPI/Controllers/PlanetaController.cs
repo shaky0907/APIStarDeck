@@ -2,6 +2,7 @@
 using StarDeckAPI.Data;
 using StarDeckAPI.Models;
 using StarDeckAPI.Utilities;
+using System.Numerics;
 
 namespace StarDeckAPI.Controllers
 {
@@ -21,16 +22,45 @@ namespace StarDeckAPI.Controllers
         public IActionResult GetPlanetas()
         {
             List<Planeta> planetas = apiDBContext.Planeta.ToList();
-            return Ok(planetas);
+
+            List<PlanetaAPIGet> planetasAPIGet = new List<PlanetaAPIGet>();
+
+            foreach (Planeta planeta in planetas)
+            {
+                string tipo_planeta = apiDBContext.Tipo_planeta.ToList().Where(x => x.Id == planeta.Tipo).First().Nombre;
+                PlanetaAPIGet planetaAPIGet = new PlanetaAPIGet()
+                {
+                    Id = planeta.Id,
+                    Nombre = planeta.Nombre,
+                    Tipo = tipo_planeta,
+                    Descripcion = planeta.Descripcion,
+                    Estado = planeta.Estado,
+                    Imagen = planeta.Imagen
+
+                };
+                planetasAPIGet.Add(planetaAPIGet);
+            }
+
+            return Ok(planetasAPIGet);
         }
 
         [HttpGet]
         [Route("get/{Id}")]
         public IActionResult GetPlaneta([FromRoute] string Id)
         {
-            List<Planeta> planetas = apiDBContext.Planeta.ToList();
-            Planeta planetaReturn = planetas.Where(x => x.Id == Id).First();
-            return Ok(planetaReturn);
+            Planeta planeta = apiDBContext.Planeta.ToList().Where(x => x.Id == Id).First();
+            string tipo_planeta = apiDBContext.Tipo_planeta.ToList().Where(x => x.Id == planeta.Tipo).First().Nombre;
+            PlanetaAPIGet planetaAPIGet = new PlanetaAPIGet()
+            {
+                Id = planeta.Id,
+                Nombre = planeta.Nombre,
+                Tipo = tipo_planeta,
+                Descripcion = planeta.Descripcion,
+                Estado = planeta.Estado,
+                Imagen = planeta.Imagen
+
+            };
+            return Ok(planetaAPIGet);
         }
 
         [HttpPost]

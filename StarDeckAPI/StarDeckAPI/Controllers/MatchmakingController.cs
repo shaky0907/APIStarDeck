@@ -67,203 +67,19 @@ namespace StarDeckAPI.Controllers
                 }
 
                 else if(myUserCheck == 2)
-                {   
-                    Usuario myUser = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
-                    List<Usuario> usuarios = apiDBContext.Usuario.ToList();
-                    bool foundanotheruser = false;
+                {
 
-                    string idFoundUser = "";
-                    foreach (Usuario user in usuarios)
-                    {
-                        if ((user.Id != Id) && (user.Id_actividad == 2))
-                        {
-                            if ((user.Ranking > myUser.Ranking - 50) && (user.Ranking < myUser.Ranking + 50))
-                            {
-                                idFoundUser = user.Id;
-                                user.Id_actividad = 3;
-                                myUser.Id_actividad = 3;
-
-                                apiDBContext.Update(user);
-                                apiDBContext.Update(myUser);
-                                apiDBContext.SaveChanges();
-
-                                foundanotheruser = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (foundanotheruser)
-                    {
-                        string idPartida = GeneratorID.GenerateRandomId("G-");
-                        matchmakingResponse.estado = 1;
-                        Partida partidanueva = new Partida()
-                        {
-                            Id = idPartida,
-                            Estado = 1,
-                            Fecha_hora = DateTime.Now
-                        };
-                        matchmakingResponse.Id_Partida = idPartida;
-                        apiDBContext.Add(partidanueva);
-                        apiDBContext.SaveChanges();
-
-                        UsuarioXPartida uxpnew1 = new UsuarioXPartida()
-                        {
-                            Id_Partida = idPartida,
-                            Id_Usuario = Id,
-                            Id_Master = true
-                        };
-
-                        UsuarioXPartida uxpnew2 = new UsuarioXPartida()
-                        {
-                            Id_Partida = idPartida,
-                            Id_Usuario = idFoundUser,
-                            Id_Master = false
-                        };
-
-                        apiDBContext.Add(uxpnew1);
-                        apiDBContext.Add(uxpnew2);
-                        apiDBContext.SaveChanges();
-
-                        int i = 0;
-                        int planetsLeft = 3;
-                        Random rand = new Random();
-                        List<Planeta> planetasSelect = apiDBContext.Planeta.ToList();
-                        List<Tipo_planeta> probabilidades = apiDBContext.Tipo_planeta.ToList();
-                        List<Planeta> planetas_partida = new List<Planeta>();
-
-                        while (planetsLeft > 0)
-                        {
-                            if ((rand.NextDouble() < ((float)(probabilidades.Where(x => x.Id == planetasSelect.ElementAt(i).Tipo).First().Probabilidad)) / (float)100.0) &&
-                            !(planetas_partida.Contains(planetasSelect.ElementAt(i))))
-                            {
-                                planetas_partida.Add(planetasSelect.ElementAt(i));
-                                planetsLeft--;
-                                PlanetasXPartida pxp = new PlanetasXPartida()
-                                {
-                                    Id_Partida = idPartida,
-                                    Id_Planeta = planetasSelect.ElementAt(i).Id
-                                };
-                                apiDBContext.Add(pxp);
-                            }
-
-                            i++;
-
-                            
-
-                            if (i == planetasSelect.Count)
-                            {
-                                i = 0;
-                            }
-                        }
-                        apiDBContext.SaveChanges();
-
-
-                    }
-                    else
-                    {
-                        matchmakingResponse.estado = 0;
-
-                    }
-
-                }else
+                    matchmakingResponse = this.createNewMatch(Id);
+                }
+                else
                 {
                     matchmakingResponse.estado = 4;
                 }
             }
             else
             {
-                Usuario myUser = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
-                List<Usuario> usuarios = apiDBContext.Usuario.ToList();
-                bool foundanotheruser = false;
-                string idFoundUser = "";
-                foreach (Usuario user in usuarios)
-                {
-                    if ((user.Id != Id) && (user.Id_actividad == 2))
-                    {
-                        if ((user.Ranking > myUser.Ranking - 50) && (user.Ranking < myUser.Ranking + 50))
-                        {
-                            idFoundUser = user.Id;
-                            user.Id_actividad = 3;
-                            myUser.Id_actividad = 3;
-                            apiDBContext.Update(user);
-                            apiDBContext.Update(myUser);
-                            apiDBContext.SaveChanges();
-                            foundanotheruser = true;
-                            break;
-                        }
-                    }
-                }
-                if (foundanotheruser)
-                {
-                    string idPartida = GeneratorID.GenerateRandomId("G-");
-                    matchmakingResponse.estado = 1;
-                    Partida partidanueva = new Partida()
-                    {
-                        Id = idPartida,
-                        Estado = 1,
-                        Fecha_hora = DateTime.Now
-                    };
-                    matchmakingResponse.Id_Partida = idPartida;
-                    apiDBContext.Add(partidanueva);
-                    apiDBContext.SaveChanges();
 
-                    UsuarioXPartida uxpnew1 = new UsuarioXPartida()
-                    {
-                        Id_Partida = idPartida,
-                        Id_Usuario = Id,
-                        Id_Master = true
-                    };
-
-                    UsuarioXPartida uxpnew2 = new UsuarioXPartida()
-                    {
-                        Id_Partida = idPartida,
-                        Id_Usuario = idFoundUser,
-                        Id_Master = false
-                    };
-
-                    apiDBContext.Add(uxpnew1);
-                    apiDBContext.Add(uxpnew2);
-                    apiDBContext.SaveChanges();
-
-                    int i = 0;
-                    int planetsLeft = 3;
-                    Random rand = new Random();
-                    List<Planeta> planetasSelect = apiDBContext.Planeta.ToList();
-                    List<Tipo_planeta> probabilidades = apiDBContext.Tipo_planeta.ToList();
-                    List<Planeta> planetas_partida = new List<Planeta>();
-
-                    while (planetsLeft > 0)
-                    {
-                        if ((rand.NextDouble() < ((float)(probabilidades.Where(x => x.Id == planetasSelect.ElementAt(i).Tipo).First().Probabilidad)) / (float)100.0) &&
-                            !(planetas_partida.Contains(planetasSelect.ElementAt(i))))
-                        {
-                            planetas_partida.Add(planetasSelect.ElementAt(i));
-                            planetsLeft--;
-                            PlanetasXPartida pxp = new PlanetasXPartida()
-                            {
-                                Id_Partida = idPartida,
-                                Id_Planeta = planetasSelect.ElementAt(i).Id
-                            };
-                            apiDBContext.Add(pxp);
-                        }
-                        i++;
-
-
-
-                        if (i == planetasSelect.Count)
-                        {
-                            i = 0;
-                        }
-                    }
-                    apiDBContext.SaveChanges();
-                }
-                else
-                {
-                    matchmakingResponse.estado = 0;
-
-                }
-
+                matchmakingResponse = this.createNewMatch(Id);
 
 
             }
@@ -272,6 +88,106 @@ namespace StarDeckAPI.Controllers
 
             return Ok(matchmakingResponse);
         }
+
+
+        private MatchmakingResponse createNewMatch(string Id)
+        {
+            
+            Usuario myUser = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
+            MatchmakingResponse matchmakingResponse = new MatchmakingResponse();
+            List<Usuario> usuarios = apiDBContext.Usuario.ToList();
+            bool foundanotheruser = false;
+            string idFoundUser = "";
+            foreach (Usuario user in usuarios)
+            {
+                if ((user.Id != Id) && (user.Id_actividad == 2))
+                {
+                    if ((user.Ranking > myUser.Ranking - 50) && (user.Ranking < myUser.Ranking + 50))
+                    {
+                        idFoundUser = user.Id;
+                        user.Id_actividad = 3;
+                        myUser.Id_actividad = 3;
+                        apiDBContext.Update(user);
+                        apiDBContext.Update(myUser);
+                        apiDBContext.SaveChanges();
+                        foundanotheruser = true;
+                        break;
+                    }
+                }
+            }
+            if (foundanotheruser)
+            {
+                string idPartida = GeneratorID.GenerateRandomId("G-");
+                matchmakingResponse.estado = 1;
+                Partida partidanueva = new Partida()
+                {
+                    Id = idPartida,
+                    Estado = 1,
+                    Fecha_hora = DateTime.Now
+                };
+                matchmakingResponse.Id_Partida = idPartida;
+                apiDBContext.Add(partidanueva);
+                apiDBContext.SaveChanges();
+
+                UsuarioXPartida uxpnew1 = new UsuarioXPartida()
+                {
+                    Id_Partida = idPartida,
+                    Id_Usuario = Id,
+                    Id_Master = true
+                };
+
+                UsuarioXPartida uxpnew2 = new UsuarioXPartida()
+                {
+                    Id_Partida = idPartida,
+                    Id_Usuario = idFoundUser,
+                    Id_Master = false
+                };
+
+                apiDBContext.Add(uxpnew1);
+                apiDBContext.Add(uxpnew2);
+                apiDBContext.SaveChanges();
+
+                int i = 0;
+                int planetsLeft = 3;
+                Random rand = new Random();
+                List<Planeta> planetasSelect = apiDBContext.Planeta.ToList();
+                List<Tipo_planeta> probabilidades = apiDBContext.Tipo_planeta.ToList();
+                List<Planeta> planetas_partida = new List<Planeta>();
+
+                while (planetsLeft > 0)
+                {
+                    if ((rand.NextDouble() < ((float)(probabilidades.Where(x => x.Id == planetasSelect.ElementAt(i).Tipo).First().Probabilidad)) / (float)100.0) &&
+                        !(planetas_partida.Contains(planetasSelect.ElementAt(i))))
+                    {
+                        planetas_partida.Add(planetasSelect.ElementAt(i));
+                        planetsLeft--;
+                        PlanetasXPartida pxp = new PlanetasXPartida()
+                        {
+                            Id_Partida = idPartida,
+                            Id_Planeta = planetasSelect.ElementAt(i).Id
+                        };
+                        apiDBContext.Add(pxp);
+                    }
+                    i++;
+
+
+
+                    if (i == planetasSelect.Count)
+                    {
+                        i = 0;
+                    }
+                }
+                apiDBContext.SaveChanges();
+            }
+            else
+            {
+                matchmakingResponse.estado = 0;
+
+            }
+
+            return matchmakingResponse;
+        } 
+
 
         [HttpPut]
         [Route("searchGame/{Id}")]
@@ -287,13 +203,25 @@ namespace StarDeckAPI.Controllers
 
         [HttpPut]
         [Route("finishMatch/{Id}")]
-        public IActionResult finishMatch([FromRoute] string Id)
+        public IActionResult finishMatchUser([FromRoute] string Id)
         {
             Usuario user = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
             user.Id_actividad = 1;
             apiDBContext.Update(user);
             apiDBContext.SaveChanges();
             return Ok(user);
+
+        }
+
+        [HttpPut]
+        [Route("finishGame/{Id}")]
+        public IActionResult finishGame([FromRoute] string Id)
+        {
+            Partida partida = apiDBContext.Partida.ToList().Where(x => x.Id == Id).First();
+            partida.Estado = 4;
+            apiDBContext.Update(partida);
+            apiDBContext.SaveChanges();
+            return Ok(partida);
 
         }
 
