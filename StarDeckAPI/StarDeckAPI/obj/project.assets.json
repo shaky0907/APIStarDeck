@@ -224,24 +224,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\david\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\quigo\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\david\\OneDrive\\Documents\\TEC\\Espe\\APIStarDeck\\StarDeckAPI\\StarDeckAPI\\StarDeckAPI.csproj",
+      "projectUniqueName": "C:\\Users\\quigo\\OneDrive - Estudiantes ITCR\\TEC 2023\\I Semestre\\Espe\\APIStarDeck\\StarDeckAPI\\StarDeckAPI\\StarDeckAPI.csproj",
       "projectName": "StarDeckAPI",
-      "projectPath": "C:\\Users\\david\\OneDrive\\Documents\\TEC\\Espe\\APIStarDeck\\StarDeckAPI\\StarDeckAPI\\StarDeckAPI.csproj",
-      "packagesPath": "C:\\Users\\david\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\david\\OneDrive\\Documents\\TEC\\Espe\\APIStarDeck\\StarDeckAPI\\StarDeckAPI\\obj\\",
+      "projectPath": "C:\\Users\\quigo\\OneDrive - Estudiantes ITCR\\TEC 2023\\I Semestre\\Espe\\APIStarDeck\\StarDeckAPI\\StarDeckAPI\\StarDeckAPI.csproj",
+      "packagesPath": "C:\\Users\\quigo\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\quigo\\OneDrive - Estudiantes ITCR\\TEC 2023\\I Semestre\\Espe\\APIStarDeck\\StarDeckAPI\\StarDeckAPI\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\david\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\quigo\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -249,7 +244,6 @@
       ],
       "sources": {
         "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-        "C:\\Program Files\\dotnet\\library-packs": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -292,8 +286,16 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.100\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "Undefined",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Problem reading the cache file C:\\Users\\quigo\\OneDrive - Estudiantes ITCR\\TEC 2023\\I Semestre\\Espe\\APIStarDeck\\StarDeckAPI\\StarDeckAPI\\obj\\project.nuget.cache : Invalid property identifier character: <. Path 'version', line 3, position 0."
+    }
+  ]
 }
