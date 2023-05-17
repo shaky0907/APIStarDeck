@@ -13,5 +13,6 @@
         public string Avatar { get; set; }
         public int Ranking { get; set; }
         public int Monedas { get; set; }
+        public string Actividad { get; set; }
     }
 }
