@@ -2,12 +2,14 @@
 using Newtonsoft.Json;
 using StarDeckAPI.Data;
 using StarDeckAPI.Models;
+using StarDeckAPI.Utilities;
 using System;
 
 namespace StarDeckAPI.Controllers
-{
+{   
     [ApiController]
     [Route("carta")]
+
     public class CartaController : Controller
     {
         private readonly APIDbContext apiDBContext;
@@ -111,7 +113,7 @@ namespace StarDeckAPI.Controllers
 
             return Ok(cartasReturn);
         }
-
+        
         [HttpGet]
         [Route("lista/{Id}")]
         public IActionResult Get([FromRoute] string Id)
@@ -139,7 +141,7 @@ namespace StarDeckAPI.Controllers
         {
             Carta carta = new Carta()
             {
-                Id = cartaAPI.Id,
+                Id = GeneratorID.GenerateRandomId("C-"),
                 N_Personaje = cartaAPI.Nombre,
                 Energia = cartaAPI.Energia,
                 C_batalla = cartaAPI.Costo,
@@ -164,6 +166,6 @@ namespace StarDeckAPI.Controllers
             apiDBContext.SaveChanges();
             return Ok(carta);
         }
-
+        
     }
 }
