@@ -1,5 +1,6 @@
 ﻿namespace StarDeckAPI.Models
 {
+
     public class CartaAPI
     {
         public string Id { get; set; }
@@ -9,7 +10,8 @@
         public string Imagen { get; set; }
         public string Raza { get; set; }
         public string Tipo { get; set; }
-        public bool Estado { get; set; }
+        public Boolean Estado { get; set; }
         public string Descripcion { get; set; }
+
     }
 }

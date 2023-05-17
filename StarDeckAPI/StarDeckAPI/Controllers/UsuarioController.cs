@@ -1,216 +1,146 @@
-﻿using System;
-using System.Collections.Generic;
-
-
-using Microsoft.AspNetCore.Mvc;
-
-using System.Data.SqlClient;
-using System.Data;
-using Newtonsoft.Json;
-
+﻿using Microsoft.AspNetCore.Mvc;
+using StarDeckAPI.Data;
 using StarDeckAPI.Models;
-using System.Text;
-
+using StarDeckAPI.Utilities;
+using System.Numerics;
+using System.Text.RegularExpressions;
 
 namespace StarDeckAPI.Controllers
 {
-    [Route("usuario")]
     [ApiController]
+    [Route("usuario")]
+
     public class UsuarioController : Controller
     {
-        private readonly IConfiguration _configuration;
+        private readonly APIDbContext apiDBContext;
+        private Random random = new Random();
 
-        public UsuarioController(IConfiguration configuration)
+        public UsuarioController(APIDbContext apiDBContext)
         {
-            _configuration = configuration;
-        }
-
-        private string execquery(string query)
-        {
-            DataTable table = new DataTable();
-            string sqlDataSource = _configuration.GetConnectionString("StarDeck");
-            SqlDataReader myReader;
-            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
-            {
-                myCon.Open();
-                using (SqlCommand myCommand = new SqlCommand(query, myCon))
-                {
-                    myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
-
-                    myReader.Close();
-                    myCon.Close();
-                }
-            }
-
-            string json = JsonConvert.SerializeObject(table);
-            return json;
-        }
-
-        public Random random = new Random();
-
-        private string GenerateRandomId()
-        {
-            const int idLength = 14;
-            StringBuilder sb = new StringBuilder(idLength);
-            sb.Append("U-");
-
-            while (sb.Length < idLength)
-            {
-                char c = (char)random.Next('0', 'z' + 1);
-                if (Char.IsLetterOrDigit(c) && sb[sb.Length - 1] != c)
-                {
-                    sb.Append(c);
-                }
-            }
-
-            return sb.ToString();
+            this.apiDBContext = apiDBContext;
         }
 
         [HttpGet]
-        [Route("lista/jugador")]
-        public string Get()
+        [Route("lista")]
+        public IActionResult GetAll()
         {
-            string query = @"
-                    select * from dbo.Usuario
-                    ";
-
-
-            string json = execquery(query);
-            List<Usuario> usuarios = JsonConvert.DeserializeObject<List<Usuario>>(json);
-            List<UsuarioAPI> usuariosAPI = new List<UsuarioAPI>();
-
-            foreach (var u in usuarios)
+            List<Usuario> list_usuario = apiDBContext.Usuario.ToList();
+            List<UsuarioAPI> list_return = new List<UsuarioAPI>();
+            foreach (Usuario usuario in list_usuario)
             {
-
-                string querypais = @"
-                                select * from dbo.Paises
-                                where Id = " + u.Nacionalidad + @"
-                                ";
-
-                string jsonpais = execquery(querypais);
-                List<Pais> pais = JsonConvert.DeserializeObject<List<Pais>>(jsonpais);
-                string paisName = "";
-
-                if (pais.Count() != 0)
+                UsuarioAPI uApi = new UsuarioAPI()
                 {
-                    paisName = pais[0].Nombre;
-                }
+                    Id = usuario.Id,
+                    Administrador = usuario.Administrador,
+                    Nombre = usuario.Nombre,
+                    Username = usuario.Username,
+                    Contrasena = usuario.Contrasena,
+                    Correo = usuario.Correo,
+                    Nacionalidad = apiDBContext.Paises.ToList().Where(x => x.Id == usuario.Nacionalidad).First().Nombre,
+                    Estado = usuario.Estado,
+                    Avatar = apiDBContext.Avatar.ToList().Where(x => x.Id == usuario.Avatar).First().Imagen,
+                    Actividad = apiDBContext.Actividad.ToList().Where(x => x.Id == usuario.Id_actividad).First().Nombre_act,
+                    Ranking = usuario.Ranking,
+                    Monedas = usuario.Monedas
 
-                string queryavatar = @"
-                                select * from dbo.Avatar
-                                where Id = '" + u.Avatar + @"'
-                                ";
+                };
 
-                string jsonavatar = execquery(queryavatar);
-                List<Avatar> avatar = JsonConvert.DeserializeObject<List<Avatar>>(jsonavatar);
-                string image = "";
-
-                if (avatar.Count() != 0)
-                {
-                    image = avatar[0].Imagen;
-                }
-
-
-
-                UsuarioAPI usapi = new UsuarioAPI();
-                usapi.Id = u.Id;
-                usapi.Nombre = u.Nombre;
-                usapi.Username = u.Username;
-                usapi.Administrador = false;
-                usapi.Contrasena = u.Contrasena;
-                usapi.Estado = u.Estado;
-                usapi.Nacionalidad = paisName;
-                usapi.Avatar = image;
-                usapi.Ranking = u.Ranking;
-                usapi.Monedas = u.Monedas;
-                usapi.Correo = u.Correo;
-
-                usuariosAPI.Add(usapi);
+                list_return.Add(uApi);
             }
 
-
-
-            json = JsonConvert.SerializeObject(usuariosAPI, Formatting.Indented);
-
-
-            return json;
-
+            return Ok(list_return);
         }
 
+        [HttpGet]
+        [Route("lista/jugadores")]
+        public IActionResult GetAllPlayers()
+        {
+            List<Usuario> list_usuario = apiDBContext.Usuario.ToList().Where(x => x.Administrador == false).ToList();
+            List<UsuarioAPI> list_return = new List<UsuarioAPI>();
+            foreach (Usuario usuario in list_usuario)
+            {
+                UsuarioAPI uApi = new UsuarioAPI()
+                {
+                    Id = usuario.Id,
+                    Administrador = usuario.Administrador,
+                    Nombre = usuario.Nombre,
+                    Username = usuario.Username,
+                    Contrasena = usuario.Contrasena,
+                    Correo = usuario.Correo,
+                    Nacionalidad = apiDBContext.Paises.ToList().Where(x => x.Id == usuario.Nacionalidad).First().Nombre,
+                    Estado = usuario.Estado,
+                    Avatar = apiDBContext.Avatar.ToList().Where(x => x.Id == usuario.Avatar).First().Imagen,
+                    Actividad = apiDBContext.Actividad.ToList().Where(x => x.Id == usuario.Id_actividad).First().Nombre_act,
+                    Ranking = usuario.Ranking,
+                    Monedas = usuario.Monedas
+
+                };
+
+                list_return.Add(uApi);
+            }
+
+            return Ok(list_return);
+        }
+
+        [HttpGet]
+        [Route("get/{Id}")]
+        public IActionResult Get([FromRoute] string Id)
+        {
+            Usuario usuario = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
+            UsuarioAPI uApi = new UsuarioAPI()
+            {
+                Id = usuario.Id,
+                Administrador = usuario.Administrador,
+                Nombre = usuario.Nombre,
+                Username = usuario.Username,
+                Contrasena = usuario.Contrasena,
+                Correo = usuario.Correo,
+                Nacionalidad = apiDBContext.Paises.ToList().Where(x => x.Id == usuario.Nacionalidad).First().Nombre,
+                Estado = usuario.Estado,
+                Avatar = apiDBContext.Avatar.ToList().Where(x => x.Id == usuario.Avatar).First().Imagen,
+                Actividad = apiDBContext.Actividad.ToList().Where(x => x.Id == usuario.Id_actividad).First().Nombre_act,
+                Ranking = usuario.Ranking,
+                Monedas = usuario.Monedas
+
+            };
+            return Ok(uApi);
+        }
 
         [HttpPost]
         [Route("guardarJugador")]
-        public JsonResult Post(UsuarioAPI usuario)
+        public IActionResult SaveUsuario(UsuarioAPI usuarioAPI)
         {
-            //crear Id
-            string Id = GenerateRandomId();
-
-
-            string userquery = @"
-                                select * from dbo.Usuario
-                                where Username =  '" + usuario.Username +  @"'";
-            string jsonusuarios = execquery(userquery);
-            List<Usuario> usernames = JsonConvert.DeserializeObject<List<Usuario>>(jsonusuarios);
-
-            string correoquery = @"
-                                select * from dbo.Usuario
-                                where Correo =  '" + usuario.Correo + @"'";
-            string jsoncorreo = execquery(correoquery);
-            List<Usuario> correos = JsonConvert.DeserializeObject<List<Usuario>>(jsoncorreo);
-
-            if (correos.Count() != 0)
+            Usuario usuario = new Usuario()
             {
-                return new JsonResult("1");
-            }
-            else if( usernames.Count() != 0)
-            {
-                return new JsonResult("2");
-            }
-            else
-            {
-                //Get Pais ID
-                string querypais = @"
-                                select * from dbo.Paises
-                                where Nombre = '" + usuario.Nacionalidad + @"'
-                                ";
+                Id = GeneratorID.GenerateRandomId("U-"),
+                Administrador = false,
+                Nombre = usuarioAPI.Nombre,
+                Username = usuarioAPI.Username,
+                Contrasena = usuarioAPI.Contrasena,
+                Correo = usuarioAPI.Correo,
+                Nacionalidad = apiDBContext.Paises.ToList().Where(x => x.Nombre == usuarioAPI.Nacionalidad).First().Id,
+                Estado = true,
+                Avatar = 1,//apiDBContext.Avatar.ToList().Where(x => x.Imagen == usuarioAPI.Avatar).First().Id,
+                Ranking = usuarioAPI.Ranking,
+                Monedas = 20,
+                Id_actividad = 1
+            };
 
-                string jsonpais = execquery(querypais);
-                List<Pais> pais = JsonConvert.DeserializeObject<List<Pais>>(jsonpais);
-                int paisint = 0;
+            apiDBContext.Usuario.Add(usuario);
 
-                if (pais.Count() != 0)
-                {
-                    paisint = pais[0].Id;
-                }
+            apiDBContext.SaveChanges();
 
-
-                string query = @"
-                    insert into dbo.Usuario values 
-                    ('" + Id + "','" + false + "','" + usuario.Nombre + "','" + usuario.Username + "','" + usuario.Contrasena + "','" + usuario.Correo + "'," + paisint + ",'" + true + "'," + 1 + "," + 0 + "," + 20 + @")
-                    ";
-
-
-                string json = execquery(query);
-
-                return new JsonResult(Id);
-            }
-            
+            return Ok(usuario);
         }
 
         [HttpDelete]
-        [Route("delete/{id}")]
-        public JsonResult Delete(string id)
+        [Route("delete/{Id}")]
+        public IActionResult DeleteUsario([FromRoute] string Id)
         {
-            string query = @"
-                    delete from dbo.Usuario
-                    where Id = '" + id + @"'
-                    ";
-
-            string json = execquery(query);
-
-            return new JsonResult("Deleted Successfully");
+            Usuario usuarioDelete = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
+            apiDBContext.Usuario.Remove(usuarioDelete);
+            apiDBContext.SaveChanges();
+            return Ok(usuarioDelete);
         }
-
     }
 }

@@ -1,5 +1,8 @@
-﻿namespace StarDeckAPI.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace StarDeckAPI.Models
 {
+    [PrimaryKey(nameof(Id))]
     public class Raza
     {
         public int Id { get; set; }

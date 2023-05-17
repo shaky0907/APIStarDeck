@@ -1,5 +1,8 @@
-﻿namespace StarDeckAPI.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace StarDeckAPI.Models
 {
+    [PrimaryKey(nameof(Id))]
     public class Carta
     {
         public string Id { get; set; }
@@ -9,7 +12,7 @@
         public string Imagen { get; set; }
         public int Raza { get; set; }
         public int Tipo { get; set; }
-        public bool Activa { get; set; }
+        public Boolean Activa { get; set; }
         public string Descripcion { get; set; }
     }
 }
