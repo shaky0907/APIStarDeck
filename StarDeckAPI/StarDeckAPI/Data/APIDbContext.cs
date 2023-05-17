@@ -18,7 +18,7 @@ namespace StarDeckAPI.Data
         public DbSet<CartaXUsuario> CartaXUsuario { get; set; }
         public DbSet<Deck> Deck { get; set; }
         public DbSet<Estado_Partida> Estado_Partida { get; set; }
-        public DbSet<Pais> Pais { get; set; }
+        public DbSet<Pais> Paises { get; set; }
         public DbSet<Partida> Partida { get; set; }
         public DbSet<Planeta> Planeta { get; set; }
         public DbSet<PlanetasXPartida> PlanetasXPartida { get; set; }
