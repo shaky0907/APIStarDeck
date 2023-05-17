@@ -2,6 +2,7 @@
 using StarDeckAPI.Data;
 using StarDeckAPI.Models;
 using StarDeckAPI.Utilities;
+using System.Numerics;
 using System.Text.RegularExpressions;
 
 namespace StarDeckAPI.Controllers
@@ -35,7 +36,7 @@ namespace StarDeckAPI.Controllers
                     Username = usuario.Username,
                     Contrasena = usuario.Contrasena,
                     Correo = usuario.Correo,
-                    Nacionalidad = apiDBContext.Pais.ToList().Where(x => x.Id == usuario.Nacionalidad).First().Nombre,
+                    Nacionalidad = apiDBContext.Paises.ToList().Where(x => x.Id == usuario.Nacionalidad).First().Nombre,
                     Estado = usuario.Estado,
                     Avatar = apiDBContext.Avatar.ToList().Where(x => x.Id == usuario.Avatar).First().Imagen,
                     Actividad = apiDBContext.Actividad.ToList().Where(x => x.Id == usuario.Id_actividad).First().Nombre_act,
@@ -66,7 +67,7 @@ namespace StarDeckAPI.Controllers
                     Username = usuario.Username,
                     Contrasena = usuario.Contrasena,
                     Correo = usuario.Correo,
-                    Nacionalidad = apiDBContext.Pais.ToList().Where(x => x.Id == usuario.Nacionalidad).First().Nombre,
+                    Nacionalidad = apiDBContext.Paises.ToList().Where(x => x.Id == usuario.Nacionalidad).First().Nombre,
                     Estado = usuario.Estado,
                     Avatar = apiDBContext.Avatar.ToList().Where(x => x.Id == usuario.Avatar).First().Imagen,
                     Actividad = apiDBContext.Actividad.ToList().Where(x => x.Id == usuario.Id_actividad).First().Nombre_act,
@@ -94,7 +95,7 @@ namespace StarDeckAPI.Controllers
                 Username = usuario.Username,
                 Contrasena = usuario.Contrasena,
                 Correo = usuario.Correo,
-                Nacionalidad = apiDBContext.Pais.ToList().Where(x => x.Id == usuario.Nacionalidad).First().Nombre,
+                Nacionalidad = apiDBContext.Paises.ToList().Where(x => x.Id == usuario.Nacionalidad).First().Nombre,
                 Estado = usuario.Estado,
                 Avatar = apiDBContext.Avatar.ToList().Where(x => x.Id == usuario.Avatar).First().Imagen,
                 Actividad = apiDBContext.Actividad.ToList().Where(x => x.Id == usuario.Id_actividad).First().Nombre_act,
@@ -115,15 +116,20 @@ namespace StarDeckAPI.Controllers
                 Administrador = false,
                 Nombre = usuarioAPI.Nombre,
                 Username = usuarioAPI.Username,
+                Contrasena = usuarioAPI.Contrasena,
                 Correo = usuarioAPI.Correo,
-                Nacionalidad = apiDBContext.Pais.ToList().Where(x => x.Nombre == usuarioAPI.Nacionalidad).First().Id,
-                Estado = usuarioAPI.Estado,
-                Avatar = apiDBContext.Avatar.ToList().Where(x => x.Imagen == usuarioAPI.Avatar).First().Id,
+                Nacionalidad = apiDBContext.Paises.ToList().Where(x => x.Nombre == usuarioAPI.Nacionalidad).First().Id,
+                Estado = true,
+                Avatar = 1,//apiDBContext.Avatar.ToList().Where(x => x.Imagen == usuarioAPI.Avatar).First().Id,
                 Ranking = usuarioAPI.Ranking,
-                Monedas = usuarioAPI.Monedas,
+                Monedas = 20,
                 Id_actividad = 1
-
             };
+
+            apiDBContext.Usuario.Add(usuario);
+
+            apiDBContext.SaveChanges();
+
             return Ok(usuario);
         }
 
