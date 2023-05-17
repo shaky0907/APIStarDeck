@@ -38,9 +38,10 @@ VALUES (1, 'Popular', 50),
 
 
 INSERT INTO Estado_Partida(Id, Nombre)
-VALUES (1, 'Emparejando'),
-		(2, 'En curso'),
-		(3, 'Finalizada');
+VALUES (1, 'Creada'),
+		(2, 'Emaparejada'),
+		(3, 'En curso'),
+		(4, 'Terminada');
 
 
 
@@ -64,6 +65,12 @@ INSERT INTO Carta(Id, N_personaje, Energia, C_batalla, Imagen, Raza, Activa, Des
 		(2, 'Carta2', 30, 4, 'imagen2', 1, 1, 'Es la segunda carta', 1),
 		(3, 'Carta3', 50, 7, 'imagen3', 1, 1, 'Es la tercera carta', 1);
 
+
+
+INSERT INTO Planeta(Id, Nombre, Tipo, Descripcion, Estado, Imagen)
+	VALUES ('1', 'Namek', 1,'Donde vive el senor picolo', 1, 'picolo'),
+			('2', 'Yadrat', 2,'Donde goku aprende el tp', 1, 'tp'),
+			('3', 'Planeta Dioses', 3,'goku eta vaina e seria', 1, 'dioses');
 
 SELECT * FROM Partida
 

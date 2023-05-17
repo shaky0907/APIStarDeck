@@ -1,89 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-
-
-using Microsoft.AspNetCore.Mvc;
-
-using System.Data.SqlClient;
-using System.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-
+using StarDeckAPI.Data;
 using StarDeckAPI.Models;
-using System.Text;
+using System;
 
 namespace StarDeckAPI.Controllers
 {
-    [Route("carta")]
     [ApiController]
+    [Route("carta")]
     public class CartaController : Controller
     {
-        private readonly IConfiguration _configuration;
+        private readonly APIDbContext apiDBContext;
+        private Random random = new Random();
 
-        public CartaController(IConfiguration configuration)
+        public CartaController(APIDbContext apiDBContext)
         {
-            _configuration = configuration;
+            this.apiDBContext = apiDBContext;
         }
-
-        private string execquery(string query)
-        {
-            DataTable table = new DataTable();
-            string sqlDataSource = _configuration.GetConnectionString("StarDeck");
-            SqlDataReader myReader;
-            using (SqlConnection myCon = new SqlConnection(sqlDataSource))
-            {
-                myCon.Open();
-                using (SqlCommand myCommand = new SqlCommand(query, myCon))
-                {
-                    myReader = myCommand.ExecuteReader();
-                    table.Load(myReader);
-
-                    myReader.Close();
-                    myCon.Close();
-                }
-            }
-
-            string json = JsonConvert.SerializeObject(table);
-            return json;
-        }
-
-
-        public Random random = new Random();
-
-        private string GenerateRandomId()
-        {
-            const int idLength = 14;
-            StringBuilder sb = new StringBuilder(idLength);
-            sb.Append("C-");
-
-            while (sb.Length < idLength)
-            {
-                char c = (char)random.Next('0', 'z' + 1);
-                if (Char.IsLetterOrDigit(c) && sb[sb.Length - 1] != c)
-                {
-                    sb.Append(c);
-                }
-            }
-
-            return sb.ToString();
-        }
-
 
         [HttpGet]
         [Route("razas")]
-        public string getrazas()
+        public IActionResult Razas()
         {
-            string query = @"
-                    select * from dbo.Raza
-                    ";
+            List<Raza> razas = apiDBContext.Raza.ToList();
 
-
-            string json = execquery(query);
-            List<Raza> razas = JsonConvert.DeserializeObject<List<Raza>>(json);
-            json = JsonConvert.SerializeObject(razas, Formatting.Indented);
-            return json;
+            return Ok(razas);
         }
 
-        private List<Carta> GenerateRandomCartas(List<Carta> inputCards,int count)
+        private List<Carta> GenerateRandomCartas(List<Carta> inputCards, int count)
         {
             if (inputCards.Count() < count)
             {
@@ -106,310 +50,119 @@ namespace StarDeckAPI.Controllers
             return selectedCards;
         }
 
-
-
         [HttpGet]
         [Route("getnewDeck")]
-        public string getnewCartas()
+        public IActionResult GetNewDeck()
         {
-            string queryBasicas = @"
-                    select * from dbo.Carta
-                    where Tipo = 5
-                    ";
+            List<Carta> cartasBasicas = apiDBContext.Carta.ToList().Where(x => x.Tipo == 5).ToList();
 
-            //Conseguir 15 cartas basicas
-            string jsonbasicas = execquery(queryBasicas);
-            List<Carta> cartasbasicas = JsonConvert.DeserializeObject<List<Carta>>(jsonbasicas);
+            List<Carta> cartasTotales = GenerateRandomCartas(cartasBasicas, 15);
 
-            List<Carta> cartasTotales = GenerateRandomCartas(cartasbasicas,15);
-
-            string queryrn = @"
-                    select * from dbo.Carta
-                    where Tipo = 3 OR Tipo = 4
-                    ";
-
-            string jsonrn = execquery(queryrn);
-            List<Carta> cartasrn = JsonConvert.DeserializeObject<List<Carta>>(jsonrn);
+            List<Carta> cartasrn = apiDBContext.Carta.ToList().Where(x => (x.Tipo == 4) || (x.Tipo == 3)).ToList();
 
             List<Carta> cartasrestantes = GenerateRandomCartas(cartasrn, 9);
 
-
-
             cartasTotales.AddRange(cartasrestantes);
 
-            List<CartaAPI> cartasapi = new List<CartaAPI>();
+            List<CartaAPI> cartasReturn = new List<CartaAPI>();
 
-            foreach (var c in cartasTotales)
+            foreach (Carta carta in cartasTotales)
             {
-
-
-                //Get Raza ID
-                string queryraza = @"
-                                select * from dbo.Raza
-                                where Id = " + c.Raza + @"
-                                ";
-
-                string jsonraza = execquery(queryraza);
-                List<Raza> raza = JsonConvert.DeserializeObject<List<Raza>>(jsonraza);
-                string razaName = "";
-
-                if (raza.Count() != 0)
+                CartaAPI cApi = new CartaAPI()
                 {
-                    razaName = raza[0].Nombre;
-                }
-                //get Tipo ID
-                string querytipo = @"
-                                select * from dbo.Tipo
-                                where Id = " + c.Tipo + @"
-                                ";
-
-                string jsontipo = execquery(querytipo);
-                List<Tipo> tipo = JsonConvert.DeserializeObject<List<Tipo>>(jsontipo);
-
-                string tipoName = "";
-                if (tipo.Count() != 0)
-                {
-                    tipoName = tipo[0].Nombre;
-                }
-
-
-                CartaAPI capi = new CartaAPI();
-
-                capi.Id = c.Id;
-                capi.Nombre = c.N_Personaje;
-                capi.Energia = c.Energia;
-                capi.Costo = c.C_batalla;
-                capi.Imagen = c.Imagen;
-                capi.Estado = c.Activa;
-                capi.Descripcion = c.Descripcion;
-                capi.Raza = razaName;
-                capi.Tipo = tipoName;
-
-                cartasapi.Add(capi);
-
+                    Id = carta.Id,
+                    Nombre = carta.N_Personaje,
+                    Energia = carta.Energia,
+                    Costo = carta.C_batalla,
+                    Imagen = carta.Imagen,
+                    Raza = apiDBContext.Raza.ToList().Where(x => x.Id == carta.Raza).First().Nombre,
+                    Tipo = apiDBContext.Tipo.ToList().Where(x => x.Id == carta.Tipo).First().Nombre,
+                    Estado = carta.Activa,
+                    Descripcion = carta.Descripcion
+                };
             }
 
-            string json = JsonConvert.SerializeObject(cartasapi, Formatting.Indented);
+            return Ok(cartasReturn);
 
-            return json;
         }
-
-
-
 
         [HttpGet]
         [Route("lista")]
-        public string Get()
+        public IActionResult GetAll()
         {
-            string query = @"
-                    select * from dbo.Carta
-                    ";
+            List<Carta> cartas = apiDBContext.Carta.ToList();
+            List<CartaAPI> cartasReturn = new List<CartaAPI>();
 
-
-            string json = execquery(query);
-            List<Carta> cartas = JsonConvert.DeserializeObject<List<Carta>>(json);
-
-            List<CartaAPI> cartasapi = new List<CartaAPI>();
-
-            foreach (var carta in cartas)
+            foreach (Carta carta in cartas)
             {
-
-
-                //Get Raza ID
-                string queryraza = @"
-                                select * from dbo.Raza
-                                where Id = " + carta.Raza + @"
-                                ";
-
-                string jsonraza = execquery(queryraza);
-                List<Raza> raza = JsonConvert.DeserializeObject<List<Raza>>(jsonraza);
-                string razaName = "";
-
-                if (raza.Count() != 0)
+                CartaAPI cApi = new CartaAPI()
                 {
-                    razaName = raza[0].Nombre;
-                }
-
-
-
-                string querytipo = @"
-                                select * from dbo.Tipo
-                                where Id = " + carta.Tipo + @"
-                                ";
-
-                string jsontipo = execquery(querytipo);
-                List<Tipo> tipo = JsonConvert.DeserializeObject<List<Tipo>>(jsontipo);
-
-                string tipoName = "";
-                if (tipo.Count() != 0)
-                {
-                    tipoName = tipo[0].Nombre;
-                }
-
-                CartaAPI c = new CartaAPI();
-                c.Id = carta.Id;
-                c.Nombre = carta.N_Personaje;
-                c.Energia = carta.Energia;
-                c.Costo = carta.C_batalla;
-                c.Imagen = carta.Imagen;
-                c.Estado = carta.Activa;
-                c.Descripcion = carta.Descripcion;
-                c.Raza = razaName;
-                c.Tipo = tipoName;
-
-                cartasapi.Add(c);
-
+                    Id = carta.Id,
+                    Nombre = carta.N_Personaje,
+                    Energia = carta.Energia,
+                    Costo = carta.C_batalla,
+                    Imagen = carta.Imagen,
+                    Raza = apiDBContext.Raza.ToList().Where(x => x.Id == carta.Raza).First().Nombre,
+                    Tipo = apiDBContext.Tipo.ToList().Where(x => x.Id == carta.Tipo).First().Nombre,
+                    Estado = carta.Activa,
+                    Descripcion = carta.Descripcion
+                };
             }
 
-
-            json = JsonConvert.SerializeObject(cartasapi, Formatting.Indented);
-
-            return json;
-
-
-           
-
+            return Ok(cartasReturn);
         }
 
         [HttpGet]
-        [Route("lista/{id}")]
-        public string Get(string id)
+        [Route("lista/{Id}")]
+        public IActionResult Get([FromRoute] string Id)
         {
-            string query = @"
-                    select * from dbo.Carta
-                    where ID = '" + id + @"'
-                    ";
-
-            string json = execquery(query);
-            List<Carta> cartas = JsonConvert.DeserializeObject<List<Carta>>(json);
-
-            List<CartaAPI> cartasapi = new List<CartaAPI>();
-
-            foreach (var carta in cartas)
+            Carta carta = apiDBContext.Carta.ToList().Where(x => x.Id == Id).First();
+            CartaAPI cApi = new CartaAPI()
             {
-                
+                Id = carta.Id,
+                Nombre = carta.N_Personaje,
+                Energia = carta.Energia,
+                Costo = carta.C_batalla,
+                Imagen = carta.Imagen,
+                Raza = apiDBContext.Raza.ToList().Where(x => x.Id == carta.Raza).First().Nombre,
+                Tipo = apiDBContext.Tipo.ToList().Where(x => x.Id == carta.Tipo).First().Nombre,
+                Estado = carta.Activa,
+                Descripcion = carta.Descripcion
+            };
 
-                //Get Raza ID
-                string queryraza = @"
-                                select * from dbo.Raza
-                                where Id = " + carta.Raza + @"
-                                ";
-
-                string jsonraza = execquery(queryraza);
-                List<Raza> raza = JsonConvert.DeserializeObject<List<Raza>>(jsonraza);
-                string razaName = "";
-
-                if (raza.Count() != 0)
-                {
-                    razaName = raza[0].Nombre;
-                }
-
-
-
-                string querytipo = @"
-                                select * from dbo.Tipo
-                                where Id = " + carta.Tipo + @"
-                                ";
-
-                string jsontipo = execquery(querytipo);
-                List<Tipo> tipo = JsonConvert.DeserializeObject<List<Tipo>>(jsontipo);
-
-                string tipoName ="";
-                if (tipo.Count() != 0)
-                {
-                    tipoName = tipo[0].Nombre;
-                }
-
-                CartaAPI c = new CartaAPI();
-                c.Id = carta.Id;
-                c.Nombre = carta.N_Personaje;
-                c.Energia = carta.Energia;
-                c.Costo = carta.C_batalla;
-                c.Imagen = carta.Imagen;
-                c.Estado = carta.Activa;
-                c.Descripcion = carta.Descripcion;
-                c.Raza = razaName;
-                c.Tipo = tipoName;
-
-                cartasapi.Add(c);
-
-            }
-
-
-            json = JsonConvert.SerializeObject(cartasapi, Formatting.Indented);
-
-            return json;
-
+            return Ok(cApi);
         }
 
         [HttpPost]
         [Route("guardar")]
-        public JsonResult Post(CartaAPI cartaapi)
+        public IActionResult saveCarta(CartaAPI cartaAPI)
         {
-            
-            //Create ID
-            string Id = GenerateRandomId();
-
-
-            //Get Raza ID
-            string queryraza = @"
-                                select * from dbo.Raza
-                                where Nombre = '" + cartaapi.Raza + @"'
-                                ";
-
-            string jsonraza = execquery(queryraza);
-            List<Raza> raza = JsonConvert.DeserializeObject<List<Raza>>(jsonraza);
-            int razaint = 0;
-
-            if (raza.Count() != 0)
+            Carta carta = new Carta()
             {
-                razaint = raza[0].Id;
-            }
+                Id = cartaAPI.Id,
+                N_Personaje = cartaAPI.Nombre,
+                Energia = cartaAPI.Energia,
+                C_batalla = cartaAPI.Costo,
+                Imagen = cartaAPI.Imagen,
+                Raza = apiDBContext.Raza.ToList().Where(x => x.Nombre == cartaAPI.Raza).First().Id,
+                Tipo = apiDBContext.Tipo.ToList().Where(x => x.Nombre == cartaAPI.Tipo).First().Id,
+                Activa = cartaAPI.Estado,
+                Descripcion = cartaAPI.Descripcion
+            };
+            apiDBContext.Add(carta);
+            apiDBContext.SaveChanges();
 
-            string querytipo = @"
-                                select * from dbo.Tipo
-                                where Nombre = '" + cartaapi.Tipo + @"'
-                                ";
-
-            string jsontipo = execquery(querytipo);
-            List<Tipo> tipo = JsonConvert.DeserializeObject<List<Tipo>>(jsontipo);
-
-            int tipoint = 0;
-            if (tipo.Count() != 0)
-            {
-                tipoint = tipo[0].Id;
-            }
-
-
-
-            string query = @"
-                    insert into dbo.carta values 
-                    ('" + Id + "','" + cartaapi.Nombre + "'," + cartaapi.Energia + "," + cartaapi.Costo  +",'" + cartaapi.Imagen + "'," + razaint + ",'" + cartaapi.Estado + "','" + cartaapi.Descripcion + "'," + tipoint + @")
-                    ";
-
-
-            string json = execquery(query);
-
-            return new JsonResult("Added Successfully");
+            return Ok(cartaAPI);
         }
 
-
-
-
-
-
         [HttpDelete]
-        [Route("delete/{id}")]
-        public JsonResult Delete(string id)
+        [Route("delete/{Id}")]
+        public IActionResult deleteCarta([FromRoute] string Id)
         {
-            string query = @"
-                    delete from dbo.Carta
-                    where Id = '" + id + @"'
-                    ";
-
-            string json = execquery(query);
-
-            return new JsonResult("Deleted Successfully");
+            Carta carta = apiDBContext.Carta.ToList().Where(x => x.Id == Id).First();
+            apiDBContext.Remove(carta);
+            apiDBContext.SaveChanges();
+            return Ok(carta);
         }
 
     }
