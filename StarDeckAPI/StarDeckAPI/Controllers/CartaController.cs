@@ -82,8 +82,11 @@ namespace StarDeckAPI.Controllers
                     Estado = carta.Activa,
                     Descripcion = carta.Descripcion
                 };
+<<<<<<< HEAD
 
                 cartasReturn.Add(cApi);
+=======
+>>>>>>> ee2203c1d2b088f89d16eff8400ba1cc64413834
             }
 
             return Ok(cartasReturn);
@@ -111,7 +114,10 @@ namespace StarDeckAPI.Controllers
                     Estado = carta.Activa,
                     Descripcion = carta.Descripcion
                 };
+<<<<<<< HEAD
                 cartasReturn.Add(cApi);
+=======
+>>>>>>> ee2203c1d2b088f89d16eff8400ba1cc64413834
             }
 
             return Ok(cartasReturn);
