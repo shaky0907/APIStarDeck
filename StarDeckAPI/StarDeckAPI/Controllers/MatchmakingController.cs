@@ -233,6 +233,31 @@ namespace StarDeckAPI.Controllers
             Partida partida = apiDBContext.Partida.ToList().Where(x => x.Id == Id).First();
             return Ok(partida);
         }
-    
+
+        [HttpGet]
+        [Route("getPlanetasPartida/{Id}")]
+        public IActionResult getPlanetasPartida([FromRoute] string Id)
+        {
+            List<PlanetasXPartida> pxps = apiDBContext.PlanetasXPartida.ToList().Where(x => x.Id_Partida == Id).ToList();
+            List<Planeta> planetas = new List<Planeta>();
+
+            foreach (PlanetasXPartida pxp in pxps)
+            {
+                Planeta p = new Planeta()
+                {
+                    Id = pxp.Id_Planeta,
+                    Nombre = apiDBContext.Planeta.ToList().Where(x => x.Id == pxp.Id_Planeta).First().Nombre,
+                    Tipo = apiDBContext.Planeta.ToList().Where(x => x.Id == pxp.Id_Planeta).First().Tipo,
+                    Descripcion = apiDBContext.Planeta.ToList().Where(x => x.Id == pxp.Id_Planeta).First().Descripcion,
+                    Estado = apiDBContext.Planeta.ToList().Where(x => x.Id == pxp.Id_Planeta).First().Estado,
+                    Imagen = apiDBContext.Planeta.ToList().Where(x => x.Id == pxp.Id_Planeta).First().Imagen
+
+                };
+                planetas.Add(p);
+            }
+
+            return Ok(planetas);
+
+        }
     }
 }

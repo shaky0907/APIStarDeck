@@ -74,7 +74,6 @@ INSERT INTO Planeta(Id, Nombre, Tipo, Descripcion, Estado, Imagen)
 
 SELECT * FROM Partida
 
-
 SELECT * FROM UsuarioXPartida
 
 SELECT * FROM PlanetasXPartida
