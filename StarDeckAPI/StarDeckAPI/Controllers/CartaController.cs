@@ -53,6 +53,18 @@ namespace StarDeckAPI.Controllers
         }
 
         [HttpGet]
+        [Route("getCartasTest")]
+        public IActionResult testFunc()
+        {
+            List<Carta> cartas = apiDBContext.Carta.ToList();
+            return Ok(cartas);
+
+
+
+        }
+
+
+        [HttpGet]
         [Route("getnewDeck")]
         public IActionResult GetNewDeck()
         {
