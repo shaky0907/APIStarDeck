@@ -2,7 +2,7 @@
 using StarDeckAPI.Data;
 using StarDeckAPI.Models;
 using StarDeckAPI.Utilities;
-
+using System.Reflection.Metadata.Ecma335;
 
 namespace StarDeckAPI.Controllers
 {
@@ -24,67 +24,78 @@ namespace StarDeckAPI.Controllers
         {
             MatchmakingResponse matchmakingResponse = new MatchmakingResponse();
             List<UsuarioXPartida> uxpL = apiDBContext.UsuarioXPartida.ToList().Where(x => x.Id_Usuario == Id).ToList();
-            int myUserCheck = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First().Id_actividad;
-            
-            if (uxpL.Any())
+            int myUserCheck = 0;
+            bool continue_check = false;
+
+            if (apiDBContext.Usuario.ToList().Where(x => x.Id == Id).ToList().Any())
             {
-                bool alreadypaired = false;
-                bool alreadystarted = false;
-                foreach (UsuarioXPartida uxp in uxpL)
+                continue_check = true;
+                myUserCheck = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First().Id_actividad;
+            }
+
+            if (continue_check)
+            {
+                if (uxpL.Any())
                 {
-                    Partida partida = apiDBContext.Partida.ToList().Where(x => x.Id == uxp.Id_Partida).First();
-                    bool uxp_check_master = apiDBContext.UsuarioXPartida.ToList().Where(x => x.Id_Usuario == Id).First().Id_Master;
-                    
-                    if ((partida.Estado == 1) && (!uxp_check_master)) 
+                    bool alreadypaired = false;
+                    bool alreadystarted = false;
+                    foreach (UsuarioXPartida uxp in uxpL)
                     {
-                        partida.Estado = 2;
-                        alreadypaired = true;
-                        apiDBContext.Update(partida);
-                        apiDBContext.SaveChanges();
-                        matchmakingResponse.Id_Partida = partida.Id;
-                        break;
+                        Partida partida = apiDBContext.Partida.ToList().Where(x => x.Id == uxp.Id_Partida).First();
+                        bool uxp_check_master = apiDBContext.UsuarioXPartida.ToList().Where(x => x.Id_Usuario == Id).First().Id_Master;
 
-                        
+                        if ((partida.Estado == 1) && (!uxp_check_master))
+                        {
+                            partida.Estado = 2;
+                            alreadypaired = true;
+                            apiDBContext.Update(partida);
+                            apiDBContext.SaveChanges();
+                            matchmakingResponse.Id_Partida = partida.Id;
+                            break;
 
-                    } else if ((partida.Estado == 2) && (uxp_check_master))
-                    {
-                        partida.Estado = 3;
-                        alreadystarted = true;
-                        apiDBContext.Update(partida);
-                        apiDBContext.SaveChanges();
-                        matchmakingResponse.Id_Partida = partida.Id;
-                        break;
+
+
+                        }
+                        else if ((partida.Estado == 2) && (uxp_check_master))
+                        {
+                            partida.Estado = 3;
+                            alreadystarted = true;
+                            apiDBContext.Update(partida);
+                            apiDBContext.SaveChanges();
+                            matchmakingResponse.Id_Partida = partida.Id;
+                            break;
+                        }
+
                     }
-                    
-                }
 
-                if (alreadypaired)
-                {
-                    matchmakingResponse.estado = 2;
-                }else if (alreadystarted)
-                {
-                    matchmakingResponse.estado = 3;
-                }
+                    if (alreadypaired)
+                    {
+                        matchmakingResponse.estado = 2;
+                    }
+                    else if (alreadystarted)
+                    {
+                        matchmakingResponse.estado = 3;
+                    }
 
-                else if(myUserCheck == 2)
-                {
+                    else if (myUserCheck == 2)
+                    {
 
-                    matchmakingResponse = this.createNewMatch(Id);
+                        matchmakingResponse = this.createNewMatch(Id);
+                    }
+                    else
+                    {
+                        matchmakingResponse.estado = 4;
+                    }
                 }
                 else
                 {
-                    matchmakingResponse.estado = 4;
+
+                    matchmakingResponse = this.createNewMatch(Id);
+
+
                 }
             }
-            else
-            {
-
-                matchmakingResponse = this.createNewMatch(Id);
-
-
-            }
-
-                matchmakingResponse.Id = Id;
+            matchmakingResponse.Id = Id;
 
             return Ok(matchmakingResponse);
         }
@@ -92,7 +103,7 @@ namespace StarDeckAPI.Controllers
 
         private MatchmakingResponse createNewMatch(string Id)
         {
-            
+
             Usuario myUser = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
             MatchmakingResponse matchmakingResponse = new MatchmakingResponse();
             List<Usuario> usuarios = apiDBContext.Usuario.ToList();
@@ -186,7 +197,7 @@ namespace StarDeckAPI.Controllers
             }
 
             return matchmakingResponse;
-        } 
+        }
 
 
         [HttpPut]
@@ -233,6 +244,31 @@ namespace StarDeckAPI.Controllers
             Partida partida = apiDBContext.Partida.ToList().Where(x => x.Id == Id).First();
             return Ok(partida);
         }
-    
+
+        [HttpGet]
+        [Route("getPlanetasPartida/{Id}")]
+        public IActionResult getPlanetasPartida([FromRoute] string Id)
+        {
+            List<PlanetasXPartida> pxps = apiDBContext.PlanetasXPartida.ToList().Where(x => x.Id_Partida == Id).ToList();
+            List<Planeta> planetas = new List<Planeta>();
+
+            foreach (PlanetasXPartida pxp in pxps)
+            {
+                Planeta p = new Planeta()
+                {
+                    Id = pxp.Id_Planeta,
+                    Nombre = apiDBContext.Planeta.ToList().Where(x => x.Id == pxp.Id_Planeta).First().Nombre,
+                    Tipo = apiDBContext.Planeta.ToList().Where(x => x.Id == pxp.Id_Planeta).First().Tipo,
+                    Descripcion = apiDBContext.Planeta.ToList().Where(x => x.Id == pxp.Id_Planeta).First().Descripcion,
+                    Estado = apiDBContext.Planeta.ToList().Where(x => x.Id == pxp.Id_Planeta).First().Estado,
+                    Imagen = apiDBContext.Planeta.ToList().Where(x => x.Id == pxp.Id_Planeta).First().Imagen
+
+                };
+                planetas.Add(p);
+            }
+
+            return Ok(planetas);
+
+        }
     }
 }
