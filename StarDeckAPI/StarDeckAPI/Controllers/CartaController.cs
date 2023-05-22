@@ -53,6 +53,18 @@ namespace StarDeckAPI.Controllers
         }
 
         [HttpGet]
+        [Route("getCartasTest")]
+        public IActionResult testFunc()
+        {
+            List<Carta> cartas = apiDBContext.Carta.ToList();
+            return Ok(cartas);
+
+
+
+        }
+
+
+        [HttpGet]
         [Route("getnewDeck")]
         public IActionResult GetNewDeck()
         {
@@ -82,6 +94,8 @@ namespace StarDeckAPI.Controllers
                     Estado = carta.Activa,
                     Descripcion = carta.Descripcion
                 };
+
+                cartasReturn.Add(cApi);
             }
 
             return Ok(cartasReturn);
@@ -109,6 +123,8 @@ namespace StarDeckAPI.Controllers
                     Estado = carta.Activa,
                     Descripcion = carta.Descripcion
                 };
+
+                cartasReturn.Add(cApi);
             }
 
             return Ok(cartasReturn);

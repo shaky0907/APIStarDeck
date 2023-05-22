@@ -17,17 +17,6 @@ CREATE TABLE Carta (
 );
 
 
-
-CREATE TABLE CartaXUsuario (
-
-	Id_usuario VARCHAR(15) NOT NULL,
-	Id_carta VARCHAR(15) NOT NULL
-	CONSTRAINT PK_Ids_cxus PRIMARY KEY (Id_usuario, Id_carta)
-
-);
-
-
-
 CREATE TABLE Raza (
 	Id INT NOT NULL,
 	Nombre VARCHAR(20) NOT NULL
@@ -39,6 +28,7 @@ CREATE TABLE Tipo (
 	Nombre VARCHAR(20) NOT NULL
 	CONSTRAINT PK_Tipo PRIMARY KEY (Id)
 );
+
 
 CREATE TABLE Usuario (
 	Id VARCHAR(15) NOT NULL,
@@ -85,7 +75,6 @@ CREATE TABLE Deck(
 	Id VARCHAR(15) NOT NULL,
 	Nombre VARCHAR(20) NOT NULL,
 	Estado BIT NOT NULL,
-	Slot INT NOT NULL,
 	Id_usuario VARCHAR(15) NOT NULL
 	CONSTRAINT PK_Deck PRIMARY KEY (Id)
 
@@ -190,6 +179,7 @@ CREATE TABLE PlanetasXPartida(
 );
 
 
+
 --Constraints
 ALTER TABLE Carta 
 ADD CONSTRAINT FK_Carta_Tipo 
@@ -198,6 +188,7 @@ FOREIGN KEY (Tipo) REFERENCES Tipo (Id);
 ALTER TABLE Carta 
 ADD CONSTRAINT FK_Carta_Raza 
 FOREIGN KEY (Raza) REFERENCES Raza (Id);
+
 
 ALTER TABLE Usuario
 ADD CONSTRAINT FK_Usuario_Actividad
@@ -290,19 +281,3 @@ use StarDeck
 drop table Carta
 drop table Raza
 drop table Tipo
-drop table Paises
-drop table Usuario
-drop table Avatar
-drop table CartaXUsuario
-drop table Actividad
-drop table Deck
-drop table CartasXDeck
-drop table Planeta
-drop table Tipo_planeta
-drop table Partida
-drop table Turno
-drop table TurnoXUsuario
-drop table CartasXTurnoXPlaneta
-drop table Estado_Partida
-drop table UsuarioXPartida
-drop table PlanetasXPartida

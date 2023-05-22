@@ -5,6 +5,7 @@ namespace StarDeckAPI.Utilities
 {
     public static class GeneratorID
     {
+
         private static Random random = new Random();
         public static string GenerateRandomId(string prefix)
         {

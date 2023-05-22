@@ -7,6 +7,6 @@
         public Boolean Estado { get; set; }
         public int Slot { get; set; }
         public string Id_usuario { get; set; }
-        public List<string> id_cartas { get; set; }
+        public List<CartaAPI> Cartas { get; set; }
     }
 }

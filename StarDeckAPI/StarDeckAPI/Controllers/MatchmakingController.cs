@@ -103,7 +103,7 @@ namespace StarDeckAPI.Controllers
 
         private MatchmakingResponse createNewMatch(string Id)
         {
-            
+
             Usuario myUser = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
             MatchmakingResponse matchmakingResponse = new MatchmakingResponse();
             List<Usuario> usuarios = apiDBContext.Usuario.ToList();
@@ -197,7 +197,7 @@ namespace StarDeckAPI.Controllers
             }
 
             return matchmakingResponse;
-        } 
+        }
 
 
         [HttpPut]
