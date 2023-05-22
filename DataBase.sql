@@ -149,12 +149,13 @@ CREATE TABLE TurnoXUsuario(
 	
 );
 
-CREATE TABLE CartasXTurnoXPlaneta(
+CREATE TABLE CartasXTurnoXPlanetaXUsuario(
 
 	Id_Carta VARCHAR(15),
 	Id_Turno VARCHAR(15),
-	Id_Planeta VARCHAR(15)
-	CONSTRAINT PK_Ids_cxtxp PRIMARY KEY (Id_Carta, Id_Turno, Id_Planeta)
+	Id_Planeta VARCHAR(15),
+	Id_Usuario VARCHAR(15),
+	CONSTRAINT PK_Ids_cxtxp PRIMARY KEY (Id_Turno, Id_Planeta)
 );
 
 
@@ -247,17 +248,21 @@ ADD CONSTRAINT FK_Turno_Usuario_U
 FOREIGN KEY (Id_Usuario) REFERENCES Usuario (Id);
 
 
-ALTER TABLE CartasXTurnoXPlaneta
+ALTER TABLE CartasXTurnoXPlanetaXUsuario
 ADD CONSTRAINT FK_Carta_T_P
 FOREIGN KEY (Id_Carta) REFERENCES Carta (Id);
 
-ALTER TABLE CartasXTurnoXPlaneta
+ALTER TABLE CartasXTurnoXPlanetaXUsuario
 ADD CONSTRAINT FK_Turnos_C_P
 FOREIGN KEY (Id_Turno) REFERENCES Turno (Id);
 
-ALTER TABLE CartasXTurnoXPlaneta
+ALTER TABLE CartasXTurnoXPlanetaXUsuario
 ADD CONSTRAINT FK_Planeta_C_T
 FOREIGN KEY (Id_Planeta) REFERENCES Planeta (Id);
+
+ALTER TABLE CartasXTurnoXPlanetaXUsuario
+ADD CONSTRAINT FK_Planeta_C_U
+FOREIGN KEY (Id_Usuario) REFERENCES Usuario (Id);
 
 
 ALTER TABLE UsuarioXPartida
