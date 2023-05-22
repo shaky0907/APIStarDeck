@@ -6,8 +6,6 @@ VALUES (1, 'Ultra-Rara'),
        (3, 'Rara'),
        (4, 'Normal'),
        (5, 'Básica');
-<<<<<<< Updated upstream
-=======
 
 
 
@@ -97,7 +95,6 @@ INSERT INTO Planeta(Id, Nombre, Tipo, Descripcion, Estado, Imagen)
 
 SELECT * FROM Partida
 
-
 SELECT * FROM UsuarioXPartida
 
 SELECT * FROM PlanetasXPartida
@@ -114,4 +111,3 @@ DELETE FROM Usuario WHERE Id = 123126
 
 DELETE FROM Usuario WHERE Id = 123125
 
->>>>>>> Stashed changes

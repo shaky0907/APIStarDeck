@@ -17,6 +17,7 @@ namespace StarDeckAPI.Controllers
         {
             this.apiDBContext = apiDBContext;
         }
+
         [HttpGet]
         [Route("get")]
         public IActionResult GetPlanetas()
@@ -102,7 +103,7 @@ namespace StarDeckAPI.Controllers
                 planetaSeleccionado.Imagen = planetaAPI.Imagen;
 
 
-                apiDBContext.Update(planetaSeleccionado);
+                apiDBContext.Planeta.Update(planetaSeleccionado);
                 apiDBContext.SaveChanges();
                 return Ok(planetaSeleccionado);
             }
@@ -118,7 +119,7 @@ namespace StarDeckAPI.Controllers
 
             if (planeta != null)
             {
-                apiDBContext.Remove(planeta);
+                apiDBContext.Planeta.Remove(planeta);
                 apiDBContext.SaveChanges();
                 return Ok(planeta);
             }

@@ -30,7 +30,7 @@ namespace StarDeckAPI.Controllers
             if (apiDBContext.Usuario.ToList().Where(x => x.Id == Id).ToList().Any())
             {
                 continue_check = true;
-                myUserCheck = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First().Id_actividad;
+                myUserCheck = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First().Id_actividad; 
             }
 
             if (continue_check)
@@ -95,7 +95,7 @@ namespace StarDeckAPI.Controllers
 
                 }
             }
-            matchmakingResponse.Id = Id;
+                matchmakingResponse.Id = Id;
 
             return Ok(matchmakingResponse);
         }
@@ -269,6 +269,19 @@ namespace StarDeckAPI.Controllers
 
             return Ok(planetas);
 
+        }
+        [HttpGet]
+        [Route("getRival/{Id_usuario}/{Id_Partida}")]
+        public IActionResult getRival(string Id_usuario, string Id_Partida)
+        {
+            string rival = apiDBContext.UsuarioXPartida.ToList().Where(x => (x.Id_Partida == Id_Partida) && (x.Id_Usuario != Id_usuario)).First().Id_Usuario;
+            Usuario rivalUsuario = new Usuario();
+            if (rival != null)
+            {
+                rivalUsuario = apiDBContext.Usuario.ToList().Where(x => x.Id == rival).First();
+            }
+
+            return Ok(rivalUsuario);
         }
     }
 }

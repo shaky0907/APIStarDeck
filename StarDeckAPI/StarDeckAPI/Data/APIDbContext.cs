@@ -9,12 +9,11 @@ namespace StarDeckAPI.Data
         {
 
         }
-
         public DbSet<Actividad> Actividad { get; set; }
         public DbSet<Avatar> Avatar { get; set; }
         public DbSet<Carta> Carta { get; set; }
         public DbSet<CartasXDeck> CartasXDeck { get; set; }
-        public DbSet<CartasXTurnoXPlaneta> CartasXTurnoXPlaneta { get; set; }
+        public DbSet<CartasXTurnoXPlanetaXUsuario> CartasXTurnoXPlaneta { get; set; }
         public DbSet<CartaXUsuario> CartaXUsuario { get; set; }
         public DbSet<Deck> Deck { get; set; }
         public DbSet<Estado_Partida> Estado_Partida { get; set; }
