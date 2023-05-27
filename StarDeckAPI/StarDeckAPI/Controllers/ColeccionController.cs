@@ -9,49 +9,21 @@ namespace StarDeckAPI.Controllers
     [Route("colection")]
     public class ColeccionController : Controller
     {
-        private readonly APIDbContext apiDBContext;
+        private APIDbContext apiDBContext;
+        private ColeccionData coleccionData;
 
         public ColeccionController(APIDbContext apiDBContext)
         {
             this.apiDBContext = apiDBContext;
+            this.coleccionData = new ColeccionData(apiDBContext);
         }
 
         [HttpGet]
         [Route("getcolection/{Id_usuario}")]
         public IActionResult GetColectionUser([FromRoute] string Id_usuario)
         {
-            List<CartaXUsuario> colection = apiDBContext.CartaXUsuario.ToList();
-            List<CartaXUsuario> colectionUser = colection.Where(x => x.Id_usuario == Id_usuario).ToList();
 
-            List<Carta> cartas = apiDBContext.Carta.ToList();
-            List<Carta> cartasUser = new List<Carta>();
-
-            foreach (CartaXUsuario carta in colectionUser)
-            {
-                Carta cartaUser = cartas.Where(x => x.Id == carta.Id_carta).First();
-                cartasUser.Add(cartaUser);
-            }
-            
-
-            List<CartaAPI> cartasReturn = new List<CartaAPI>();
-
-            foreach (Carta carta in cartasUser)
-            {
-                CartaAPI cApi = new CartaAPI()
-                {
-                    Id = carta.Id,
-                    Nombre = carta.N_Personaje,
-                    Energia = carta.Energia,
-                    Costo = carta.C_batalla,
-                    Imagen = carta.Imagen,
-                    Raza = apiDBContext.Raza.ToList().Where(x => x.Id == carta.Raza).First().Nombre,
-                    Tipo = apiDBContext.Tipo.ToList().Where(x => x.Id == carta.Tipo).First().Nombre,
-                    Estado = carta.Activa,
-                    Descripcion = carta.Descripcion
-                };
-
-                cartasReturn.Add(cApi);
-            }
+            List<CartaAPI> cartasReturn = this.coleccionData.getColeccionDelUsuario(Id_usuario);
 
             return Ok(cartasReturn);
         }
@@ -60,70 +32,18 @@ namespace StarDeckAPI.Controllers
         [Route("getdecks/{Id_usuario}")]
         public IActionResult GetDecksUser([FromRoute] string Id_usuario)
         {
-            List<Deck> decks = apiDBContext.Deck.ToList();
-            List<Deck> decksUser = decks.Where(x => x.Id_usuario == Id_usuario).ToList();
-
-            List<CartasXDeck> cartasXDeck = apiDBContext.CartasXDeck.ToList();
-            List<DeckAPIGET> deckAPI = new List<DeckAPIGET>();
-
-            CartaController cartas = new CartaController(apiDBContext);
-
             
+            List<DeckAPIGET> decksAPI = this.coleccionData.getDecksUsuario(Id_usuario);
 
-            foreach (Deck deck in decksUser)
-            {
-                List<CartaAPI> Cartas = new List<CartaAPI>();
-                List<String> ids = cartasXDeck.Where(x => x.Id_Deck == deck.Id).Select(x => x.Id_Carta).ToList();
-
-                foreach (String id in ids)
-                {
-                    Carta carta = apiDBContext.Carta.ToList().Where(x => x.Id == id).First();
-                    CartaAPI cApi = new CartaAPI()
-                    {
-                        Id = carta.Id,
-                        Nombre = carta.N_Personaje,
-                        Energia = carta.Energia,
-                        Costo = carta.C_batalla,
-                        Imagen = carta.Imagen,
-                        Raza = apiDBContext.Raza.ToList().Where(x => x.Id == carta.Raza).First().Nombre,
-                        Tipo = apiDBContext.Tipo.ToList().Where(x => x.Id == carta.Tipo).First().Nombre,
-                        Estado = carta.Activa,
-                        Descripcion = carta.Descripcion
-                    };
-                    Cartas.Add(cApi);
-                }
-
-                DeckAPIGET element = new DeckAPIGET()
-                {
-                    Id = deck.Id,
-                    Nombre = deck.Nombre,
-                    Estado = deck.Estado,
-                    Id_usuario = deck.Id,
-                    Cartas = Cartas
-                };
-                deckAPI.Add(element);
-            }
-
-            return Ok(deckAPI);
+            return Ok(decksAPI);
         }
 
         [HttpGet]
         [Route("getdeck/{Id}")]
         public IActionResult GetDeckUser([FromRoute] string Id)
         {
-            List<Deck> decks = apiDBContext.Deck.ToList();
-            Deck deckUser = decks.Where(x => x.Id == Id).First();
 
-            List<CartasXDeck> cartasXDeck = apiDBContext.CartasXDeck.ToList();
-
-            DeckAPIGET element = new DeckAPIGET()
-            {
-                Id = deckUser.Id,
-                Nombre = deckUser.Nombre,
-                Estado = deckUser.Estado,
-                Id_usuario = deckUser.Id,
-                //id_cartas = cartasXDeck.Where(x => x.Id_Deck == deckUser.Id).Select(x => x.Id_Carta).ToList()
-            };
+            DeckAPIGET element = this.coleccionData.getDeckUsuario(Id);
             return Ok(element);
         }
 
@@ -141,39 +61,8 @@ namespace StarDeckAPI.Controllers
         [Route("addDeck")]
         public IActionResult AddDeck(DeckAPI deckApi)
         {
-            string id = GeneratorID.GenerateRandomId("D-");
-            Deck deck = new Deck()
-            {
-                Id = id,
-                Nombre = deckApi.Nombre,
-                Estado = deckApi.Estado,
-                Id_usuario = deckApi.Id_usuario
-            };
-            apiDBContext.Deck.Add(deck);
-            apiDBContext.SaveChanges();
 
-            foreach (CartaAPI carta in deckApi.Cartas)
-            {
-                CartasXDeck cxd = new CartasXDeck()
-                {
-                    Id_Carta = carta.Id,
-                    Id_Deck = id
-                };
-                apiDBContext.CartasXDeck.Add(cxd);
-            }
-            
-            apiDBContext.SaveChanges();
-            List<Deck> decks = apiDBContext.Deck.ToList();
-            List<Deck> decksToUpdate = decks.Where(x => x.Id != id).ToList();
-
-            foreach (Deck deckToUpdate in decksToUpdate)
-            {
-                deckToUpdate.Estado = false;
-
-                apiDBContext.Update(deckToUpdate);
-            }
-
-            apiDBContext.SaveChanges();
+            Deck deck = this.coleccionData.addDeckUsuario(deckApi);
             return Ok(deck);
 
         }

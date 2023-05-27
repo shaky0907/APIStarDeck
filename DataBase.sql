@@ -16,6 +16,14 @@ CREATE TABLE Carta (
     CONSTRAINT PK_Carta PRIMARY KEY (Id)
 );
 
+CREATE TABLE CartaXUsuario (
+
+	Id_usuario VARCHAR(15) NOT NULL,
+	Id_carta VARCHAR(15) NOT NULL
+	CONSTRAINT PK_Ids_cxus PRIMARY KEY (Id_usuario, Id_carta)
+
+);
+
 
 CREATE TABLE Raza (
 	Id INT NOT NULL,
@@ -149,6 +157,22 @@ CREATE TABLE CartasXTurnoXPlanetaXUsuario(
 
 
 
+CREATE TABLE CartasXTurnoXDeckXUsuario(
+
+	Id_Carta VARCHAR(15),
+	Id_Turno VARCHAR(15),
+	Id_Usuario VARCHAR(15),
+	CONSTRAINT PK_Ids_cxtxdxu PRIMARY KEY (Id_Turno, Id_Carta, Id_Usuario)
+);
+
+CREATE TABLE CartasXTurnoXManoXUsuario(
+
+	Id_Carta VARCHAR(15),
+	Id_Turno VARCHAR(15),
+	Id_Usuario VARCHAR(15),
+	CONSTRAINT PK_Ids_cxtxmxu PRIMARY KEY (Id_Turno, Id_Carta, Id_Usuario)
+);
+
 CREATE TABLE Estado_Partida(
 	
 	Id INT NOT NULL,
@@ -253,6 +277,31 @@ FOREIGN KEY (Id_Planeta) REFERENCES Planeta (Id);
 
 ALTER TABLE CartasXTurnoXPlanetaXUsuario
 ADD CONSTRAINT FK_Planeta_C_U
+FOREIGN KEY (Id_Usuario) REFERENCES Usuario (Id);
+
+
+ALTER TABLE CartasXTurnoXDeckXUsuario
+ADD CONSTRAINT FK_Carta_C_x
+FOREIGN KEY (Id_Carta) REFERENCES Carta (Id);
+
+ALTER TABLE CartasXTurnoXDeckXUsuario
+ADD CONSTRAINT FK_Turnos_T_x
+FOREIGN KEY (Id_Turno) REFERENCES Turno (Id);
+
+ALTER TABLE CartasXTurnoXDeckXUsuario
+ADD CONSTRAINT FK_Planeta_U_x
+FOREIGN KEY (Id_Usuario) REFERENCES Usuario (Id);
+
+ALTER TABLE CartasXTurnoXManoXUsuario
+ADD CONSTRAINT FK_Carta_C_x_m
+FOREIGN KEY (Id_Carta) REFERENCES Carta (Id);
+
+ALTER TABLE CartasXTurnoXManoXUsuario
+ADD CONSTRAINT FK_Turnos_T_x_m
+FOREIGN KEY (Id_Turno) REFERENCES Turno (Id);
+
+ALTER TABLE CartasXTurnoXManoXUsuario
+ADD CONSTRAINT FK_Planeta_U_x_m
 FOREIGN KEY (Id_Usuario) REFERENCES Usuario (Id);
 
 

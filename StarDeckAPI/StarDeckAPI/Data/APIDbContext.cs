@@ -28,5 +28,8 @@ namespace StarDeckAPI.Data
         public DbSet<TurnoXUsuario> TurnoXUsuario { get; set; }
         public DbSet<Usuario> Usuario { get; set; }
         public DbSet<UsuarioXPartida> UsuarioXPartida { get; set; }
+        public DbSet<CartasXTurnoXDeckXUsuario> CartasXTurnoXDeckXUsuarios { get; set; }
+        public DbSet<CartasXTurnoXManoXUsuario> CartasXTurnoXManoXUsuarios { get; set; }
+
     }
 }
