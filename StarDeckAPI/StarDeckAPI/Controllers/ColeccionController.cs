@@ -72,14 +72,7 @@ namespace StarDeckAPI.Controllers
         public IActionResult AddCartaColeccion(CartaXUsuario cartaXUsuario)
         {
 
-            CartaXUsuario cxu = new CartaXUsuario()
-            {
-                Id_usuario = cartaXUsuario.Id_usuario,
-                Id_carta = cartaXUsuario.Id_carta
-            };
-            apiDBContext.CartaXUsuario.Add(cxu);
-
-            apiDBContext.SaveChanges();
+            CartaXUsuario cxu = this.coleccionData.addCartaColeccion(cartaXUsuario);
 
             return Ok(cxu);
 
@@ -87,17 +80,10 @@ namespace StarDeckAPI.Controllers
 
         [HttpPost]
         [Route("addCartaDeck")]
-        public IActionResult AddCartaColeccion(CartasXDeck cartasXDeck)
+        public IActionResult AddCartaDeck(CartasXDeck cartasXDeck)
         {
 
-            CartasXDeck cxd = new CartasXDeck()
-            {
-                Id_Carta = cartasXDeck.Id_Carta,
-                Id_Deck = cartasXDeck.Id_Deck
-            };
-            apiDBContext.CartasXDeck.Add(cxd);
-
-            apiDBContext.SaveChanges();
+            CartasXDeck cxd = this.coleccionData.AddCartaDeck(cartasXDeck);
 
             return Ok(cxd);
 
@@ -107,16 +93,10 @@ namespace StarDeckAPI.Controllers
         [Route("update/{Id}")]
         public IActionResult UpdateDeck([FromRoute] string Id, Deck deckAPI)
         {
-            List<Deck> decks = apiDBContext.Deck.ToList();
-            Deck deckUser = decks.Where(x => x.Id == Id).First();
+            Deck deckUser = this.coleccionData.actualizarDeck(Id, deckAPI);
 
             if (deckUser != null)
             {
-                deckUser.Estado = deckAPI.Estado;
-                
-                apiDBContext.Update(deckUser);
-                apiDBContext.SaveChanges();
-
                 return Ok(deckUser);
             }
             return NotFound();
@@ -127,23 +107,10 @@ namespace StarDeckAPI.Controllers
         public IActionResult DeleteDeck([FromRoute] string Id)
         {
             List<Deck> decks = apiDBContext.Deck.ToList();
-            Deck deckUser = decks.Where(x => x.Id == Id).First();
-
-            List<CartasXDeck> cxdL = apiDBContext.CartasXDeck.ToList().Where(x => x.Id_Deck == Id).ToList();
-
-            if (cxdL.Any())
-            {
-                foreach (CartasXDeck cxd in cxdL)
-                {
-                    apiDBContext.Remove(cxd);
-                }
-            }
-            apiDBContext.SaveChanges();
+            Deck deckUser = this.coleccionData.deleteDeck(Id);
 
             if (deckUser != null)
             {
-                apiDBContext.Remove(deckUser);
-                apiDBContext.SaveChanges();
                 return Ok(deckUser);
             }
 
@@ -155,13 +122,10 @@ namespace StarDeckAPI.Controllers
         [Route("deleteCartaDeck/{Id_Deck}/{Id_Carta}")]
         public IActionResult DeleteCartaDeck([FromRoute] string Id_Deck, string Id_Carta)
         {
-            List<CartasXDeck> cxdL = apiDBContext.CartasXDeck.ToList();
-            CartasXDeck cxdFiltered = cxdL.Where(x => x.Id_Deck == Id_Deck).Where(x => x.Id_Carta == Id_Carta).First();
+            CartasXDeck cxdFiltered = this.coleccionData.deleteCartaDeck(Id_Deck, Id_Carta);
 
             if (cxdFiltered != null)
             {
-                apiDBContext.Remove(cxdFiltered);
-                apiDBContext.SaveChanges();
                 return Ok(cxdFiltered);
             }
 

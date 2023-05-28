@@ -156,6 +156,96 @@ namespace StarDeckAPI.Data
             apiDBContext.SaveChanges();
             return deck;
         }
+
+        public CartaXUsuario addCartaColeccion(CartaXUsuario cartaXUsuario)
+        {
+
+            CartaXUsuario cxu = new CartaXUsuario()
+            {
+                Id_usuario = cartaXUsuario.Id_usuario,
+                Id_carta = cartaXUsuario.Id_carta
+            };
+            apiDBContext.CartaXUsuario.Add(cxu);
+
+            apiDBContext.SaveChanges();
+
+            return cxu;
+        }
+
+        public CartasXDeck AddCartaDeck(CartasXDeck cartasXDeck)
+        {
+
+            CartasXDeck cxd = new CartasXDeck()
+            {
+                Id_Carta = cartasXDeck.Id_Carta,
+                Id_Deck = cartasXDeck.Id_Deck
+            };
+            apiDBContext.CartasXDeck.Add(cxd);
+
+            apiDBContext.SaveChanges();
+
+            return cxd;
+        }
+
+        public Deck actualizarDeck(string Id, Deck deckAPI)
+        {
+            List<Deck> decks = apiDBContext.Deck.ToList();
+            Deck deckUser = decks.Where(x => x.Id == Id).First();
+
+            if (deckUser != null)
+            {
+                deckUser.Estado = deckAPI.Estado;
+
+                apiDBContext.Update(deckUser);
+                apiDBContext.SaveChanges();
+
+               
+            }
+            return deckUser;
+        }
+
+        public Deck deleteDeck(string Id)
+        {
+            List<Deck> decks = apiDBContext.Deck.ToList();
+            Deck deckUser = decks.Where(x => x.Id == Id).First();
+
+            List<CartasXDeck> cxdL = apiDBContext.CartasXDeck.ToList().Where(x => x.Id_Deck == Id).ToList();
+
+            if (cxdL.Any())
+            {
+                foreach (CartasXDeck cxd in cxdL)
+                {
+                    apiDBContext.Remove(cxd);
+                }
+            }
+            apiDBContext.SaveChanges();
+
+            if (deckUser != null)
+            {
+                apiDBContext.Remove(deckUser);
+                apiDBContext.SaveChanges();
+                
+            }
+
+            return deckUser;
+
+        }
+
+        public CartasXDeck deleteCartaDeck(string Id_Deck, string Id_Carta)
+        {
+            List<CartasXDeck> cxdL = apiDBContext.CartasXDeck.ToList();
+            CartasXDeck cxdFiltered = cxdL.Where(x => x.Id_Deck == Id_Deck).Where(x => x.Id_Carta == Id_Carta).First();
+
+            if (cxdFiltered != null)
+            {
+                apiDBContext.Remove(cxdFiltered);
+                apiDBContext.SaveChanges();
+                
+            }
+
+            return cxdFiltered;
+
+        }
     }
 
     
