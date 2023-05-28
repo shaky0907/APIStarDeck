@@ -274,5 +274,17 @@ namespace StarDeckAPI.Data
 
             return rivalUsuario;
         }
+
+        public Partida isInMatch(string Id_usuario)
+        {
+            Usuario usuario = apiDBContext.Usuario.ToList().Where(x => x.Id == Id_usuario).First();
+            Partida partidaActual = new Partida();
+            if (usuario.Id_actividad == 3)
+            {
+                string partidaId = apiDBContext.UsuarioXPartida.ToList().Where(x => x.Id_Usuario == Id_usuario).First().Id_Partida;
+                partidaActual = apiDBContext.Partida.ToList().Where(x => x.Id == partidaId).First();
+            }
+            return partidaActual;
+        }
     }
 }

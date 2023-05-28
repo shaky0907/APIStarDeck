@@ -75,10 +75,18 @@ namespace StarDeckAPI.Controllers
         }
         [HttpGet]
         [Route("getRival/{Id_usuario}/{Id_Partida}")]
-        public IActionResult getRival(string Id_usuario, string Id_Partida)
+        public IActionResult getRival([FromRoute] string Id_usuario,[FromRoute] string Id_Partida)
         {
             Usuario rivalUsuario = this.matchmakingData.getRival(Id_usuario, Id_Partida);
             return Ok(rivalUsuario);
+        }
+
+        [HttpGet]
+        [Route("isInMatch/{Id_usuario}")]
+        public IActionResult getIsInMatch([FromRoute] string Id_usuario)
+        {
+            Partida partida = this.matchmakingData.isInMatch(Id_usuario);
+            return Ok(partida);
         }
     }
 }

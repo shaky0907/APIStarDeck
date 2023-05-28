@@ -26,7 +26,7 @@ VALUES (1, 'Estados Unidos'),
 
 
 INSERT INTO ACTIVIDAD(Id, Nombre_act)
-VALUES (1, 'No busca partida'),
+VALUES (1, 'No busca partida'),	
 		(2, 'Buscando partida'),
 		(3, 'En partida');
 
@@ -111,3 +111,4 @@ DELETE FROM Usuario WHERE Id = 123126
 
 DELETE FROM Usuario WHERE Id = 123125
 
+SELECT * FROM TURNOXUSUARIO

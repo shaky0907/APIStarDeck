@@ -13,7 +13,7 @@ namespace StarDeckAPI.Data
         public DbSet<Avatar> Avatar { get; set; }
         public DbSet<Carta> Carta { get; set; }
         public DbSet<CartasXDeck> CartasXDeck { get; set; }
-        public DbSet<CartasXTurnoXPlanetaXUsuario> CartasXTurnoXPlaneta { get; set; }
+        public DbSet<CartasXTurnoXPlanetaXUsuario> CartasXTurnoXPlanetaXUsuario { get; set; }
         public DbSet<CartaXUsuario> CartaXUsuario { get; set; }
         public DbSet<Deck> Deck { get; set; }
         public DbSet<Estado_Partida> Estado_Partida { get; set; }
@@ -24,7 +24,6 @@ namespace StarDeckAPI.Data
         public DbSet<Raza> Raza { get; set; }
         public DbSet<Tipo_planeta> Tipo_planeta { get; set; }
         public DbSet<Tipo> Tipo { get; set; }
-        public DbSet<Turno> Turno { get; set; }
         public DbSet<TurnoXUsuario> TurnoXUsuario { get; set; }
         public DbSet<Usuario> Usuario { get; set; }
         public DbSet<UsuarioXPartida> UsuarioXPartida { get; set; }

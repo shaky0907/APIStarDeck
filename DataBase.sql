@@ -127,22 +127,15 @@ CREATE TABLE Partida(
 );
 
 
-CREATE TABLE Turno(
-
-	Id VARCHAR(15),
-	Id_Partida VARCHAR(15),
-	Numero_turno INT
-	CONSTRAINT PK_Turno PRIMARY KEY (Id)
-)
-
 CREATE TABLE TurnoXUsuario(
 	
-	Id_turno VARCHAR(15),
-	Id_Usuario VARCHAR(15),
-	Energia_inicial INT,
-	Energia_gastada INT,
+	Id VARCHAR(15) NOT NULL,
+	Id_Partida VARCHAR(15) NOT NULL,
+	Numero_turno INT NOT NULL,
+	Id_Usuario VARCHAR(15) NOT NULL,
+	Energia INT,
 	Revela_primero BIT
-	CONSTRAINT PK_Ids_txu PRIMARY KEY (Id_turno, Id_Usuario)
+	CONSTRAINT PK_Ids_txu PRIMARY KEY (Id)
 	
 );
 
@@ -250,13 +243,10 @@ ALTER TABLE Partida
 ADD CONSTRAINT FK_Estado_partida
 FOREIGN KEY (Estado) REFERENCES Estado_Partida (Id);
 
-ALTER TABLE Turno
+ALTER TABLE TurnoXUsuario
 ADD CONSTRAINT FK_Partida_Turno
 FOREIGN KEY (Id_Partida) REFERENCES Partida (Id);
 
-ALTER TABLE TurnoXUsuario
-ADD CONSTRAINT FK_Turno_Usuario_T
-FOREIGN KEY (Id_Turno) REFERENCES Turno (Id);
 
 ALTER TABLE TurnoXUsuario
 ADD CONSTRAINT FK_Turno_Usuario_U
@@ -269,7 +259,7 @@ FOREIGN KEY (Id_Carta) REFERENCES Carta (Id);
 
 ALTER TABLE CartasXTurnoXPlanetaXUsuario
 ADD CONSTRAINT FK_Turnos_C_P
-FOREIGN KEY (Id_Turno) REFERENCES Turno (Id);
+FOREIGN KEY (Id_Turno) REFERENCES TurnoXUsuario (Id);
 
 ALTER TABLE CartasXTurnoXPlanetaXUsuario
 ADD CONSTRAINT FK_Planeta_C_T
@@ -286,11 +276,12 @@ FOREIGN KEY (Id_Carta) REFERENCES Carta (Id);
 
 ALTER TABLE CartasXTurnoXDeckXUsuario
 ADD CONSTRAINT FK_Turnos_T_x
-FOREIGN KEY (Id_Turno) REFERENCES Turno (Id);
+FOREIGN KEY (Id_Turno) REFERENCES TurnoXUsuario (Id);
 
 ALTER TABLE CartasXTurnoXDeckXUsuario
 ADD CONSTRAINT FK_Planeta_U_x
 FOREIGN KEY (Id_Usuario) REFERENCES Usuario (Id);
+
 
 ALTER TABLE CartasXTurnoXManoXUsuario
 ADD CONSTRAINT FK_Carta_C_x_m
@@ -298,7 +289,7 @@ FOREIGN KEY (Id_Carta) REFERENCES Carta (Id);
 
 ALTER TABLE CartasXTurnoXManoXUsuario
 ADD CONSTRAINT FK_Turnos_T_x_m
-FOREIGN KEY (Id_Turno) REFERENCES Turno (Id);
+FOREIGN KEY (Id_Turno) REFERENCES TurnoXUsuario (Id);
 
 ALTER TABLE CartasXTurnoXManoXUsuario
 ADD CONSTRAINT FK_Planeta_U_x_m
