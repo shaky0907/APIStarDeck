@@ -9,5 +9,6 @@ namespace StarDeckAPI.Models
             public string Id_Carta { get; set; }
             public string Id_Turno { get; set; }
             public string Id_Usuario { get; set; }
+            public int Posicion { get; set; }
         }
 }

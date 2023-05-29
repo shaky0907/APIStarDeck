@@ -155,6 +155,7 @@ CREATE TABLE CartasXTurnoXDeckXUsuario(
 	Id_Carta VARCHAR(15),
 	Id_Turno VARCHAR(15),
 	Id_Usuario VARCHAR(15),
+	Posicion INT
 	CONSTRAINT PK_Ids_cxtxdxu PRIMARY KEY (Id_Turno, Id_Carta, Id_Usuario)
 );
 
@@ -163,6 +164,7 @@ CREATE TABLE CartasXTurnoXManoXUsuario(
 	Id_Carta VARCHAR(15),
 	Id_Turno VARCHAR(15),
 	Id_Usuario VARCHAR(15),
+	Posicion INT
 	CONSTRAINT PK_Ids_cxtxmxu PRIMARY KEY (Id_Turno, Id_Carta, Id_Usuario)
 );
 
@@ -195,6 +197,14 @@ CREATE TABLE PlanetasXPartida(
 
 );
 
+CREATE TABLE Parametros(
+	Id Int,
+	Tiempo_turno INT,
+	Turnos_totales INT,
+	Cartas_Mano_Inicial int,
+	Energia_Inicial INT
+	CONSTRAINT PK_Params PRIMARY KEY (Id)
+);
 
 
 --Constraints
@@ -316,8 +326,3 @@ ADD CONSTRAINT FK_Partida_P
 FOREIGN KEY (Id_Partida) REFERENCES Partida (Id);
 
 
-use StarDeck
-
-drop table Carta
-drop table Raza
-drop table Tipo

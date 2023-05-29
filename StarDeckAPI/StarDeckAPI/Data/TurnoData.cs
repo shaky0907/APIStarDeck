@@ -161,7 +161,7 @@ namespace StarDeckAPI.Data
             return turnoXUsuario;
         }
 
-        public TurnoAPI getLastTurno(string Id_Partida, string Id_Usuario)
+        public TurnoXUsuario getLastTurno(string Id_Partida, string Id_Usuario)
         {
             List<TurnoXUsuario> turnos = apiDBContext.TurnoXUsuario.ToList().Where(x =>
             (x.Id_Partida == Id_Partida) && (x.Id_Usuario == Id_Usuario)).ToList();
@@ -177,17 +177,7 @@ namespace StarDeckAPI.Data
 
             }
 
-            TurnoAPI turnoReturn = new TurnoAPI()
-            {
-                Id_Partida = Id_Partida,
-                Id_Usuario = Id_Usuario,
-                Numero_turno = last_Turno,
-                Energia = turnoLast.Energia,
-                Revela_primero = turnoLast.Revela_primero
-
-            };
-
-            return turnoReturn;
+            return turnoLast;
         }
 
         public TurnoAPI getTurno(string Id)

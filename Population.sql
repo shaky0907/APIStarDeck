@@ -44,6 +44,9 @@ VALUES (1, 'Emparejando'),
 
 
 
+INSERT INTO Parametros(Id, Tiempo_turno, Turnos_totales, Cartas_Mano_Inicial, Energia_Inicial)
+Values (1, 10, 18, 5, 100);
+
 INSERT INTO Avatar (Id, Imagen)
 	VALUES (1, 'AVATAR1');
 

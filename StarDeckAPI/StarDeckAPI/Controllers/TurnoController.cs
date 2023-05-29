@@ -66,7 +66,7 @@ namespace StarDeckAPI.Controllers
 
         [HttpPost]
         [Route("addCartaTurnoPlanetaUsuario")]
-        public IActionResult AddCartaDeck(CartasXTurnoXPlanetaXUsuario cartasXTurnoXPlanetaXUsuario)
+        public IActionResult AddCartaPlaneta(CartasXTurnoXPlanetaXUsuario cartasXTurnoXPlanetaXUsuario)
         {
 
             CartasXTurnoXPlanetaXUsuario cxtxdxu = this.turnoData.AddCartaPlaneta(cartasXTurnoXPlanetaXUsuario);
@@ -111,7 +111,7 @@ namespace StarDeckAPI.Controllers
         [Route("getLastTurno/{Id_Partida}/{Id_Usuario}")]
         public IActionResult getLastTurno([FromRoute] string Id_Partida, [FromRoute] string Id_Usuario)
         {
-            TurnoAPI turno = this.turnoData.getLastTurno(Id_Partida, Id_Usuario);
+            TurnoXUsuario turno = this.turnoData.getLastTurno(Id_Partida, Id_Usuario);
             return Ok(turno);
         }
 
