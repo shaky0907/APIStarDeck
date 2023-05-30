@@ -150,7 +150,7 @@ namespace StarDeckAPI.Data
                 Id_Partida = turnoApi.Id_Partida,
                 Id_Usuario = turnoApi.Id_Usuario,
                 Numero_turno = turnoApi.Numero_turno,
-                Revela_primero = turnoApi.Revela_primero,
+                Terminado = turnoApi.Terminado,
                 Energia = turnoApi.Energia
 
             };
@@ -189,7 +189,7 @@ namespace StarDeckAPI.Data
                 Id_Usuario = turnoXUsuario.Id_Usuario,
                 Numero_turno = turnoXUsuario.Numero_turno,
                 Energia = turnoXUsuario.Energia,
-                Revela_primero = turnoXUsuario.Revela_primero
+                Terminado = turnoXUsuario.Terminado
 
             };
             return turnoReturn;
@@ -204,7 +204,7 @@ namespace StarDeckAPI.Data
                 turno.Numero_turno = turnoApi.Numero_turno;
                 turno.Id_Partida = turnoApi.Id_Partida;
                 turno.Id_Usuario = turnoApi.Id_Usuario;
-                turno.Revela_primero = turnoApi.Revela_primero;
+                turno.Terminado = turnoApi.Terminado;
                 turno.Energia = turnoApi.Energia;
 
                 apiDBContext.TurnoXUsuario.Update(turno);

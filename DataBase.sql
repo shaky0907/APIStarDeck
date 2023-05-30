@@ -134,7 +134,7 @@ CREATE TABLE TurnoXUsuario(
 	Numero_turno INT NOT NULL,
 	Id_Usuario VARCHAR(15) NOT NULL,
 	Energia INT,
-	Revela_primero BIT
+	Terminado BIT
 	CONSTRAINT PK_Ids_txu PRIMARY KEY (Id)
 	
 );

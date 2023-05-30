@@ -10,6 +10,6 @@ namespace StarDeckAPI.Models
         public int Numero_turno { get; set; }
         public string Id_Usuario { get; set; }
         public int Energia { get; set; }
-        public Boolean Revela_primero { get; set; }
+        public Boolean Terminado { get; set; }
     }
 }
