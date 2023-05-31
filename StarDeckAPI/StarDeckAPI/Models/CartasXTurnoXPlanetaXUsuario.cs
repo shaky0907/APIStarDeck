@@ -2,7 +2,7 @@
 
 namespace StarDeckAPI.Models
 {
-    [PrimaryKey(nameof(Id_Turno), nameof(Id_Planeta))]
+    [PrimaryKey(nameof(Id_Turno), nameof(Id_Planeta), nameof(Id_Carta), nameof(Id_Usuario))]
     public class CartasXTurnoXPlanetaXUsuario
     {
         public string Id_Carta { get; set; }

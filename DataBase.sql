@@ -145,7 +145,7 @@ CREATE TABLE CartasXTurnoXPlanetaXUsuario(
 	Id_Turno VARCHAR(15),
 	Id_Planeta VARCHAR(15),
 	Id_Usuario VARCHAR(15),
-	CONSTRAINT PK_Ids_cxtxp PRIMARY KEY (Id_Turno, Id_Planeta)
+	CONSTRAINT PK_Ids_cxtxp PRIMARY KEY (Id_Turno, Id_Planeta, Id_Usuario, Id_Carta)
 );
 
 
