@@ -6,8 +6,6 @@ VALUES (1, 'Ultra-Rara'),
        (3, 'Rara'),
        (4, 'Normal'),
        (5, 'Básica');
-<<<<<<< Updated upstream
-=======
 
 
 
@@ -28,7 +26,7 @@ Values('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAMAAACahl6sAAAACX
 
 
 INSERT INTO ACTIVIDAD(Id, Nombre_act)
-VALUES (1, 'No busca partida'),
+VALUES (1, 'No busca partida'),	
 		(2, 'Buscando partida'),
 		(3, 'En partida');
 
@@ -40,11 +38,15 @@ VALUES (1, 'Popular', 50),
 
 
 INSERT INTO Estado_Partida(Id, Nombre)
-VALUES (1, 'Emparejando'),
-		(2, 'En curso'),
-		(3, 'Finalizada');
+VALUES (1, 'Creada'),
+		(2, 'Emaparejada'),
+		(3, 'En curso'),
+		(4, 'Terminada');
 
 
+
+INSERT INTO Parametros(Id, Tiempo_turno, Turnos_totales, Cartas_Mano_Inicial, Energia_Inicial)
+Values (1, 10, 18, 5, 100);
 
 INSERT INTO Avatar (Id, Imagen)
 	VALUES (1, 'AVATAR1');
@@ -97,7 +99,6 @@ INSERT INTO Planeta(Id, Nombre, Tipo, Descripcion, Estado, Imagen)
 
 SELECT * FROM Partida
 
-
 SELECT * FROM UsuarioXPartida
 
 SELECT * FROM PlanetasXPartida
@@ -114,4 +115,4 @@ DELETE FROM Usuario WHERE Id = 123126
 
 DELETE FROM Usuario WHERE Id = 123125
 
->>>>>>> Stashed changes
+SELECT * FROM TURNOXUSUARIO

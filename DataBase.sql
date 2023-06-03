@@ -16,6 +16,14 @@ CREATE TABLE Carta (
     CONSTRAINT PK_Carta PRIMARY KEY (Id)
 );
 
+CREATE TABLE CartaXUsuario (
+
+	Id_usuario VARCHAR(15) NOT NULL,
+	Id_carta VARCHAR(15) NOT NULL
+	CONSTRAINT PK_Ids_cxus PRIMARY KEY (Id_usuario, Id_carta)
+
+);
+
 
 
 CREATE TABLE CartaXUsuario (
@@ -39,6 +47,7 @@ CREATE TABLE Tipo (
 	Nombre VARCHAR(20) NOT NULL
 	CONSTRAINT PK_Tipo PRIMARY KEY (Id)
 );
+
 
 CREATE TABLE Usuario (
 	Id VARCHAR(15) NOT NULL,
@@ -130,34 +139,46 @@ CREATE TABLE Partida(
 );
 
 
-CREATE TABLE Turno(
-
-	Id VARCHAR(15),
-	Id_Partida VARCHAR(15),
-	Numero_turno INT
-	CONSTRAINT PK_Turno PRIMARY KEY (Id)
-)
-
 CREATE TABLE TurnoXUsuario(
 	
-	Id_turno VARCHAR(15),
-	Id_Usuario VARCHAR(15),
-	Energia_inicial INT,
-	Energia_gastada INT,
-	Revela_primero BIT
-	CONSTRAINT PK_Ids_txu PRIMARY KEY (Id_turno, Id_Usuario)
+	Id VARCHAR(15) NOT NULL,
+	Id_Partida VARCHAR(15) NOT NULL,
+	Numero_turno INT NOT NULL,
+	Id_Usuario VARCHAR(15) NOT NULL,
+	Energia INT,
+	Terminado BIT
+	CONSTRAINT PK_Ids_txu PRIMARY KEY (Id)
 	
 );
 
-CREATE TABLE CartasXTurnoXPlaneta(
+CREATE TABLE CartasXTurnoXPlanetaXUsuario(
 
 	Id_Carta VARCHAR(15),
 	Id_Turno VARCHAR(15),
-	Id_Planeta VARCHAR(15)
-	CONSTRAINT PK_Ids_cxtxp PRIMARY KEY (Id_Carta, Id_Turno, Id_Planeta)
+	Id_Planeta VARCHAR(15),
+	Id_Usuario VARCHAR(15),
+	CONSTRAINT PK_Ids_cxtxp PRIMARY KEY (Id_Turno, Id_Planeta, Id_Usuario, Id_Carta)
 );
 
 
+
+CREATE TABLE CartasXTurnoXDeckXUsuario(
+
+	Id_Carta VARCHAR(15),
+	Id_Turno VARCHAR(15),
+	Id_Usuario VARCHAR(15),
+	Posicion INT
+	CONSTRAINT PK_Ids_cxtxdxu PRIMARY KEY (Id_Turno, Id_Carta, Id_Usuario)
+);
+
+CREATE TABLE CartasXTurnoXManoXUsuario(
+
+	Id_Carta VARCHAR(15),
+	Id_Turno VARCHAR(15),
+	Id_Usuario VARCHAR(15),
+	Posicion INT
+	CONSTRAINT PK_Ids_cxtxmxu PRIMARY KEY (Id_Turno, Id_Carta, Id_Usuario)
+);
 
 CREATE TABLE Estado_Partida(
 	
@@ -186,6 +207,15 @@ CREATE TABLE PlanetasXPartida(
 	Id_Partida VARCHAR(15)
 	CONSTRAINT PK_Ids_pxp PRIMARY KEY (Id_Planeta, Id_Partida)
 
+);
+
+CREATE TABLE Parametros(
+	Id Int,
+	Tiempo_turno INT,
+	Turnos_totales INT,
+	Cartas_Mano_Inicial int,
+	Energia_Inicial INT
+	CONSTRAINT PK_Params PRIMARY KEY (Id)
 );
 
 
@@ -282,22 +312,112 @@ FOREIGN KEY (Id_Partida) REFERENCES Partida (Id);
 
 use StarDeck
 
-drop table Carta
-drop table Raza
-drop table Tipo
-drop table Paises
-drop table Usuario
-drop table Avatar
-drop table CartaXUsuario
-drop table Actividad
-drop table Deck
-drop table CartasXDeck
-drop table Planeta
-drop table Tipo_planeta
-drop table Partida
-drop table Turno
-drop table TurnoXUsuario
-drop table CartasXTurnoXPlaneta
-drop table Estado_Partida
-drop table UsuarioXPartida
-drop table PlanetasXPartida
+ALTER TABLE Usuario
+ADD CONSTRAINT FK_Usuario_Actividad
+FOREIGN KEY (Id_actividad) REFERENCES Actividad (Id);
+
+ALTER TABLE CartaXUsuario
+ADD CONSTRAINT FK_Carta_User
+FOREIGN KEY (Id_carta) REFERENCES Carta;
+
+ALTER TABLE CartaXUsuario
+ADD CONSTRAINT FK_Usuario_Cards
+FOREIGN KEY (Id_usuario) REFERENCES Usuario;
+
+ALTER TABLE Usuario
+ADD CONSTRAINT FK_Usuario_Nacionalidad
+FOREIGN KEY (Nacionalidad) REFERENCES Paises (Id);
+
+ALTER TABLE Usuario
+ADD CONSTRAINT FK_Usuario_Avatar
+FOREIGN KEY (Avatar) REFERENCES Avatar (Id);
+
+ALTER TABLE CartasXDeck
+ADD CONSTRAINT FK_Carta_D
+FOREIGN KEY (Id_Carta) REFERENCES Carta (Id);
+
+ALTER TABLE CartasXDeck
+ADD CONSTRAINT FK_Deck_C
+FOREIGN KEY (Id_Deck) REFERENCES Deck (Id);
+
+ALTER TABLE Planeta
+ADD CONSTRAINT FK_Tipo_planeta
+FOREIGN KEY (Tipo) REFERENCES Tipo_Planeta (Id);
+
+ALTER TABLE Partida
+ADD CONSTRAINT FK_Estado_partida
+FOREIGN KEY (Estado) REFERENCES Estado_Partida (Id);
+
+ALTER TABLE TurnoXUsuario
+ADD CONSTRAINT FK_Partida_Turno
+FOREIGN KEY (Id_Partida) REFERENCES Partida (Id);
+
+
+ALTER TABLE TurnoXUsuario
+ADD CONSTRAINT FK_Turno_Usuario_U
+FOREIGN KEY (Id_Usuario) REFERENCES Usuario (Id);
+
+
+ALTER TABLE CartasXTurnoXPlanetaXUsuario
+ADD CONSTRAINT FK_Carta_T_P
+FOREIGN KEY (Id_Carta) REFERENCES Carta (Id);
+
+ALTER TABLE CartasXTurnoXPlanetaXUsuario
+ADD CONSTRAINT FK_Turnos_C_P
+FOREIGN KEY (Id_Turno) REFERENCES TurnoXUsuario (Id);
+
+ALTER TABLE CartasXTurnoXPlanetaXUsuario
+ADD CONSTRAINT FK_Planeta_C_T
+FOREIGN KEY (Id_Planeta) REFERENCES Planeta (Id);
+
+ALTER TABLE CartasXTurnoXPlanetaXUsuario
+ADD CONSTRAINT FK_Planeta_C_U
+FOREIGN KEY (Id_Usuario) REFERENCES Usuario (Id);
+
+
+ALTER TABLE CartasXTurnoXDeckXUsuario
+ADD CONSTRAINT FK_Carta_C_x
+FOREIGN KEY (Id_Carta) REFERENCES Carta (Id);
+
+ALTER TABLE CartasXTurnoXDeckXUsuario
+ADD CONSTRAINT FK_Turnos_T_x
+FOREIGN KEY (Id_Turno) REFERENCES TurnoXUsuario (Id);
+
+ALTER TABLE CartasXTurnoXDeckXUsuario
+ADD CONSTRAINT FK_Planeta_U_x
+FOREIGN KEY (Id_Usuario) REFERENCES Usuario (Id);
+
+
+ALTER TABLE CartasXTurnoXManoXUsuario
+ADD CONSTRAINT FK_Carta_C_x_m
+FOREIGN KEY (Id_Carta) REFERENCES Carta (Id);
+
+ALTER TABLE CartasXTurnoXManoXUsuario
+ADD CONSTRAINT FK_Turnos_T_x_m
+FOREIGN KEY (Id_Turno) REFERENCES TurnoXUsuario (Id);
+
+ALTER TABLE CartasXTurnoXManoXUsuario
+ADD CONSTRAINT FK_Planeta_U_x_m
+FOREIGN KEY (Id_Usuario) REFERENCES Usuario (Id);
+
+
+ALTER TABLE UsuarioXPartida
+ADD CONSTRAINT FK_Usuario
+FOREIGN KEY (Id_Usuario) REFERENCES Usuario (Id);
+
+
+ALTER TABLE UsuarioXPartida
+ADD CONSTRAINT FK_Partida_U
+FOREIGN KEY (Id_Partida) REFERENCES Partida (Id);
+
+
+ALTER TABLE PlanetasXPartida
+ADD CONSTRAINT FK_Planetas_P
+FOREIGN KEY (Id_Planeta) REFERENCES Planeta (Id);
+
+
+ALTER TABLE PlanetasXPartida
+ADD CONSTRAINT FK_Partida_P
+FOREIGN KEY (Id_Partida) REFERENCES Partida (Id);
+
+
