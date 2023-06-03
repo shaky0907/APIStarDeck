@@ -38,9 +38,10 @@ VALUES (1, 'Popular', 50),
 
 
 INSERT INTO Estado_Partida(Id, Nombre)
-VALUES (1, 'Emparejando'),
-		(2, 'En curso'),
-		(3, 'Finalizada');
+VALUES (1, 'Creada'),
+		(2, 'Emaparejada'),
+		(3, 'En curso'),
+		(4, 'Terminada');
 
 
 

@@ -22,7 +22,7 @@ namespace StarDeckAPI.Controllers
         public IActionResult GetUserMano([FromRoute] string Id_usuario, [FromRoute] string Id_turno)
         {
 
-            List<string> cartas_Ids = this.turnoData.getUserMano(Id_usuario, Id_turno);
+            List<CartaAPI> cartas_Ids = this.turnoData.getUserMano(Id_usuario, Id_turno);
             return Ok(cartas_Ids);
         }
 
@@ -31,7 +31,7 @@ namespace StarDeckAPI.Controllers
         public IActionResult GetUserDeck([FromRoute] string Id_usuario, [FromRoute] string Id_turno)
         {
 
-            List<string> cartas_Ids = this.turnoData.getUserDeck(Id_usuario, Id_turno);
+            List<CartaAPI> cartas_Ids = this.turnoData.getUserDeck(Id_usuario, Id_turno);
             return Ok(cartas_Ids);
         }
 
@@ -40,8 +40,26 @@ namespace StarDeckAPI.Controllers
         public IActionResult GetPlanetaCartas([FromRoute] string Id_planeta, [FromRoute] string Id_turno, [FromRoute] string Id_usuario)
         {
 
-            List<string> cartas_Ids = this.turnoData.getPlanetaCartas(Id_planeta, Id_turno, Id_usuario);
+            List<CartaAPI> cartas_Ids = this.turnoData.getPlanetaCartas(Id_planeta, Id_turno, Id_usuario);
             return Ok(cartas_Ids);
+        }
+
+        [HttpGet]
+        [Route("getcartasplanetapartida/{Id_planeta}/{Id_partida}/{Id_usuario}")]
+        public IActionResult GetPlanetaCartasPartida([FromRoute] string Id_planeta, [FromRoute] string Id_partida, [FromRoute] string Id_usuario)
+        {
+
+            List<CartaAPI> cartas_Ids = this.turnoData.getPlanetaCartasPartida(Id_planeta, Id_partida, Id_usuario);
+            return Ok(cartas_Ids);
+        }
+
+        [HttpGet]
+        [Route("getganadorplaneta/{Id_planeta}/{Id_partida}/{Id_usuario}/{Id_rival}")]
+        public IActionResult GetGanadorPlanetaPartida([FromRoute] string Id_planeta, [FromRoute] string Id_partida, [FromRoute] string Id_usuario, [FromRoute] string Id_rival)
+        {
+
+            UsuarioAPI ganador = this.turnoData.getGanadorPlanetaPartida(Id_planeta, Id_partida, Id_usuario, Id_rival);
+            return Ok(ganador);
         }
 
         [HttpPost]
@@ -112,6 +130,14 @@ namespace StarDeckAPI.Controllers
         public IActionResult getLastTurno([FromRoute] string Id_Partida, [FromRoute] string Id_Usuario)
         {
             TurnoXUsuario turno = this.turnoData.getLastTurno(Id_Partida, Id_Usuario);
+            return Ok(turno);
+        }
+
+        [HttpGet]
+        [Route("getLastTurnoNumero/{Id_Partida}/{Id_Usuario}/{Numero_Turno}")]
+        public IActionResult getLastTurnoNumero([FromRoute] string Id_Partida, [FromRoute] string Id_Usuario, [FromRoute] int Numero_Turno)
+        {
+            TurnoXUsuario turno = this.turnoData.getLastTurnoNumero(Id_Partida, Id_Usuario, Numero_Turno);
             return Ok(turno);
         }
 

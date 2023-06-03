@@ -12,45 +12,170 @@ namespace StarDeckAPI.Data
             this.apiDBContext = apiDBContext;
         }
 
-        public List<string> getUserMano(string Id_usuario, string Id_turno)
+        public List<CartaAPI> getUserMano(string Id_usuario, string Id_turno)
         {
-            List<CartasXTurnoXManoXUsuario> Cartas = this.apiDBContext.CartasXTurnoXManoXUsuario.ToList().Where(x => 
+            List<CartasXTurnoXManoXUsuario> Cartas = this.apiDBContext.CartasXTurnoXManoXUsuario.ToList().Where(x =>
             (x.Id_Turno == Id_turno) && (x.Id_Usuario == Id_usuario)).ToList();
             List<string> cartas_Ids = new List<string>();
+            List<CartaAPI> cartas = new List<CartaAPI>();
+            CartaData cartaData = new CartaData(this.apiDBContext);
 
             foreach (CartasXTurnoXManoXUsuario carta in Cartas)
             {
                 cartas_Ids.Add(carta.Id_Carta);
             }
 
-            return cartas_Ids;
+            foreach (string id in cartas_Ids)
+            {
+                cartas.Add(cartaData.getCartaDB(id));
+            }
+
+            return cartas;
         }
 
-        public List<string> getUserDeck(string Id_usuario, string Id_turno)
+        public List<CartaAPI> getUserDeck(string Id_usuario, string Id_turno)
         {
 
             List<CartasXTurnoXDeckXUsuario> Cartas = this.apiDBContext.CartasXTurnoXDeckXUsuario.ToList().Where(x => (x.Id_Turno == Id_turno) && (x.Id_Usuario == Id_usuario)).ToList();
             List<string> cartas_Ids = new List<string>();
+            List<CartaAPI> cartas = new List<CartaAPI>();
+            CartaData cartaData = new CartaData(this.apiDBContext);
 
             foreach (CartasXTurnoXDeckXUsuario carta in Cartas)
             {
                 cartas_Ids.Add(carta.Id_Carta);
             }
-            return cartas_Ids;
+
+            foreach (string id in cartas_Ids)
+            {
+                cartas.Add(cartaData.getCartaDB(id));
+            }
+
+            return cartas;
+
         }
 
-        public List<string> getPlanetaCartas(string Id_planeta,string Id_turno, string Id_usuario)
+        public List<CartaAPI> getPlanetaCartas(string Id_planeta, string Id_turno, string Id_usuario)
         {
             List<CartasXTurnoXPlanetaXUsuario> Cartas = this.apiDBContext.CartasXTurnoXPlanetaXUsuario.ToList().Where(x =>
             (x.Id_Turno == Id_turno) && (x.Id_Planeta == Id_planeta) && (x.Id_Planeta == Id_planeta)).ToList();
             List<string> cartas_Ids = new List<string>();
+            List<CartaAPI> cartas = new List<CartaAPI>();
+            CartaData cartaData = new CartaData(this.apiDBContext);
 
             foreach (CartasXTurnoXPlanetaXUsuario carta in Cartas)
             {
                 cartas_Ids.Add(carta.Id_Carta);
             }
 
-            return cartas_Ids;
+            foreach (string id in cartas_Ids)
+            {
+                cartas.Add(cartaData.getCartaDB(id));
+            }
+
+            return cartas;
+        }
+        
+        public List<CartaAPI> getPlanetaCartasPartida(string Id_planeta, string Id_partida, string Id_usuario)
+        {
+            List<TurnoXUsuario> Turnos = this.apiDBContext.TurnoXUsuario.ToList().Where(x => 
+            (x.Id_Partida == Id_partida) && (x.Id_Usuario == Id_usuario)).ToList();
+
+            List<CartaAPI> cartas = new List<CartaAPI>();
+            List<string> cartas_Ids = new List<string>();
+            CartaData cartaData = new CartaData(this.apiDBContext);
+
+            foreach (TurnoXUsuario turno in Turnos)
+            {
+                List<CartasXTurnoXPlanetaXUsuario> Cartas = this.apiDBContext.CartasXTurnoXPlanetaXUsuario.ToList().Where(x =>
+                (x.Id_Turno == turno.Id) && (x.Id_Planeta == Id_planeta) && (x.Id_Planeta == Id_planeta)).ToList();
+
+                foreach (CartasXTurnoXPlanetaXUsuario carta in Cartas)
+                {
+                    cartas_Ids.Add(carta.Id_Carta);
+                }
+            }
+            
+            foreach (string id in cartas_Ids)
+            {
+                cartas.Add(cartaData.getCartaDB(id));
+            }
+
+            return cartas;
+        }
+
+        public UsuarioAPI getGanadorPlanetaPartida(string Id_planeta, string Id_partida, string Id_usuario, string Id_rival)
+        {
+            List<TurnoXUsuario> Turnos = this.apiDBContext.TurnoXUsuario.ToList().Where(x =>
+            (x.Id_Partida == Id_partida) && (x.Id_Usuario == Id_usuario)).ToList();
+            List<TurnoXUsuario> Turnos_Rival = this.apiDBContext.TurnoXUsuario.ToList().Where(x =>
+            (x.Id_Partida == Id_partida) && (x.Id_Usuario == Id_rival)).ToList();
+
+            List<CartaAPI> cartas = new List<CartaAPI>();
+            List<string> cartas_Ids = new List<string>();
+            List<CartaAPI> cartas_Rival = new List<CartaAPI>();
+            List<string> cartas_Ids_Rival = new List<string>();
+            int puntos_Planeta = 0;
+            int puntos_Planeta_Rival = 0;
+            UsuarioAPI usuario = new UsuarioAPI();
+
+            CartaData cartaData = new CartaData(this.apiDBContext);
+            UsuarioData usuarioData = new UsuarioData(this.apiDBContext);
+
+            //Sacar los puntos del usuario
+            foreach (TurnoXUsuario turno in Turnos)
+            {
+                List<CartasXTurnoXPlanetaXUsuario> Cartas = this.apiDBContext.CartasXTurnoXPlanetaXUsuario.ToList().Where(x =>
+                (x.Id_Turno == turno.Id) && (x.Id_Planeta == Id_planeta) && (x.Id_Planeta == Id_planeta)).ToList();
+
+                foreach (CartasXTurnoXPlanetaXUsuario carta in Cartas)
+                {
+                    cartas_Ids.Add(carta.Id_Carta);
+                }
+            }
+            foreach (string id in cartas_Ids)
+            {
+                cartas.Add(cartaData.getCartaDB(id));
+            }
+            foreach (CartaAPI carta in cartas)
+            {
+                puntos_Planeta += carta.Costo;
+            }
+
+            //Sacar los puntos del rival
+            foreach (TurnoXUsuario turno in Turnos_Rival)
+            {
+                List<CartasXTurnoXPlanetaXUsuario> Cartas = this.apiDBContext.CartasXTurnoXPlanetaXUsuario.ToList().Where(x =>
+                (x.Id_Turno == turno.Id) && (x.Id_Planeta == Id_planeta) && (x.Id_Planeta == Id_planeta)).ToList();
+
+                foreach (CartasXTurnoXPlanetaXUsuario carta in Cartas)
+                {
+                    cartas_Ids_Rival.Add(carta.Id_Carta);
+                }
+            }
+            foreach (string id in cartas_Ids_Rival)
+            {
+                cartas_Rival.Add(cartaData.getCartaDB(id));
+            }
+            foreach (CartaAPI carta in cartas_Rival)
+            {
+                puntos_Planeta_Rival += carta.Costo;
+            }
+
+            //Sacar el ganador y mandar el usuario ganador
+            if (puntos_Planeta > puntos_Planeta_Rival)
+            {
+                usuario = usuarioData.getUsuario(Id_usuario);
+            } else if (puntos_Planeta < puntos_Planeta_Rival)
+            {
+                usuario = usuarioData.getUsuario(Id_rival);
+            } else
+            {
+                usuario = null;
+            }
+
+
+            return usuario;
         }
 
         public CartasXTurnoXManoXUsuario addCartaMano(CartasXTurnoXManoXUsuario cartasxturnoxmanoxusuario)
@@ -169,7 +294,26 @@ namespace StarDeckAPI.Data
             TurnoXUsuario turnoLast = new TurnoXUsuario();
             foreach (TurnoXUsuario turno in turnos)
             {
-                if (last_Turno >= turno.Numero_turno)
+                if (last_Turno <= turno.Numero_turno)
+                {
+                    last_Turno = turno.Numero_turno;
+                    turnoLast = turno;
+                }
+
+            }
+
+            return turnoLast;
+        }
+
+        public TurnoXUsuario getLastTurnoNumero(string Id_Partida, string Id_Usuario, int numero)
+        {
+            List<TurnoXUsuario> turnos = apiDBContext.TurnoXUsuario.ToList().Where(x =>
+            (x.Id_Partida == Id_Partida) && (x.Id_Usuario == Id_Usuario) && (x.Numero_turno == numero)).ToList();
+            int last_Turno = 1;
+            TurnoXUsuario turnoLast = new TurnoXUsuario();
+            foreach (TurnoXUsuario turno in turnos)
+            {
+                if (last_Turno <= turno.Numero_turno)
                 {
                     last_Turno = turno.Numero_turno;
                     turnoLast = turno;
