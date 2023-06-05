@@ -1,3 +1,4 @@
+USE StarDeck
 DELETE FROM CartasXTurnoXDeckXUsuario
 DELETE FROM CartasXTurnoXManoXUsuario
 DELETE FROM CartasXTurnoXPlanetaXUsuario
