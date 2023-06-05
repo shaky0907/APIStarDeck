@@ -15,11 +15,13 @@ namespace StarDeckAPI.Controllers
         private APIDbContext apiDBContext;
         private CartaData cartaData;
 
+        private readonly ILogger<CartaController> _logger;
 
-        public CartaController(APIDbContext apiDBContext)
+        public CartaController(APIDbContext apiDBContext, ILogger<CartaController> logger)
         {
             this.apiDBContext = apiDBContext;
             this.cartaData = new CartaData(apiDBContext);
+            _logger = logger;
         }
 
         [HttpGet]
@@ -27,7 +29,7 @@ namespace StarDeckAPI.Controllers
         public IActionResult Razas()
         {
             List<Raza> razas = apiDBContext.Raza.ToList();
-
+            _logger.LogInformation("HOlaa");
             return Ok(razas);
         }
 

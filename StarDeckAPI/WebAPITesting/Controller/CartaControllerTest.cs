@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -19,54 +20,46 @@ namespace WebAPITesting.Controller
         private async Task<APIDbContext> GetDatabaseContext()
         {
             var options = new DbContextOptionsBuilder<APIDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .UseSqlServer("Server = DAVIDGAMING ; Database=StarDeckTest; Trusted_Connection=True ;  TrustServerCertificate=True")
                 .Options;
 
             var databaseContext = new APIDbContext(options);
 
-            databaseContext.Database.EnsureCreated();
-
-            if(await databaseContext.Carta.CountAsync() <= 0)
-            {
-                for(int i = 0; i < 3; i++)
-                {
-                    databaseContext.Carta.Add(
-                    new Carta()
-                    {
-                        Id = "C-123141241"+i.ToString(),
-                        N_Personaje = "Carta"+i.ToString(),
-                        Energia =5,
-                        Imagen = "imagen"+i.ToString(),
-                        Raza = 1,
-                        Activa = true,
-                        Descripcion = "Carta Descripcion",
-                        Tipo = 1
-                    });
-                    await databaseContext.SaveChangesAsync();
-                }
-            }
+            
             return databaseContext;
         }
 
 
         [Fact]
-        public async void CartaController_GetAllCartas_ReturnsCartas()
+        public async void GetAllCartas_ReturnsCartas()
         {
             //Arrange
             var dbContext = await GetDatabaseContext();
-            var cartaController = new CartaController(dbContext);
+            var cartaController = new CartaData(dbContext);
 
             //Act
-            var result = cartaController.GetAll();
+            var result = cartaController.getAllCartas();
             
-
             //Assert
-
             Assert.NotNull(result);
-
-
+            Assert.Equal(27, result.Count());
         }
 
+        [Fact]
+        public async void GetCarta_ReturnCarta()
+        {
+            //Arrange
+            var dbContext = await GetDatabaseContext();
+            var cartaController = new CartaData(dbContext);
 
+            //Act
+            var result = cartaController.getCartaDB("1");
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal("1",result.Id);
+        }
+
+       
     }
 }

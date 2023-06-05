@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StarDeckAPI.Controllers;
 using StarDeckAPI.Data;
@@ -9,9 +10,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace WebAPITesting.Controller
 {
-    public class PlanetaControllerTest
+    public class UsuarioControllerTest
     {
         private async Task<APIDbContext> GetDatabaseContext()
         {
@@ -21,42 +23,57 @@ namespace WebAPITesting.Controller
 
             var databaseContext = new APIDbContext(options);
 
-            
+
             return databaseContext;
         }
 
-
-
-
         [Fact]
-        public async void GetPlanetas_ReturnsPlanetas()
-        {
-            //Arrange
-            var context = await GetDatabaseContext();
-            var controller = new PlanetaData(context);
-
-            //Act
-            var result = controller.getPlanetas();
-
-            //Assert
-            Assert.NotNull(result);
-            Assert.Equal(3, result.Count());
-        }
-
-        [Fact]
-        public async void GetPlaneta_ReturnPlaneta()
+        public async void GetUsuarios_ReturnUsuarios()
         {
             //Arrange
             var dbContext = await GetDatabaseContext();
-            var planetaController = new PlanetaData(dbContext);
+            var controller = new UsuarioData(dbContext);
 
             //Act
-            var result = planetaController.getPlaneta("1");
+
+            var result = controller.getUsuarios();
+
+            //Assert
+
+            Assert.NotNull(result);
+            Assert.Equal(4, result.Count());
+        }
+
+        [Fact]
+        public async void GetUsuario_ReturnUsuario()
+        {
+            //Arrange
+            var dbContext = await GetDatabaseContext();
+            var controller = new UsuarioData(dbContext);
+
+            //Act
+            var result = controller.getUsuario("U-KwW5aumoYDKX");
 
             //Assert
             Assert.NotNull(result);
-            Assert.Equal("1", result.Id);
+            Assert.Equal("U-KwW5aumoYDKX", result.Id);
+
         }
 
+        [Fact]
+        public async void GetJugadores_ReturnJugadores()
+        {
+            //Arrange
+            var dbContext = await GetDatabaseContext();
+            var controller = new UsuarioData(dbContext);
+
+            //Act
+            var result = controller.getJugadores();
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal(4, result.Count());
+
+        }
     }
 }
