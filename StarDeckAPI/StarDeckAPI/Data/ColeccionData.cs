@@ -60,10 +60,6 @@ namespace StarDeckAPI.Data
             List<CartasXDeck> cartasXDeck = apiDBContext.CartasXDeck.ToList();
             List<DeckAPIGET> deckAPI = new List<DeckAPIGET>();
 
-            CartaController cartas = new CartaController(apiDBContext);
-
-
-
             foreach (Deck deck in decksUser)
             {
                 List<CartaAPI> Cartas = new List<CartaAPI>();

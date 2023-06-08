@@ -61,7 +61,12 @@ namespace StarDeckAPI.Controllers
 
         public IActionResult getPartida([FromRoute] string Id)
         {
-            Partida partida = apiDBContext.Partida.ToList().Where(x => x.Id == Id).First();
+            List<Partida> partidas = apiDBContext.Partida.ToList();
+            Partida partida = new Partida();
+            if (partidas.Any())
+            {
+                partida = partidas.Where(x => x.Id == Id).First();
+            }
             return Ok(partida);
         }
 
