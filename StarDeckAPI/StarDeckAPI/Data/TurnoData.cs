@@ -372,7 +372,7 @@ namespace StarDeckAPI.Data
             winnerAPI.Winner = GanadorFinder.getGanadorPartidaCompleta(winnerAPI.WinnerPerPlanet, jugador, rival);
 
             //Actualizar informacion en la base
-            if (!jugadorXPartida.Ganador && !rivalXPartida.Ganador)
+            if (!jugadorXPartida.Ganador && !rivalXPartida.Ganador && winnerAPI.Winner != null)
             {
                 UsuarioXPartida usuarioXPartida = apiDBContext.UsuarioXPartida.ToList().Where(x => x.Id_Usuario == winnerAPI.Winner.Id &&
                     x.Id_Partida == Id_partida).First();
