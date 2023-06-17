@@ -292,10 +292,29 @@ namespace StarDeckAPI.Data
         {
             Usuario usuario = apiDBContext.Usuario.ToList().Where(x => x.Id == Id_usuario).First();
             Partida partidaActual = new Partida();
+            List<UsuarioXPartida> partidas = apiDBContext.UsuarioXPartida.ToList();
+            List<UsuarioXPartida> partidasXUsuario = new List<UsuarioXPartida>();
+
+            foreach (UsuarioXPartida partida in partidas)
+            {
+                if (partida.Id_Usuario == Id_usuario)
+                {
+                    partidasXUsuario.Add(partida);
+                }
+            }
             if (usuario.Id_actividad == 3)
             {
-                string partidaId = apiDBContext.UsuarioXPartida.ToList().Where(x => x.Id_Usuario == Id_usuario).First().Id_Partida;
-                partidaActual = apiDBContext.Partida.ToList().Where(x => x.Id == partidaId).First();
+                foreach (UsuarioXPartida partida in partidasXUsuario)
+                {
+                    try
+                    {
+                        partidaActual = apiDBContext.Partida.ToList().Where(x => x.Id == partida.Id_Partida && x.Estado == 3).First();
+                    }
+                    catch
+                    {
+                        //DO NOTHING
+                    }
+                }
             }
             return partidaActual;
         }
