@@ -360,13 +360,61 @@ namespace StarDeckAPI.Data
             return ganadorPorPlaneta;
         }
         
-        private void actualizarResultadosPartida(WinnerAPI winnerAPI, UsuarioAPI jugador, UsuarioAPI rival)
-        {
+        private void actualizarResultadosPartida(WinnerAPI winnerAPI, UsuarioAPI jugador, UsuarioAPI rival, string Id_partida)
+        {   
+            //Declaraciones iniciales
+            UsuarioXPartida jugadorXPartida = apiDBContext.UsuarioXPartida.ToList().Where(x => x.Id_Usuario == jugador.Id &&
+                x.Id_Partida == Id_partida).First();
+            UsuarioXPartida rivalXPartida = apiDBContext.UsuarioXPartida.ToList().Where(x => x.Id_Usuario == rival.Id &&
+                x.Id_Partida == Id_partida).First();
+
+            Console.WriteLine("---- JUGADOR ----");
+            Console.WriteLine(jugadorXPartida.Id_Usuario);
+            Console.WriteLine(jugadorXPartida.Ganador);
+            Console.WriteLine("---- RIVAL ----");
+            Console.WriteLine(rivalXPartida.Id_Usuario);
+            Console.WriteLine(rivalXPartida.Ganador);
+
             //Sacar el ganador de la partida en si
             winnerAPI.Winner = GanadorFinder.getGanadorPartidaCompleta(winnerAPI.WinnerPerPlanet, jugador, rival);
 
+            //Actualizar informacion en la base
+            if (!jugadorXPartida.Ganador && !rivalXPartida.Ganador)
+            {
+                UsuarioXPartida usuarioXPartida = apiDBContext.UsuarioXPartida.ToList().Where(x => x.Id_Usuario == winnerAPI.Winner.Id &&
+                    x.Id_Partida == Id_partida).First();
+                usuarioXPartida.Ganador = true;
+                apiDBContext.UsuarioXPartida.Update(usuarioXPartida);
+                apiDBContext.SaveChanges();
+            }
+            else if (jugadorXPartida.Ganador)
+            {
+                winnerAPI.Winner = jugador;
+            }
+            else if (rivalXPartida.Ganador)
+            {
+                winnerAPI.Winner = rival;
+            }
+
             //Comprobar el ganador de la partida
             this.comprobarVictoriaJugador(winnerAPI, jugador, rival);
+        }
+
+        public UsuarioXPartida giveUpMatch(string Id_partida, string Id_usuario)
+        { 
+            Console.WriteLine("---- GIVE UP ----");
+            MatchmakingData matchmakingData = new MatchmakingData(apiDBContext);
+            string rival_id = matchmakingData.getRival(Id_usuario, Id_partida).Id;
+            Console.WriteLine("---- BEFORE DB USUARIO X PARTIDA ----");
+            UsuarioXPartida usuarioXPartida = apiDBContext.UsuarioXPartida.ToList().Where(x => x.Id_Usuario == rival_id &&
+                x.Id_Partida == Id_partida).First();
+            
+            Console.WriteLine("---- AFTER DB USUARIO X PARTIDA ----");
+            usuarioXPartida.Ganador = true;
+            apiDBContext.UsuarioXPartida.Update(usuarioXPartida);
+            apiDBContext.SaveChanges();
+
+            return usuarioXPartida;
         }
 
         public WinnerAPI getGanadorPartida(string Id_partida, string Id_usuario)
@@ -387,7 +435,7 @@ namespace StarDeckAPI.Data
             winnerAPI.WinnerPerPlanet = this.anadirGanadorPlaneta(winnerAPI,planetas,rival,Id_partida,jugador);
 
             //Actualizar resultados de partida
-            this.actualizarResultadosPartida(winnerAPI, jugador, rival);
+            this.actualizarResultadosPartida(winnerAPI, jugador, rival, Id_partida);
 
             return winnerAPI;
 
@@ -483,13 +531,13 @@ namespace StarDeckAPI.Data
             }
         }
 
-        private void agarrarCartaDeck(TurnoCompletoAPI turnoCompletoNuevo)
+        private void agarrarCartaDeck(TurnoCompletoAPI turnoCompleto)
         {
             const int maximoCartasEnMano = 7;
-            if (turnoCompletoNuevo.cartasManoUsuario.Count <= maximoCartasEnMano)
+            if (turnoCompleto.cartasManoUsuario.Count < maximoCartasEnMano && turnoCompleto.cartasDeckUsuario.Count > 0)
             {
-                turnoCompletoNuevo.cartasManoUsuario.Add(turnoCompletoNuevo.cartasDeckUsuario[0]);
-                turnoCompletoNuevo.cartasDeckUsuario.RemoveAt(0);
+                turnoCompleto.cartasManoUsuario.Add(turnoCompleto.cartasDeckUsuario[0]);
+                turnoCompleto.cartasDeckUsuario.RemoveAt(0);
             }
         }
 
@@ -539,7 +587,7 @@ namespace StarDeckAPI.Data
             turnoCompleto.planetasEnPartida = planetasEnPartida;
         }
 
-        public TurnoCompletoAPI getInfoCompletaUltimoTurno(string Id_partida, string Id_usuario)
+        public async Task<TurnoCompletoAPI> getInfoCompletaUltimoTurno(string Id_partida, string Id_usuario)
         {
             //Declaraciones Iniciales
             TurnoCompletoAPI turnoCompleto = new TurnoCompletoAPI();
@@ -553,7 +601,7 @@ namespace StarDeckAPI.Data
             return turnoCompleto;
         }
 
-        public TurnoCompletoAPI updateInfoCompletaTurno(string Id_partida, string Id_usuario, TurnoCompletoAPI turnoCompleto)
+        public async Task<TurnoCompletoAPI> updateInfoCompletaTurno(string Id_partida, string Id_usuario, TurnoCompletoAPI turnoCompleto)
         {
             TurnoCompletoAPI turnoCompletoUpdated = new TurnoCompletoAPI();
 
@@ -562,12 +610,12 @@ namespace StarDeckAPI.Data
             this.actualizarTurno(id_turno, turnoCompleto.infoPartida);
 
             //Se agarra toda la informacion del turno
-            turnoCompletoUpdated = this.getInfoCompletaUltimoTurno(Id_partida, Id_usuario);
+            turnoCompletoUpdated = await this.getInfoCompletaUltimoTurno(Id_partida, Id_usuario);
 
             return turnoCompletoUpdated;
         }
 
-        public TurnoCompletoAPI CrearNuevoTurnoCompleto(string Id_partida, string Id_usuario, TurnoCompletoAPI turnoCompleto)
+        public async Task<TurnoCompletoAPI> CrearNuevoTurnoCompleto(string Id_partida, string Id_usuario, TurnoCompletoAPI turnoCompleto)
         {
             //Se crea un nuevo turno
             this.crearTurnoNuevo(turnoCompleto, Id_partida, Id_usuario);
@@ -582,8 +630,21 @@ namespace StarDeckAPI.Data
             //Se actualizan todas las cartas de los planetas
             this.anadirCartaAPlanetaTurno(turnoCompleto, Id_usuario, Id_partida);
 
+            //Bucle para nuevo turno
+            MatchmakingData matchmakingData = new MatchmakingData(this.apiDBContext);
+            string rival_id = matchmakingData.getRival(Id_usuario, Id_partida).Id;
+            Boolean opponentIsInNewTurn = false;
+            while(!opponentIsInNewTurn)
+            {
+                TurnoCompletoAPI turnoRival = await this.getInfoCompletaUltimoTurno(Id_partida, rival_id);
+                if (turnoCompleto.infoPartida.Numero_turno == turnoRival.infoPartida.Numero_turno && turnoRival.infoPartida.Terminado == false) {
+                    opponentIsInNewTurn = true;
+                }
+                await Task.Delay(1500);
+            } 
+
             //Se updatea la informacion del turno para updatear la energia, numero de turno y estado
-            turnoCompleto = this.updateInfoCompletaTurno(Id_partida, Id_usuario, turnoCompleto);
+            turnoCompleto = await this.updateInfoCompletaTurno(Id_partida, Id_usuario, turnoCompleto);
 
             return turnoCompleto;
         }

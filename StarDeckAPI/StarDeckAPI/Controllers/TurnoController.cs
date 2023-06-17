@@ -95,11 +95,11 @@ namespace StarDeckAPI.Controllers
 
         [HttpGet]
         [Route("getInfoCompletaTurno/{Id_partida}/{Id_usuario}")]
-        public IActionResult getInfoCompletaTurno([FromRoute] string Id_partida, [FromRoute] string Id_usuario)
+        public async Task<IActionResult> getInfoCompletaTurno([FromRoute] string Id_partida, [FromRoute] string Id_usuario)
         {
             try
             {
-                TurnoCompletoAPI turnoCompleto = this.turnoData.getInfoCompletaUltimoTurno(Id_partida, Id_usuario);
+                TurnoCompletoAPI turnoCompleto = await this.turnoData.getInfoCompletaUltimoTurno(Id_partida, Id_usuario);
                 return Ok(turnoCompleto);
             }
             catch (Exception e)
@@ -111,11 +111,11 @@ namespace StarDeckAPI.Controllers
 
         [HttpPut]
         [Route("updateInfoCompletaTurno/{Id_partida}/{Id_usuario}")]
-        public IActionResult getInfoCompletaTurno([FromRoute] string Id_partida, [FromRoute] string Id_usuario, TurnoCompletoAPI turnoCompleto)
+        public async Task<IActionResult> getInfoCompletaTurno([FromRoute] string Id_partida, [FromRoute] string Id_usuario, TurnoCompletoAPI turnoCompleto)
         {
             try
             {
-                TurnoCompletoAPI turnoCompletoUpdated = this.turnoData.updateInfoCompletaTurno(Id_partida, Id_usuario, turnoCompleto);
+                TurnoCompletoAPI turnoCompletoUpdated = await this.turnoData.updateInfoCompletaTurno(Id_partida, Id_usuario, turnoCompleto);
                 return Ok(turnoCompletoUpdated);
             }
             catch (Exception e)
@@ -125,13 +125,29 @@ namespace StarDeckAPI.Controllers
             }
         }
 
-        [HttpPost]
-        [Route("crearNuevoTurnoCompleto/{Id_partida}/{Id_usuario}")]
-        public IActionResult CrearNuevoTurnoCompleto([FromRoute] string Id_partida, [FromRoute] string Id_usuario, TurnoCompletoAPI turnoCompleto)
+        [HttpPut]
+        [Route("giveUpMatch/{Id_partida}/{Id_usuario}")]
+        public IActionResult giveUpMatch([FromRoute] string Id_partida, [FromRoute] string Id_usuario)
         {
             try
             {
-                TurnoCompletoAPI turnoCompletoNuevo = this.turnoData.CrearNuevoTurnoCompleto(Id_partida, Id_usuario, turnoCompleto);
+                UsuarioXPartida usuarioXPartida = this.turnoData.giveUpMatch(Id_partida, Id_usuario);
+                return Ok(usuarioXPartida);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return BadRequest("No se logró rendirse de la partida.");
+            }
+        }
+
+        [HttpPost]
+        [Route("crearNuevoTurnoCompleto/{Id_partida}/{Id_usuario}")]
+        public async Task<IActionResult> CrearNuevoTurnoCompleto([FromRoute] string Id_partida, [FromRoute] string Id_usuario, TurnoCompletoAPI turnoCompleto)
+        {
+            try
+            {
+                TurnoCompletoAPI turnoCompletoNuevo = await this.turnoData.CrearNuevoTurnoCompleto(Id_partida, Id_usuario, turnoCompleto);
                 return Ok(turnoCompletoNuevo);
             }
             catch (Exception e)

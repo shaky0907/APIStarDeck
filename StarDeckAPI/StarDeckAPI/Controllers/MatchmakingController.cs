@@ -52,12 +52,28 @@ namespace StarDeckAPI.Controllers
         }
 
         [HttpPut]
-        [Route("finishMatchUser/{Id}")]
-        public IActionResult finishMatchUser([FromRoute] string Id)
+        [Route("finishMatchUser/{Id}/{matchId}")]
+        public IActionResult finishMatchUser([FromRoute] string Id, [FromRoute] string matchId)
         {
             try
             {
-                Usuario user = this.matchmakingData.terminarPartida(Id);
+                Usuario user = this.matchmakingData.terminarPartida(Id, matchId);
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("No se logró finalizar la partida para el usuario.");
+            }
+
+        }
+
+        [HttpPut]
+        [Route("finishMatchSearch/{Id}")]
+        public IActionResult finishMatchSearch([FromRoute] string Id)
+        {
+            try
+            {
+                Usuario user = this.matchmakingData.terminarBusquedaPartida(Id);
                 return Ok(user);
             }
             catch (Exception e)
