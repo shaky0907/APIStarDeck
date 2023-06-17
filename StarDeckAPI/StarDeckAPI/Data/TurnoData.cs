@@ -131,6 +131,10 @@ namespace StarDeckAPI.Data
 
             apiDBContext.CartasXTurnoXManoXUsuario.Add(cartasxturnoxmanoxusuario);
 
+            Console.WriteLine("CARTA POR INSERTAR");
+            Console.WriteLine(cartasxturnoxmanoxusuario.Id_Turno);
+            Console.WriteLine(cartasxturnoxmanoxusuario.Id_Carta);
+
             apiDBContext.SaveChanges();
 
             return cartasxturnoxmanoxusuario;
@@ -327,34 +331,20 @@ namespace StarDeckAPI.Data
             return turno;
         }
 
-        public WinnerAPI getGanadorPartida(string Id_partida, string Id_usuario)
+        private List<UsuarioAPI> anadirGanadorPlaneta(WinnerAPI winnerAPI, List<Planeta> planetas, UsuarioAPI rival, string Id_partida, UsuarioAPI jugador)
         {
-            WinnerAPI winnerAPI = new WinnerAPI();
-            MatchmakingData matchmakingData = new MatchmakingData(this.apiDBContext);
-            UsuarioData usuarioData = new UsuarioData(this.apiDBContext);
             PlanetaData planetaData = new PlanetaData(this.apiDBContext);
-
-            List<Planeta> planetas = matchmakingData.getPlanetasPartida(Id_partida);
-
-            Usuario rival_ = matchmakingData.getRival(Id_usuario, Id_partida);
-            UsuarioAPI rival = usuarioData.getUsuario(rival_.Id);
-
-            UsuarioAPI jugador = usuarioData.getUsuario(Id_usuario);
-
-            TurnoXUsuario turno = this.getLastTurno(Id_partida, Id_usuario);
+            TurnoXUsuario turno = this.getLastTurno(Id_partida, jugador.Id);
             TurnoXUsuario turno_rival = this.getLastTurno(Id_partida, rival.Id);
-
             List<UsuarioAPI> ganadorPorPlaneta = new List<UsuarioAPI>();
-
             winnerAPI.PointsPerPlanet = new List<int>();
             winnerAPI.PointsRivalPerPlanet = new List<int>();
-
             winnerAPI.PlanetsOnMatch = new List<PlanetaAPIGet>();
 
             foreach (Planeta planeta in planetas)
             {
                 //Sacar los puntos del usuario
-                int PuntosUsuario = this.getPuntosDePlaneta(planeta, turno.Id, Id_usuario);
+                int PuntosUsuario = this.getPuntosDePlaneta(planeta, turno.Id, jugador.Id);
                 winnerAPI.PointsPerPlanet.Add(PuntosUsuario);
 
                 //Sacar los puntos del rival
@@ -367,59 +357,198 @@ namespace StarDeckAPI.Data
                 winnerAPI.PlanetsOnMatch.Add(planetaData.getPlaneta(planeta.Id));
             }
 
-            //Settear los ganadores por planeta
-            winnerAPI.WinnerPerPlanet = ganadorPorPlaneta;
-
+            return ganadorPorPlaneta;
+        }
+        
+        private void actualizarResultadosPartida(WinnerAPI winnerAPI, UsuarioAPI jugador, UsuarioAPI rival)
+        {
             //Sacar el ganador de la partida en si
-            winnerAPI.Winner = GanadorFinder.getGanadorPartidaCompleta(ganadorPorPlaneta);
+            winnerAPI.Winner = GanadorFinder.getGanadorPartidaCompleta(winnerAPI.WinnerPerPlanet, jugador, rival);
 
-            //Sacar el perdedor de la partida en si
-            winnerAPI.Loser = GanadorFinder.getPerdedorPartidaCompleta(ganadorPorPlaneta, jugador, rival);
-
-            return winnerAPI;
+            //Comprobar el ganador de la partida
+            this.comprobarVictoriaJugador(winnerAPI, jugador, rival);
         }
 
-        public TurnoCompletoAPI getInfoCompletaUltimoTurno(string Id_partida, string Id_usuario)
+        public WinnerAPI getGanadorPartida(string Id_partida, string Id_usuario)
         {
-            TurnoCompletoAPI turnoCompleto = new TurnoCompletoAPI();
+            //Declaraciones inciales
+            WinnerAPI winnerAPI = new WinnerAPI();
             MatchmakingData matchmakingData = new MatchmakingData(this.apiDBContext);
             UsuarioData usuarioData = new UsuarioData(this.apiDBContext);
-            PlanetaData planetaData = new PlanetaData(this.apiDBContext);
 
             List<Planeta> planetas = matchmakingData.getPlanetasPartida(Id_partida);
-            List<PlanetaAPIGet> planetasEnPartida = new List<PlanetaAPIGet>();
+
+            Usuario rival_ = matchmakingData.getRival(Id_usuario, Id_partida);
+            UsuarioAPI rival = usuarioData.getUsuario(rival_.Id);
+
+            UsuarioAPI jugador = usuarioData.getUsuario(Id_usuario);
+
+            //Settear los ganadores por planeta
+            winnerAPI.WinnerPerPlanet = this.anadirGanadorPlaneta(winnerAPI,planetas,rival,Id_partida,jugador);
+
+            //Actualizar resultados de partida
+            this.actualizarResultadosPartida(winnerAPI, jugador, rival);
+
+            return winnerAPI;
+
+        }
+
+        private void anadirManoTurno(TurnoCompletoAPI turnoCompleto, string Id_usuario)
+        {
+            CartasXTurnoXManoXUsuario cartaMano = new CartasXTurnoXManoXUsuario();
+            string id_turno = this.getLastTurno(turnoCompleto.infoPartida.Id_Partida, Id_usuario).Id;
+            int contador = 0;
+
+            foreach (CartaAPI carta in turnoCompleto.cartasManoUsuario)
+            {
+                cartaMano.Id_Carta = carta.Id;
+                cartaMano.Id_Turno = id_turno;
+                cartaMano.Id_Usuario = Id_usuario;
+                cartaMano.Posicion = contador;
+
+                this.addCartaMano(cartaMano);
+
+                contador++;
+            }
+        }
+
+        private void anadirDeckTurno(TurnoCompletoAPI turnoCompleto, string Id_usuario)
+        {
+            CartasXTurnoXDeckXUsuario cartaDeck = new CartasXTurnoXDeckXUsuario();
+            string id_turno = this.getLastTurno(turnoCompleto.infoPartida.Id_Partida, Id_usuario).Id;
+            int contador = 0;
+
+            foreach (CartaAPI carta in turnoCompleto.cartasDeckUsuario)
+            {
+                cartaDeck.Id_Carta = carta.Id;
+                cartaDeck.Id_Turno = id_turno;
+                cartaDeck.Id_Usuario = Id_usuario;
+                cartaDeck.Posicion = contador;
+
+                this.AddCartaDeck(cartaDeck);
+
+                contador++;
+            }
+        }
+
+        private void crearTurnoNuevo(TurnoCompletoAPI turnoCompleto, string Id_partida, string Id_usuario)
+        {
+            TurnoAPI turnoNuevo = new TurnoAPI();
+            TurnoXUsuario turnoCreado = new TurnoXUsuario();
+
+            const int energiaGanadaPorTurno = 30;
+
+            turnoNuevo = turnoCompleto.infoPartida;
+            if (turnoNuevo.Numero_turno != 0) {
+                turnoNuevo.Energia += energiaGanadaPorTurno;
+            }
+            turnoNuevo.Terminado = false;
+            turnoNuevo.Numero_turno += 1;
+            turnoNuevo.Id_Partida = Id_partida;
+            turnoNuevo.Id_Usuario = Id_usuario;
+
+            turnoCreado = this.addTurno(turnoNuevo);
+            turnoNuevo = this.getTurno(turnoCreado.Id);
+
+            turnoCompleto.infoPartida = turnoNuevo;
+        }
+
+        private void anadirCartaAPlanetaTurno(TurnoCompletoAPI turnoCompleto, string Id_usuario, string Id_partida)
+        {
+            MatchmakingData matchmakingData = new MatchmakingData(this.apiDBContext);
+            CartasXTurnoXPlanetaXUsuario cartaPlaneta = new CartasXTurnoXPlanetaXUsuario();
+            string id_turno = this.getLastTurno(turnoCompleto.infoPartida.Id_Partida, Id_usuario).Id;
+
+
+            int contador = 0;
+            List<Planeta> planetas = matchmakingData.getPlanetasPartida(Id_partida);
+
+            foreach (List<CartaAPI> listaCartas in turnoCompleto.cartasPlanetas)
+            {
+                List<CartaAPI> cartasExistentesEnPlaneta = this.getPlanetaCartasPartida(planetas[contador].Id, Id_partida, Id_usuario);
+
+                foreach (CartaAPI carta in listaCartas)
+                {
+                    if (!cartasExistentesEnPlaneta.Contains(carta))
+                    {
+                        cartaPlaneta.Id_Turno = id_turno;
+                        cartaPlaneta.Id_Carta = carta.Id;
+                        cartaPlaneta.Id_Planeta = planetas[contador].Id;
+                        cartaPlaneta.Id_Usuario = Id_usuario;
+
+                        this.AddCartaPlaneta(cartaPlaneta);
+                    }
+                }
+                contador++;
+            }
+        }
+
+        private void agarrarCartaDeck(TurnoCompletoAPI turnoCompletoNuevo)
+        {
+            const int maximoCartasEnMano = 7;
+            if (turnoCompletoNuevo.cartasManoUsuario.Count <= maximoCartasEnMano)
+            {
+                turnoCompletoNuevo.cartasManoUsuario.Add(turnoCompletoNuevo.cartasDeckUsuario[0]);
+                turnoCompletoNuevo.cartasDeckUsuario.RemoveAt(0);
+            }
+        }
+
+        private void obtenerTotalidadCartasTurno(TurnoCompletoAPI turnoCompleto, string Id_usuario, string Id_partida)
+        {
+            MatchmakingData matchmakingData = new MatchmakingData(this.apiDBContext);
+            UsuarioData usuarioData = new UsuarioData(this.apiDBContext);
 
             string id_turno = this.getLastTurno(Id_partida, Id_usuario).Id;
             turnoCompleto.infoPartida = this.getTurno(id_turno);
 
             string rival_id = matchmakingData.getRival(Id_usuario, Id_partida).Id;
-            UsuarioAPI rival = usuarioData.getUsuario(rival_id);
-            string id_turno_rival = this.getLastTurno(Id_partida, rival.Id).Id;
-            turnoCompleto.rival = rival;
+            turnoCompleto.rival = usuarioData.getUsuario(rival_id);
+            string id_turno_rival = this.getLastTurno(Id_partida, rival_id).Id;
 
-            //Obtener todas las cartas de la mano y mazo tanto para el jugador como el rival
+
             turnoCompleto.cartasManoUsuario = this.getUserMano(Id_usuario, id_turno);
             turnoCompleto.cartasDeckUsuario = this.getUserDeck(Id_usuario, id_turno);
-            turnoCompleto.cartasManoRival = this.getUserMano(rival.Id, id_turno_rival);
-            turnoCompleto.cartasDeckRival = this.getUserDeck(rival.Id, id_turno_rival);
+            turnoCompleto.cartasManoRival = this.getUserMano(rival_id, id_turno_rival);
+            turnoCompleto.cartasDeckRival = this.getUserDeck(rival_id, id_turno_rival);
+        }
 
+        private void obtenerTotalidadPlanetas(TurnoCompletoAPI turnoCompleto, string Id_usuario, string Id_partida)
+        {
+            PlanetaData planetaData = new PlanetaData(this.apiDBContext);
+            MatchmakingData matchmakingData = new MatchmakingData(this.apiDBContext);
 
-            //Obtener todas las cartas por planeta y planetas en si
+            List<Planeta> planetas = matchmakingData.getPlanetasPartida(Id_partida);
+            List<PlanetaAPIGet> planetasEnPartida = new List<PlanetaAPIGet>();
+
             turnoCompleto.cartasPlanetas = new List<List<CartaAPI>>();
             turnoCompleto.cartasRivalPlanetas = new List<List<CartaAPI>>();
 
-            int contador = 0;
+            string id_turno = this.getLastTurno(Id_partida, Id_usuario).Id;
+
+            string rival_id = matchmakingData.getRival(Id_usuario, Id_partida).Id;
+            string id_turno_rival = this.getLastTurno(Id_partida, rival_id).Id;
+
             foreach (Planeta planeta in planetas)
             {
                 turnoCompleto.cartasPlanetas.Add(this.getPlanetaCartas(planeta.Id, id_turno, Id_usuario));
-                turnoCompleto.cartasRivalPlanetas.Add(this.getPlanetaCartas(planeta.Id, id_turno_rival, rival.Id));
+                turnoCompleto.cartasRivalPlanetas.Add(this.getPlanetaCartas(planeta.Id, id_turno_rival, rival_id));
 
                 planetasEnPartida.Add(planetaData.getPlaneta(planeta.Id));
-
-                contador++;
             }
 
             turnoCompleto.planetasEnPartida = planetasEnPartida;
+        }
+
+        public TurnoCompletoAPI getInfoCompletaUltimoTurno(string Id_partida, string Id_usuario)
+        {
+            //Declaraciones Iniciales
+            TurnoCompletoAPI turnoCompleto = new TurnoCompletoAPI();
+
+            //Obtener todas las cartas de la mano y mazo tanto para el jugador como el rival
+            this.obtenerTotalidadCartasTurno(turnoCompleto, Id_usuario, Id_partida);
+
+            //Obtener todas las cartas por planeta y planetas en si
+            this.obtenerTotalidadPlanetas(turnoCompleto, Id_usuario, Id_partida);
 
             return turnoCompleto;
         }
@@ -440,125 +569,45 @@ namespace StarDeckAPI.Data
 
         public TurnoCompletoAPI CrearNuevoTurnoCompleto(string Id_partida, string Id_usuario, TurnoCompletoAPI turnoCompleto)
         {
-            TurnoCompletoAPI turnoCompletoNuevo = new TurnoCompletoAPI();
-            TurnoAPI turnoNuevo = new TurnoAPI();
-            TurnoXUsuario turnoCreado = new TurnoXUsuario();
-            MatchmakingData matchmakingData = new MatchmakingData(this.apiDBContext);
-            CartasXTurnoXManoXUsuario cartaMano = new CartasXTurnoXManoXUsuario();
-            CartasXTurnoXDeckXUsuario cartaDeck = new CartasXTurnoXDeckXUsuario();
-            CartasXTurnoXPlanetaXUsuario cartaPlaneta = new CartasXTurnoXPlanetaXUsuario();
-
-            //Se le sobreescribe la informacion del turno viejo al nuevo
-            turnoCompletoNuevo = turnoCompleto;
-
             //Se crea un nuevo turno
-            turnoNuevo = turnoCompleto.infoPartida;
-            turnoNuevo.Terminado = false;
-            turnoNuevo.Numero_turno += 1;
-            turnoNuevo.Energia += 30;
+            this.crearTurnoNuevo(turnoCompleto, Id_partida, Id_usuario);
 
-            turnoCreado = this.addTurno(turnoNuevo);
-            turnoNuevo = this.getTurno(turnoCreado.Id);
-
-            turnoCompletoNuevo.infoPartida = turnoNuevo;
-
-            //Se agarra una de las cartas del mazo y pasa a la mano
-            turnoCompletoNuevo.cartasManoUsuario.Add(turnoCompletoNuevo.cartasDeckUsuario[0]);
-            turnoCompletoNuevo.cartasDeckUsuario.RemoveAt(0);
+            //Se agarra una de las cartas del mazo y pasa a la mano si la mano no supera las 7 cartas
+            this.agarrarCartaDeck(turnoCompleto);
 
             //Se actualiza el mazo y mano del usuario para el nuevo turno
-            int contador = 0;
-            foreach (CartaAPI carta in turnoCompleto.cartasManoUsuario)
-            {
-                cartaMano.Id_Carta = carta.Id;
-                cartaMano.Id_Turno = turnoCreado.Id;
-                cartaMano.Id_Usuario = Id_usuario;
-                cartaMano.Posicion = contador;
-
-                this.addCartaMano(cartaMano);
-
-                contador++;
-            }
-            contador = 0;
-            foreach (CartaAPI carta in turnoCompleto.cartasDeckUsuario)
-            {
-                cartaDeck.Id_Carta = carta.Id;
-                cartaDeck.Id_Turno = turnoCreado.Id;
-                cartaDeck.Id_Usuario = Id_usuario;
-                cartaDeck.Posicion = contador;
-
-                this.AddCartaDeck(cartaDeck);
-
-                contador++;
-            }
+            this.anadirManoTurno(turnoCompleto, Id_usuario);
+            this.anadirDeckTurno(turnoCompleto, Id_usuario);
 
             //Se actualizan todas las cartas de los planetas
-            contador = 0;
-            List<Planeta> planetas = matchmakingData.getPlanetasPartida(Id_partida);
-
-            foreach (List<CartaAPI> listaCartas in turnoCompleto.cartasPlanetas)
-            {
-                List<CartaAPI> cartasExistentesEnPlaneta = this.getPlanetaCartasPartida(planetas[contador].Id, Id_partida, Id_usuario);
-
-                foreach (CartaAPI carta in listaCartas)
-                {
-                    if (!cartasExistentesEnPlaneta.Contains(carta))
-                    {
-                        cartaPlaneta.Id_Turno = turnoCreado.Id;
-                        cartaPlaneta.Id_Carta = carta.Id;
-                        cartaPlaneta.Id_Planeta = planetas[contador].Id;
-                        cartaPlaneta.Id_Usuario = Id_usuario;
-
-                        this.AddCartaPlaneta(cartaPlaneta);
-                    }
-                }
-                contador++;
-            }
+            this.anadirCartaAPlanetaTurno(turnoCompleto, Id_usuario, Id_partida);
 
             //Se updatea la informacion del turno para updatear la energia, numero de turno y estado
-            turnoCompletoNuevo = this.updateInfoCompletaTurno(Id_partida, Id_usuario, turnoCompletoNuevo);
+            turnoCompleto = this.updateInfoCompletaTurno(Id_partida, Id_usuario, turnoCompleto);
 
-            return turnoCompletoNuevo;
+            return turnoCompleto;
         }
 
-        public TurnoCompletoAPI AddTurnoCompleto(string Id_partida, string Id_usuario, TurnoCompletoAPI turnoCompleto)
+        private List<CartaAPI> deckHabilitado(string Id_usuario)
         {
-            TurnoCompletoAPI turnoCompletoNuevo = new TurnoCompletoAPI();
-            MatchmakingData matchmakingData = new MatchmakingData(this.apiDBContext);
             ColeccionData coleccionData = new ColeccionData(this.apiDBContext);
-
-            TurnoAPI turnoNuevo = new TurnoAPI();
-            TurnoXUsuario turnoCreado = new TurnoXUsuario();
-
-            CartasXTurnoXManoXUsuario cartaMano = new CartasXTurnoXManoXUsuario();
-            CartasXTurnoXDeckXUsuario cartaDeck = new CartasXTurnoXDeckXUsuario();
-            CartasXTurnoXPlanetaXUsuario cartaPlaneta = new CartasXTurnoXPlanetaXUsuario();
             List<DeckAPIGET> decks = new List<DeckAPIGET>();
-            List<CartaAPI> deckEscogido = new List<CartaAPI>();
 
-            //Se crea un nuevo turno
-            turnoNuevo = turnoCompleto.infoPartida;
-            turnoNuevo.Terminado = false;
-            turnoNuevo.Numero_turno = 1;
-            turnoNuevo.Id_Partida = Id_partida;
-            turnoNuevo.Id_Usuario = Id_usuario;
-
-            turnoCreado = this.addTurno(turnoNuevo);
-            turnoNuevo = this.getTurno(turnoCreado.Id);
-
-            turnoCompletoNuevo.infoPartida = turnoNuevo;
-
-            //Con el nuevo turno creado, se crea la mano y deck restante del usuario
             decks = coleccionData.getDecksUsuario(Id_usuario);
             foreach (DeckAPIGET deck in decks)
             {
                 if (deck.Estado == true)
                 {
-                    deckEscogido = deck.Cartas;
+                    return deck.Cartas;
                 }
             }
 
-            //Se generan las cartas para la mano
+            return null;
+        }
+
+        private List<CartaAPI> generarCartasManoUsuario(TurnoCompletoAPI turnoCompleto, List<CartaAPI> deckEscogido, string Id_usuario)
+        {
+
             int[] NumerosRandomMano = RandomGenerator.GenerateRandomArray(5, 0, 17);
             RandomGenerator.OrdenarArray(NumerosRandomMano);
 
@@ -572,42 +621,56 @@ namespace StarDeckAPI.Data
             }
 
 
-            turnoCompletoNuevo.cartasManoUsuario = handTemp;
+            turnoCompleto.cartasManoUsuario = handTemp;
 
-            //Se mezclan las cartas del mazo restantes
-            turnoCompletoNuevo.cartasDeckUsuario = deckTemp;
-            RandomGenerator.ShuffleList(turnoCompletoNuevo.cartasDeckUsuario);
+            //Añadir la mano al turno
+            this.anadirManoTurno(turnoCompleto, Id_usuario);
+            return deckTemp;
+        }
 
-            //Se agregan a las listas de cada turno
-            int contador = 0;
-            foreach (CartaAPI carta in turnoCompletoNuevo.cartasManoUsuario)
+        public TurnoCompletoAPI AddTurnoCompleto(string Id_partida, string Id_usuario, TurnoCompletoAPI turnoCompleto)
+        {   
+            //Declaraciones Iniciales
+            MatchmakingData matchmakingData = new MatchmakingData(this.apiDBContext);
+            CartasXTurnoXPlanetaXUsuario cartaPlaneta = new CartasXTurnoXPlanetaXUsuario();
+            List<CartaAPI> deckEscogido = new List<CartaAPI>();
+
+            //Se crea un nuevo turno
+            this.crearTurnoNuevo(turnoCompleto, Id_partida, Id_usuario);
+
+            //Con el nuevo turno creado, se crea la mano y deck restante del usuario
+            //Sacar el deck habilitado del usuario
+            deckEscogido = this.deckHabilitado(Id_usuario);
+
+            //Se generan las cartas para la mano
+            List<CartaAPI> deckGenerado = this.generarCartasManoUsuario(turnoCompleto, deckEscogido, Id_usuario);
+            
+            //Se mezclan las cartas del mazo restantes y se añaden al mazo del turno
+            turnoCompleto.cartasDeckUsuario = deckGenerado;
+            RandomGenerator.ShuffleList(turnoCompleto.cartasDeckUsuario);
+            this.anadirDeckTurno(turnoCompleto, Id_usuario);
+
+            //Crear estas listas vacias inicialmente
+            turnoCompleto.cartasPlanetas = new List<List<CartaAPI>>() { null, null, null };
+            turnoCompleto.cartasRivalPlanetas = new List<List<CartaAPI>>() { null, null, null };
+
+            return turnoCompleto;
+        }
+
+        private void comprobarVictoriaJugador(WinnerAPI winnerAPI, UsuarioAPI jugador, UsuarioAPI rival)
+        {
+            if (winnerAPI.Winner == null)
             {
-                cartaMano.Id_Carta = carta.Id;
-                cartaMano.Id_Turno = turnoCreado.Id;
-                cartaMano.Id_Usuario = Id_usuario;
-                cartaMano.Posicion = contador;
-
-                this.addCartaMano(cartaMano);
-
-                contador++;
+                winnerAPI.Loser = null;
             }
-            contador = 0;
-            foreach (CartaAPI carta in turnoCompletoNuevo.cartasDeckUsuario)
+            else if (winnerAPI.Winner == jugador) 
             {
-                cartaDeck.Id_Carta = carta.Id;
-                cartaDeck.Id_Turno = turnoCreado.Id;
-                cartaDeck.Id_Usuario = Id_usuario;
-                cartaDeck.Posicion = contador;
-
-                this.AddCartaDeck(cartaDeck);
-
-                contador++;
+                winnerAPI.Loser = rival;
             }
-
-            turnoCompletoNuevo.cartasPlanetas = new List<List<CartaAPI>>() { null, null, null };
-            turnoCompletoNuevo.cartasRivalPlanetas = new List<List<CartaAPI>>() { null, null, null };
-
-            return turnoCompletoNuevo;
+            else
+            {
+                winnerAPI.Loser = jugador;
+            }
         }
     }
 }

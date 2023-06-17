@@ -24,9 +24,7 @@ namespace StarDeckAPI.Controllers
         [Route("get")]
         public IActionResult GetPlanetas()
         {
-
             List<PlanetaAPIGet> planetasAPIGet = this.planetaData.getPlanetas();
-
             return Ok(planetasAPIGet);
         }
 
@@ -34,46 +32,60 @@ namespace StarDeckAPI.Controllers
         [Route("get/{Id}")]
         public IActionResult GetPlaneta([FromRoute] string Id)
         {
-            PlanetaAPIGet planetaAPIGet = this.planetaData.getPlaneta(Id);
-            return Ok(planetaAPIGet);
+            try
+            {
+                PlanetaAPIGet planetaAPIGet = this.planetaData.getPlaneta(Id);
+                return Ok(planetaAPIGet);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("No se logró encontrar el planeta solicitado.");
+            }
         }
 
         [HttpPost]
         [Route("add")]
         public IActionResult AddPlaneta(PlanetaAPI planetaAPI)
         {
-
-            Planeta planeta = this.planetaData.addPlaneta(planetaAPI);
-
-            return Ok(planeta);
-
+            try
+            {
+                Planeta planeta = this.planetaData.addPlaneta(planetaAPI);
+                return Ok(planeta);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("No se logró añadir el planeta.");
+            }
         }
 
         [HttpPut]
         [Route("update/{Id}")]
         public IActionResult UpdatePlaneta([FromRoute] string Id, PlanetaAPI planetaAPI)
         {
-            Planeta planetaSeleccionado = this.planetaData.actualizarPlaneta(Id, planetaAPI);
-
-            if (planetaSeleccionado != null)
+            try
             {
+                Planeta planetaSeleccionado = this.planetaData.actualizarPlaneta(Id, planetaAPI);
                 return Ok(planetaSeleccionado);
             }
-            return NotFound();
+            catch (Exception e)
+            {
+                return BadRequest("No se logró actualizar el planeta solicitado.");
+            }
         }
 
         [HttpDelete]
         [Route("delete/{Id}")]
         public IActionResult DeletePlaneta([FromRoute] string Id)
         {
-            Planeta planeta = this.planetaData.deletePlaneta(Id);
-
-            if (planeta != null)
+            try
             {
+                Planeta planeta = this.planetaData.deletePlaneta(Id);
                 return Ok(planeta);
             }
-
-            return NotFound();
+            catch
+            {
+                return BadRequest("No se logró eliminar el planeta solicitado.");
+            }
 
         }
 

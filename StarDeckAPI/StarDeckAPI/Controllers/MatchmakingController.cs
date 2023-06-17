@@ -23,9 +23,15 @@ namespace StarDeckAPI.Controllers
         [Route("matchmakingCheck/{Id}")]
         public IActionResult matchmakingCheck([FromRoute] string Id)
         {
-            MatchmakingResponse matchmakingResponse =  this.matchmakingData.matchmakingCheck(Id);
-
-            return Ok(matchmakingResponse);
+            try
+            {
+                MatchmakingResponse matchmakingResponse =  this.matchmakingData.matchmakingCheck(Id);
+                return Ok(matchmakingResponse);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("No se logró encontrar el usuario solicitado en la partida.");
+            }
         }
 
 
@@ -33,8 +39,15 @@ namespace StarDeckAPI.Controllers
         [Route("searchGame/{Id}")]
         public IActionResult searchGame([FromRoute] string Id)
         {
-            Usuario user = this.matchmakingData.buscarPartida(Id);
-            return Ok(user);
+            try
+            {
+                Usuario user = this.matchmakingData.buscarPartida(Id);
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("No se logró encontrar la partida.");
+            }
 
         }
 
@@ -42,8 +55,15 @@ namespace StarDeckAPI.Controllers
         [Route("finishMatchUser/{Id}")]
         public IActionResult finishMatchUser([FromRoute] string Id)
         {
-            Usuario user = this.matchmakingData.terminarPartida(Id);
-            return Ok(user);
+            try
+            {
+                Usuario user = this.matchmakingData.terminarPartida(Id);
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("No se logró finalizar la partida para el usuario.");
+            }
 
         }
 
@@ -51,8 +71,15 @@ namespace StarDeckAPI.Controllers
         [Route("finishGame/{Id}")]
         public IActionResult finishGame([FromRoute] string Id)
         {
-            Partida partida = this.matchmakingData.finalizarJuego(Id);
-            return Ok(partida);
+            try
+            {
+                Partida partida = this.matchmakingData.finalizarJuego(Id);
+                return Ok(partida);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("No se logró finalizar la partida.");
+            }
 
         }
 
@@ -61,32 +88,66 @@ namespace StarDeckAPI.Controllers
 
         public IActionResult getPartida([FromRoute] string Id)
         {
-            Partida partida = apiDBContext.Partida.ToList().Where(x => x.Id == Id).First();
-            return Ok(partida);
+            try
+            {
+                if (Id != "null") 
+                {
+                    Partida partida = apiDBContext.Partida.ToList().Where(x => x.Id == Id).First();
+                    return Ok(partida);
+                }
+                else
+                {
+                    return Ok();
+                }
+            }
+            catch (Exception e)
+            {
+                return BadRequest("No se logró encontrar la partida.");
+            }
         }
 
         [HttpGet]
         [Route("getPlanetasPartida/{Id}")]
         public IActionResult getPlanetasPartida([FromRoute] string Id)
         {
+            try
+            {
             List<Planeta> planetas = this.matchmakingData.getPlanetasPartida(Id);
             return Ok(planetas);
-
+            }
+            catch (Exception e)
+            {
+                return BadRequest("No se logró obtener la lista de planetas de la partida.");
+            }
         }
         [HttpGet]
         [Route("getRival/{Id_usuario}/{Id_Partida}")]
         public IActionResult getRival([FromRoute] string Id_usuario,[FromRoute] string Id_Partida)
         {
-            Usuario rivalUsuario = this.matchmakingData.getRival(Id_usuario, Id_Partida);
-            return Ok(rivalUsuario);
+            try
+            {
+                Usuario rivalUsuario = this.matchmakingData.getRival(Id_usuario, Id_Partida);
+                return Ok(rivalUsuario);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("No se logró obtener el rival.");
+            }
         }
 
         [HttpGet]
         [Route("isInMatch/{Id_usuario}")]
         public IActionResult getIsInMatch([FromRoute] string Id_usuario)
         {
-            Partida partida = this.matchmakingData.isInMatch(Id_usuario);
-            return Ok(partida);
+            try
+            {   
+                Partida partida = this.matchmakingData.isInMatch(Id_usuario);
+                return Ok(partida);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("No se logró verificar si el usuario está en partida.");
+            }
         }
     }
 }

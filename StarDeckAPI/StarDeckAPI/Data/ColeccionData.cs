@@ -144,7 +144,7 @@ namespace StarDeckAPI.Data
 
             apiDBContext.SaveChanges();
             List<Deck> decks = apiDBContext.Deck.ToList();
-            List<Deck> decksToUpdate = decks.Where(x => x.Id != id).ToList();
+            List<Deck> decksToUpdate = decks.Where(x => x.Id != id && x.Id_usuario == deckApi.Id_usuario).ToList();
 
             foreach (Deck deckToUpdate in decksToUpdate)
             {

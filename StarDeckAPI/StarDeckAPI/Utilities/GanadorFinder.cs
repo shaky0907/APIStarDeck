@@ -26,77 +26,38 @@ namespace StarDeckAPI.Utilities
 
             return ganador;
         }
-        public static UsuarioAPI getGanadorPartidaCompleta(List<UsuarioAPI> ganadorPorPlaneta)
+        public static UsuarioAPI getGanadorPartidaCompleta(List<UsuarioAPI> ganadorPorPlaneta, UsuarioAPI jugador, UsuarioAPI rival)
         {
             UsuarioAPI ganador = null;
-            UsuarioAPI jugador1 = new UsuarioAPI();
-            UsuarioAPI jugador2 = new UsuarioAPI();
             int planetasGanadosJugador1 = 0;
             int planetasGanadosJugador2 = 0;
 
-            foreach (UsuarioAPI jugador in ganadorPorPlaneta)
+            foreach (UsuarioAPI usuarioGanadorDelPlaneta in ganadorPorPlaneta)
             {
-                if (jugador1 != jugador)
+                if (jugador == usuarioGanadorDelPlaneta)
                 {
-                    jugador1 = jugador;
                     planetasGanadosJugador1++;
                 }
-                else
+                else if (rival == usuarioGanadorDelPlaneta)
                 {
-                    jugador2 = jugador;
                     planetasGanadosJugador2++;
                 }
             }
-
+            
             if (planetasGanadosJugador1 > planetasGanadosJugador2)
             {
-                ganador = jugador1;
+                ganador = jugador;
             }
             else if (planetasGanadosJugador1 < planetasGanadosJugador2)
             {
-                ganador = jugador2;
+                ganador = rival;
             }
-            else
+            else if (planetasGanadosJugador1 == planetasGanadosJugador2)
             {
-                return null;
+                ganador = null;
             }
 
             return ganador;
-        }
-
-        public static UsuarioAPI getPerdedorPartidaCompleta(List<UsuarioAPI> ganadorPorPlaneta, UsuarioAPI jugador1, UsuarioAPI jugador2)
-        {
-            UsuarioAPI perdedor = null;
-            int planetasGanadosJugador1 = 0;
-            int planetasGanadosJugador2 = 0;
-
-            foreach (UsuarioAPI jugador in ganadorPorPlaneta)
-            {
-                if (jugador1 == jugador)
-                {
-                    jugador1 = jugador;
-                    planetasGanadosJugador1++;
-                }
-                else
-                {
-                    planetasGanadosJugador2++;
-                }
-            }
-
-            if (planetasGanadosJugador1 > planetasGanadosJugador2)
-            {
-                perdedor = jugador2;
-            }
-            else if (planetasGanadosJugador1 < planetasGanadosJugador2)
-            {
-                perdedor = jugador1;
-            }
-            else
-            {
-                return null;
-            }
-
-            return perdedor;
         }
     }
 }
