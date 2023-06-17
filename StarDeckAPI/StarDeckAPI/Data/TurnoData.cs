@@ -368,13 +368,6 @@ namespace StarDeckAPI.Data
             UsuarioXPartida rivalXPartida = apiDBContext.UsuarioXPartida.ToList().Where(x => x.Id_Usuario == rival.Id &&
                 x.Id_Partida == Id_partida).First();
 
-            Console.WriteLine("---- JUGADOR ----");
-            Console.WriteLine(jugadorXPartida.Id_Usuario);
-            Console.WriteLine(jugadorXPartida.Ganador);
-            Console.WriteLine("---- RIVAL ----");
-            Console.WriteLine(rivalXPartida.Id_Usuario);
-            Console.WriteLine(rivalXPartida.Ganador);
-
             //Sacar el ganador de la partida en si
             winnerAPI.Winner = GanadorFinder.getGanadorPartidaCompleta(winnerAPI.WinnerPerPlanet, jugador, rival);
 
@@ -402,14 +395,10 @@ namespace StarDeckAPI.Data
 
         public UsuarioXPartida giveUpMatch(string Id_partida, string Id_usuario)
         { 
-            Console.WriteLine("---- GIVE UP ----");
             MatchmakingData matchmakingData = new MatchmakingData(apiDBContext);
             string rival_id = matchmakingData.getRival(Id_usuario, Id_partida).Id;
-            Console.WriteLine("---- BEFORE DB USUARIO X PARTIDA ----");
             UsuarioXPartida usuarioXPartida = apiDBContext.UsuarioXPartida.ToList().Where(x => x.Id_Usuario == rival_id &&
                 x.Id_Partida == Id_partida).First();
-            
-            Console.WriteLine("---- AFTER DB USUARIO X PARTIDA ----");
             usuarioXPartida.Ganador = true;
             apiDBContext.UsuarioXPartida.Update(usuarioXPartida);
             apiDBContext.SaveChanges();
