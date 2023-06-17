@@ -29,7 +29,6 @@ namespace StarDeckAPI.Controllers
         public IActionResult Razas()
         {
             List<Raza> razas = apiDBContext.Raza.ToList();
-            _logger.LogInformation("HOlaa");
             return Ok(razas);
         }
 
@@ -41,7 +40,6 @@ namespace StarDeckAPI.Controllers
         {
             List<Carta> cartas = apiDBContext.Carta.ToList();
             return Ok(cartas);
-
         }
 
 
@@ -49,10 +47,8 @@ namespace StarDeckAPI.Controllers
         [Route("getnewDeck")]
         public IActionResult GetNewDeck()
         {
-
             List<CartaAPI> cartasReturn = this.cartaData.getCartasNuevoDeck();
             return Ok(cartasReturn);
-
         }
 
         [HttpGet]
@@ -60,7 +56,6 @@ namespace StarDeckAPI.Controllers
         public IActionResult GetAll()
         {
             List<CartaAPI> cartasReturn = this.cartaData.getAllCartas();
-
             return Ok(cartasReturn);
         }
         
@@ -68,9 +63,15 @@ namespace StarDeckAPI.Controllers
         [Route("lista/{Id}")]
         public IActionResult Get([FromRoute] string Id)
         {
-            CartaAPI cApi = this.cartaData.getCartaDB(Id);
-
-            return Ok(cApi);
+            try
+            {
+                CartaAPI cApi = this.cartaData.getCartaDB(Id);
+                return Ok(cApi);
+            } 
+            catch (Exception e)
+            {
+                return BadRequest("No se logró encontrar la carta solicitada.");
+            }
         }
 
         [HttpPost]
@@ -78,7 +79,6 @@ namespace StarDeckAPI.Controllers
         public IActionResult saveCarta(CartaAPI cartaAPI)
         {
             Carta cartaReturn = this.cartaData.guardarCartaDB(cartaAPI);
-
             return Ok(cartaReturn);
         }
 
@@ -86,9 +86,15 @@ namespace StarDeckAPI.Controllers
         [Route("delete/{Id}")]
         public IActionResult deleteCarta([FromRoute] string Id)
         {
-            Carta carta = this.cartaData.deleteCartaDB(Id);
-
-            return Ok(carta);
+            try
+            {
+                Carta carta = this.cartaData.deleteCartaDB(Id);
+                return Ok(carta);
+            }
+            catch (Exception e)
+            {
+                return BadRequest("No se pudo eliminar la carta.");
+            }
         }
         
     }

@@ -11,16 +11,10 @@ namespace StarDeckAPI.Data
     {
         private APIDbContext apiDBContext;
         private Random random = new Random();
-
-        private readonly ILogger<CartaData> _logger;
-
-
         public CartaData(APIDbContext apiDBContext)
         {
             this.apiDBContext = apiDBContext;
         }
-
-
         public Carta guardarCartaDB(CartaAPI cartaAPI)
         {
             Carta carta = new Carta()
@@ -43,19 +37,10 @@ namespace StarDeckAPI.Data
 
         public Carta deleteCartaDB(string Id)
         {
-            try
-            {
-                Carta carta = apiDBContext.Carta.ToList().Where(x => x.Id == Id).First();
-                apiDBContext.Remove(carta);
-                apiDBContext.SaveChanges();
-                return carta;
-            }
-            catch (Exception)
-            {
-                return null;
-                
-            }
-            
+            Carta carta = apiDBContext.Carta.ToList().Where(x => x.Id == Id).First();
+            apiDBContext.Remove(carta);
+            apiDBContext.SaveChanges();
+            return carta;
         }
 
         public CartaAPI getCartaDB(string Id)
@@ -99,7 +84,7 @@ namespace StarDeckAPI.Data
 
                 cartasReturn.Add(cApi);
             }
-           // _logger.LogInformation("Solicitud aceptada dfe cartas");
+
             return cartasReturn;
         }
 

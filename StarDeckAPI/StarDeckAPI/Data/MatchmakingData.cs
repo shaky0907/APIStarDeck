@@ -221,8 +221,21 @@ namespace StarDeckAPI.Data
             return user;
         }
 
-        public Usuario terminarPartida(string Id)
+        public Usuario terminarPartida(string Id, string matchId)
         {
+            TurnoData turnoData = new TurnoData(apiDBContext);
+            WinnerAPI winnerApi = turnoData.getGanadorPartida(matchId,Id);
+            Usuario user = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
+            user.Id_actividad = 1;
+            if (winnerApi.Winner.Id == Id) {
+                user.Ranking += 1;
+            }
+            apiDBContext.Update(user);
+            apiDBContext.SaveChanges();
+            return user;
+        }
+
+        public Usuario terminarBusquedaPartida(string Id) {
             Usuario user = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
             user.Id_actividad = 1;
             apiDBContext.Update(user);

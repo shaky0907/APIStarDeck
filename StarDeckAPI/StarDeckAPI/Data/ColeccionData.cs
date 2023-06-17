@@ -60,7 +60,7 @@ namespace StarDeckAPI.Data
             List<CartasXDeck> cartasXDeck = apiDBContext.CartasXDeck.ToList();
             List<DeckAPIGET> deckAPI = new List<DeckAPIGET>();
 
-            //CartaController cartas = new CartaController(apiDBContext);
+            CartaController cartas = new CartaController(apiDBContext);
 
 
 
@@ -113,7 +113,7 @@ namespace StarDeckAPI.Data
                 Id = deckUser.Id,
                 Nombre = deckUser.Nombre,
                 Estado = deckUser.Estado,
-                Id_usuario = deckUser.Id_usuario
+                Id_usuario = deckUser.Id
                 //id_cartas = cartasXDeck.Where(x => x.Id_Deck == deckUser.Id).Select(x => x.Id_Carta).ToList()
             };
             return element;
@@ -144,7 +144,7 @@ namespace StarDeckAPI.Data
 
             apiDBContext.SaveChanges();
             List<Deck> decks = apiDBContext.Deck.ToList();
-            List<Deck> decksToUpdate = decks.Where(x => x.Id != id).ToList();
+            List<Deck> decksToUpdate = decks.Where(x => x.Id != id && x.Id_usuario == deckApi.Id_usuario).ToList();
 
             foreach (Deck deckToUpdate in decksToUpdate)
             {

@@ -16,7 +16,14 @@ namespace StarDeckAPI.Controllers
         [Route("getParametros")]
         public IActionResult getParametros()
         {
-            return Ok(this.apiDBContext.Parametros.ToList());
+            try
+            {
+                return Ok(this.apiDBContext.Parametros.ToList());
+            }
+            catch (Exception e)
+            {
+                return BadRequest("No se logró obtener los parametros.");
+            }
         }
     }
 }
