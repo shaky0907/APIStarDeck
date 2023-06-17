@@ -54,12 +54,49 @@ namespace StarDeckAPI.Controllers
         }
 
         [HttpGet]
-        [Route("getganadorplaneta/{Id_planeta}/{Id_partida}/{Id_usuario}/{Id_rival}")]
-        public IActionResult GetGanadorPlanetaPartida([FromRoute] string Id_planeta, [FromRoute] string Id_partida, [FromRoute] string Id_usuario, [FromRoute] string Id_rival)
+        [Route("getGanador/{Id_partida}/{Id_usuario}/")]
+        public IActionResult GetGanadorPlanetaPartida([FromRoute] string Id_partida, [FromRoute] string Id_usuario)
         {
 
-            UsuarioAPI ganador = this.turnoData.getGanadorPlanetaPartida(Id_planeta, Id_partida, Id_usuario, Id_rival);
+            WinnerAPI ganador = this.turnoData.getGanadorPartida(Id_partida, Id_usuario);
             return Ok(ganador);
+        }
+
+        [HttpGet]
+        [Route("getInfoCompletaTurno/{Id_partida}/{Id_usuario}")]
+        public IActionResult getInfoCompletaTurno([FromRoute] string Id_partida, [FromRoute] string Id_usuario)
+        {
+
+            TurnoCompletoAPI turnoCompleto = this.turnoData.getInfoCompletaUltimoTurno(Id_partida, Id_usuario);
+            return Ok(turnoCompleto);
+        }
+
+        [HttpPut]
+        [Route("updateInfoCompletaTurno/{Id_partida}/{Id_usuario}")]
+        public IActionResult getInfoCompletaTurno([FromRoute] string Id_partida, [FromRoute] string Id_usuario, TurnoCompletoAPI turnoCompleto)
+        {
+
+            TurnoCompletoAPI turnoCompletoUpdated = this.turnoData.updateInfoCompletaTurno(Id_partida, Id_usuario, turnoCompleto);
+            return Ok(turnoCompletoUpdated);
+        }
+
+        [HttpPost]
+        [Route("crearNuevoTurnoCompleto/{Id_partida}/{Id_usuario}")]
+        public IActionResult CrearNuevoTurnoCompleto([FromRoute] string Id_partida, [FromRoute] string Id_usuario, TurnoCompletoAPI turnoCompleto)
+        {
+
+            TurnoCompletoAPI turnoCompletoNuevo = this.turnoData.CrearNuevoTurnoCompleto(Id_partida, Id_usuario, turnoCompleto);
+            return Ok(turnoCompletoNuevo);
+        }
+
+        [HttpPost]
+        [Route("addTurnoCompleto/{Id_partida}/{Id_usuario}")]
+        public IActionResult AddTurnoCompleto([FromRoute] string Id_partida, [FromRoute] string Id_usuario, TurnoCompletoAPI turnoCompleto)
+        {
+
+            TurnoCompletoAPI turnoCompletoNuevo = this.turnoData.AddTurnoCompleto(Id_partida, Id_usuario, turnoCompleto);
+            return Ok(turnoCompletoNuevo);
+
         }
 
         [HttpPost]
