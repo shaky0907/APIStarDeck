@@ -227,7 +227,7 @@ namespace StarDeckAPI.Data
             WinnerAPI winnerApi = turnoData.getGanadorPartida(matchId,Id);
             Usuario user = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
             user.Id_actividad = 1;
-            if (winnerApi.Winner.Id == Id) {
+            if (winnerApi.Winner != null && winnerApi.Winner.Id == Id) {
                 user.Ranking += 1;
             }
             apiDBContext.Update(user);

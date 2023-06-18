@@ -15,13 +15,9 @@ namespace WebAPITesting.Controller
     {
         private async Task<APIDbContext> GetDatabaseContext()
         {
-            var options = new DbContextOptionsBuilder<APIDbContext>()
-                .UseSqlServer("Server = DAVIDGAMING ; Database=StarDeckTest; Trusted_Connection=True ;  TrustServerCertificate=True")
-                .Options;
+            MockUpDataBase mock = new MockUpDataBase();
+            var databaseContext = mock.GetDatabaseContext();
 
-            var databaseContext = new APIDbContext(options);
-
-            
             return databaseContext;
         }
 
@@ -40,7 +36,7 @@ namespace WebAPITesting.Controller
 
             //Assert
             Assert.NotNull(result);
-            Assert.Equal(3, result.Count());
+            Assert.Equal(5, result.Count());
         }
 
         [Fact]
@@ -56,6 +52,47 @@ namespace WebAPITesting.Controller
             //Assert
             Assert.NotNull(result);
             Assert.Equal("1", result.Id);
+        }
+
+        [Fact]
+        public async void createPlaneta()
+        {
+            //Arrange
+            var dbContext = await GetDatabaseContext();
+            var planetaController = new PlanetaData(dbContext);
+
+            //Act
+
+            planetaController.addPlaneta(new PlanetaAPI()
+            {
+                Nombre = "Nuevo planeta",
+                Tipo=1,
+                Descripcion = "Nuevo planeta",
+                Estado =true,
+                Imagen = "0000"
+            });
+
+            var result = planetaController.getPlanetas();
+
+            //Assert
+            Assert.Equal(6, result.Count());
+        }
+
+        [Fact]
+        public async void deletePlaneta()
+        {
+            //Arrange
+            var dbContext = await GetDatabaseContext();
+            var planetaController = new PlanetaData(dbContext);
+
+            //Act
+
+            planetaController.deletePlaneta("1");
+            
+            var result = planetaController.getPlanetas();
+
+            //Assert
+            Assert.Equal(4, result.Count());
         }
 
     }

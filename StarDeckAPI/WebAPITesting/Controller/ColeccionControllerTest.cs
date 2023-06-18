@@ -20,12 +20,8 @@ namespace WebAPITesting.Controller
 
         private async Task<APIDbContext> GetDatabaseContext()
         {
-            var options = new DbContextOptionsBuilder<APIDbContext>()
-                .UseSqlServer("Server = DAVIDGAMING ; Database=StarDeckTest; Trusted_Connection=True ;  TrustServerCertificate=True")
-                .Options;
-
-            var databaseContext = new APIDbContext(options);
-
+            MockUpDataBase mock = new MockUpDataBase();
+            var databaseContext = mock.GetDatabaseContext();
 
             return databaseContext;
         }
@@ -40,7 +36,7 @@ namespace WebAPITesting.Controller
             var controller = new ColeccionData(databaseContext);
 
             //Act
-            var result = controller.getColeccionDelUsuario("U-KwW5aumoYDKX");
+            var result = controller.getColeccionDelUsuario("1");
 
             //Assert
             Assert.NotNull(result);
@@ -55,7 +51,7 @@ namespace WebAPITesting.Controller
             var controller = new ColeccionData(databaseContext);
 
             //Act
-            var result = controller.getDecksUsuario("U-KwW5aumoYDKX");
+            var result = controller.getDecksUsuario("1");
 
             //Assert
             Assert.NotNull(result);
@@ -70,12 +66,55 @@ namespace WebAPITesting.Controller
             var controller = new ColeccionData(databaseContext);
 
             //Act
-            var result = controller.getDeckUsuario("D-JvzSwNmgAuv6");
+            var result = controller.getDeckUsuario("1");
 
             //Assert
             Assert.NotNull(result);
-            Assert.Equal("D-JvzSwNmgAuv6", result.Id);
-            Assert.Equal("U-KwW5aumoYDKX", result.Id_usuario);
+            Assert.Equal("1", result.Id);
+            Assert.Equal("1", result.Id_usuario);
+        }
+
+        [Fact]
+        public async void AddDeck()
+        {
+            //Arrange
+            var databaseContext = await GetDatabaseContext();
+            var controller = new ColeccionData(databaseContext);
+            var cartacontroller = new CartaData(databaseContext);
+            //Act
+            var cartas = cartacontroller.getAllCartas();
+
+
+            controller.addDeckUsuario(new DeckAPI()
+            {
+                Nombre = "Deck Nuevo",
+                Estado = true,
+                Id_usuario = "1",
+                Cartas = cartas
+            });
+
+            var result = controller.getDecksUsuario("1");
+
+            //Assert 
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count());
+        }
+
+
+        [Fact]
+        public async void RemoveDeck() 
+        {
+            //Arrange
+            var databaseContext = await GetDatabaseContext();
+            var controller = new ColeccionData(databaseContext);
+
+            //Act
+            controller.deleteDeck("1");
+
+            var result = controller.getDecksUsuario("1");
+
+            //Assert
+            Assert.Equal(0, result.Count());
         }
 
     }

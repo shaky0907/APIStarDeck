@@ -17,12 +17,8 @@ namespace WebAPITesting.Controller
     {
         private async Task<APIDbContext> GetDatabaseContext()
         {
-            var options = new DbContextOptionsBuilder<APIDbContext>()
-                .UseSqlServer("Server = DAVIDGAMING ; Database=StarDeckTest; Trusted_Connection=True ;  TrustServerCertificate=True")
-                .Options;
-
-            var databaseContext = new APIDbContext(options);
-
+            MockUpDataBase mock = new MockUpDataBase();
+            var databaseContext = mock.GetDatabaseContext();
 
             return databaseContext;
         }
@@ -41,7 +37,7 @@ namespace WebAPITesting.Controller
             //Assert
 
             Assert.NotNull(result);
-            Assert.Equal(4, result.Count());
+            Assert.Equal(2, result.Count());
         }
 
         [Fact]
@@ -52,11 +48,11 @@ namespace WebAPITesting.Controller
             var controller = new UsuarioData(dbContext);
 
             //Act
-            var result = controller.getUsuario("U-KwW5aumoYDKX");
+            var result = controller.getUsuario("1");
 
             //Assert
             Assert.NotNull(result);
-            Assert.Equal("U-KwW5aumoYDKX", result.Id);
+            Assert.Equal("1", result.Id);
 
         }
 
@@ -72,8 +68,62 @@ namespace WebAPITesting.Controller
 
             //Assert
             Assert.NotNull(result);
-            Assert.Equal(4, result.Count());
+            Assert.Equal(2, result.Count());
 
         }
+
+
+
+        [Fact]
+        public async void addUsuario()
+        {
+            //Arrange
+            var dbContext = await GetDatabaseContext();
+            var controller = new UsuarioData(dbContext);
+
+            //Act 
+            controller.addUsuario(new UsuarioAPI()
+            {
+                Id = "1",
+                Administrador =false,
+                Nombre = "Nuevo Usuario",
+                Username = "username",
+                Contrasena = "12345678",
+                Correo = "Correo",
+                Nacionalidad = "pais 1",
+                Estado = true,
+                Avatar = "fewfefaewdgtryntrhbrty",
+                Ranking =100,
+                Monedas = 100,
+                Actividad = "No busca partida"
+            });
+
+            var result = controller.getJugadores();
+
+            //Assert
+
+            Assert.NotNull(result);
+            Assert.Equal(3, result.Count());
+        }
+
+        [Fact]
+        public async void deleteUsuario()
+        {
+            //Arrange
+            var dbContext = await GetDatabaseContext();
+            var controller = new UsuarioData(dbContext);
+
+
+            //act 
+
+            controller.deleteUsuario("1");
+            var result = controller.getJugadores();
+
+            //Assert 
+            Assert.Equal(1, result.Count());
+        }
+
+        
+
     }
 }

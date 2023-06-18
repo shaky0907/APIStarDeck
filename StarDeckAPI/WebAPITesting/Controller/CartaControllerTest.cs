@@ -20,11 +20,8 @@ namespace WebAPITesting.Controller
         private async Task<APIDbContext> GetDatabaseContext()
         {
             
-
             MockUpDataBase mock = new MockUpDataBase();
-
             var databaseContext = mock.GetDatabaseContext();
-
 
             return databaseContext;
         }
@@ -42,7 +39,7 @@ namespace WebAPITesting.Controller
             
             //Assert
             Assert.NotNull(result);
-            Assert.Equal(27, result.Count());
+            Assert.Equal(18, result.Count());
         }
 
         [Fact]
@@ -60,6 +57,51 @@ namespace WebAPITesting.Controller
             Assert.Equal("1",result.Id);
         }
 
-       
+        [Fact]
+        public async void AddCarta()
+        {
+            //Arrange
+            var dbContext = await GetDatabaseContext();
+            var cartaController = new CartaData(dbContext);
+
+            //Act
+            cartaController.guardarCartaDB(new CartaAPI()
+            {
+                Id = "1",
+                Nombre = "Carta nueva",
+                Energia = 20,
+                Costo = 20,
+                Imagen = "1211313",
+                Raza = "1",
+                Tipo = "1",
+                Estado =true,
+                Descripcion = "1",
+            });
+
+
+            var result = cartaController.getAllCartas();
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal(19, result.Count());
+        }
+
+        [Fact]
+        public async void deleteCarta()
+        {
+            //Arrange
+            var dbContext = await GetDatabaseContext();
+            var cartaController = new CartaData(dbContext);
+
+            //Act
+            cartaController.deleteCartaDB("1");
+
+            var result = cartaController.getAllCartas();
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal(17, result.Count());
+
+        }
     }
 }
