@@ -19,13 +19,13 @@ namespace WebAPITesting.Controller
     {
         private async Task<APIDbContext> GetDatabaseContext()
         {
-            var options = new DbContextOptionsBuilder<APIDbContext>()
-                .UseSqlServer("Server = DAVIDGAMING ; Database=StarDeckTest; Trusted_Connection=True ;  TrustServerCertificate=True")
-                .Options;
-
-            var databaseContext = new APIDbContext(options);
-
             
+
+            MockUpDataBase mock = new MockUpDataBase();
+
+            var databaseContext = mock.GetDatabaseContext();
+
+
             return databaseContext;
         }
 
