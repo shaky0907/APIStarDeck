@@ -10,193 +10,33 @@ namespace StarDeckAPI.Controllers
     [Route("matchmaking")]
     public class MatchmakingController : Controller
     {
-        private readonly APIDbContext apiDBContext;
+        private APIDbContext apiDBContext;
         //private List<Planeta> planetas_partida;
+        private MatchmakingData matchmakingData;
+        private readonly ILogger<CartaController> _logger;
 
-        public MatchmakingController(APIDbContext apiDBContext)
+        public MatchmakingController(APIDbContext apiDBContext, ILogger<CartaController> logger)
         {
             this.apiDBContext = apiDBContext;
+            this.matchmakingData = new MatchmakingData(apiDBContext);
+            _logger = logger;
         }
 
         [HttpGet]
         [Route("matchmakingCheck/{Id}")]
         public IActionResult matchmakingCheck([FromRoute] string Id)
         {
-            MatchmakingResponse matchmakingResponse = new MatchmakingResponse();
-            List<UsuarioXPartida> uxpL = apiDBContext.UsuarioXPartida.ToList().Where(x => x.Id_Usuario == Id).ToList();
-            int myUserCheck = 0;
-            bool continue_check = false;
-
-            if (apiDBContext.Usuario.ToList().Where(x => x.Id == Id).ToList().Any())
+            try
             {
-                continue_check = true;
-                myUserCheck = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First().Id_actividad; 
+                MatchmakingResponse matchmakingResponse =  this.matchmakingData.matchmakingCheck(Id);
+                _logger.LogInformation("Se envio la informacion del matchmaking correctamente");
+                return Ok(matchmakingResponse);
             }
-
-            if (continue_check)
+            catch (Exception e)
             {
-                if (uxpL.Any())
-                {
-                    bool alreadypaired = false;
-                    bool alreadystarted = false;
-                    foreach (UsuarioXPartida uxp in uxpL)
-                    {
-                        Partida partida = apiDBContext.Partida.ToList().Where(x => x.Id == uxp.Id_Partida).First();
-                        bool uxp_check_master = apiDBContext.UsuarioXPartida.ToList().Where(x => x.Id_Usuario == Id).First().Id_Master;
-
-                        if ((partida.Estado == 1) && (!uxp_check_master))
-                        {
-                            partida.Estado = 2;
-                            alreadypaired = true;
-                            apiDBContext.Update(partida);
-                            apiDBContext.SaveChanges();
-                            matchmakingResponse.Id_Partida = partida.Id;
-                            break;
-
-
-
-                        }
-                        else if ((partida.Estado == 2) && (uxp_check_master))
-                        {
-                            partida.Estado = 3;
-                            alreadystarted = true;
-                            apiDBContext.Update(partida);
-                            apiDBContext.SaveChanges();
-                            matchmakingResponse.Id_Partida = partida.Id;
-                            break;
-                        }
-
-                    }
-
-                    if (alreadypaired)
-                    {
-                        matchmakingResponse.estado = 2;
-                    }
-                    else if (alreadystarted)
-                    {
-                        matchmakingResponse.estado = 3;
-                    }
-
-                    else if (myUserCheck == 2)
-                    {
-
-                        matchmakingResponse = this.createNewMatch(Id);
-                    }
-                    else
-                    {
-                        matchmakingResponse.estado = 4;
-                    }
-                }
-                else
-                {
-
-                    matchmakingResponse = this.createNewMatch(Id);
-
-
-                }
+                _logger.LogError("Se envio la informacion de las razas correctamente"); 
+                return BadRequest("No se logró encontrar el usuario solicitado en la partida.");
             }
-                matchmakingResponse.Id = Id;
-
-            return Ok(matchmakingResponse);
-        }
-
-
-        private MatchmakingResponse createNewMatch(string Id)
-        {
-
-            Usuario myUser = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
-            MatchmakingResponse matchmakingResponse = new MatchmakingResponse();
-            List<Usuario> usuarios = apiDBContext.Usuario.ToList();
-            bool foundanotheruser = false;
-            string idFoundUser = "";
-            foreach (Usuario user in usuarios)
-            {
-                if ((user.Id != Id) && (user.Id_actividad == 2))
-                {
-                    if ((user.Ranking > myUser.Ranking - 50) && (user.Ranking < myUser.Ranking + 50))
-                    {
-                        idFoundUser = user.Id;
-                        user.Id_actividad = 3;
-                        myUser.Id_actividad = 3;
-                        apiDBContext.Update(user);
-                        apiDBContext.Update(myUser);
-                        apiDBContext.SaveChanges();
-                        foundanotheruser = true;
-                        break;
-                    }
-                }
-            }
-            if (foundanotheruser)
-            {
-                string idPartida = GeneratorID.GenerateRandomId("G-");
-                matchmakingResponse.estado = 1;
-                Partida partidanueva = new Partida()
-                {
-                    Id = idPartida,
-                    Estado = 1,
-                    Fecha_hora = DateTime.Now
-                };
-                matchmakingResponse.Id_Partida = idPartida;
-                apiDBContext.Add(partidanueva);
-                apiDBContext.SaveChanges();
-
-                UsuarioXPartida uxpnew1 = new UsuarioXPartida()
-                {
-                    Id_Partida = idPartida,
-                    Id_Usuario = Id,
-                    Id_Master = true
-                };
-
-                UsuarioXPartida uxpnew2 = new UsuarioXPartida()
-                {
-                    Id_Partida = idPartida,
-                    Id_Usuario = idFoundUser,
-                    Id_Master = false
-                };
-
-                apiDBContext.Add(uxpnew1);
-                apiDBContext.Add(uxpnew2);
-                apiDBContext.SaveChanges();
-
-                int i = 0;
-                int planetsLeft = 3;
-                Random rand = new Random();
-                List<Planeta> planetasSelect = apiDBContext.Planeta.ToList();
-                List<Tipo_planeta> probabilidades = apiDBContext.Tipo_planeta.ToList();
-                List<Planeta> planetas_partida = new List<Planeta>();
-
-                while (planetsLeft > 0)
-                {
-                    if ((rand.NextDouble() < ((float)(probabilidades.Where(x => x.Id == planetasSelect.ElementAt(i).Tipo).First().Probabilidad)) / (float)100.0) &&
-                        !(planetas_partida.Contains(planetasSelect.ElementAt(i))))
-                    {
-                        planetas_partida.Add(planetasSelect.ElementAt(i));
-                        planetsLeft--;
-                        PlanetasXPartida pxp = new PlanetasXPartida()
-                        {
-                            Id_Partida = idPartida,
-                            Id_Planeta = planetasSelect.ElementAt(i).Id
-                        };
-                        apiDBContext.Add(pxp);
-                    }
-                    i++;
-
-
-
-                    if (i == planetasSelect.Count)
-                    {
-                        i = 0;
-                    }
-                }
-                apiDBContext.SaveChanges();
-            }
-            else
-            {
-                matchmakingResponse.estado = 0;
-
-            }
-
-            return matchmakingResponse;
         }
 
 
@@ -204,23 +44,54 @@ namespace StarDeckAPI.Controllers
         [Route("searchGame/{Id}")]
         public IActionResult searchGame([FromRoute] string Id)
         {
-            Usuario user = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
-            user.Id_actividad = 2;
-            apiDBContext.Update(user);
-            apiDBContext.SaveChanges();
-            return Ok(user);
+            try
+            {
+                Usuario user = this.matchmakingData.buscarPartida(Id);
+                _logger.LogInformation("Se empezo la busqueda de la partida correctamente");
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("No se logro buscar la partida");
+                return BadRequest("No se logró encontrar la partida.");
+            }
 
         }
 
         [HttpPut]
-        [Route("finishMatch/{Id}")]
-        public IActionResult finishMatchUser([FromRoute] string Id)
+        [Route("finishMatchUser/{Id}/{matchId}")]
+        public IActionResult finishMatchUser([FromRoute] string Id, [FromRoute] string matchId)
         {
-            Usuario user = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
-            user.Id_actividad = 1;
-            apiDBContext.Update(user);
-            apiDBContext.SaveChanges();
-            return Ok(user);
+            try
+            {
+                Usuario user = this.matchmakingData.terminarPartida(Id, matchId);
+                _logger.LogInformation("Se termino la partida para el usuario " + Id + " correctamente");
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("No se logro terminar la partida correctamente");
+                return BadRequest("No se logró finalizar la partida para el usuario.");
+            }
+
+        }
+
+        [HttpPut]
+        [Route("finishMatchSearch/{Id}")]
+        public IActionResult finishMatchSearch([FromRoute] string Id)
+        {
+            try
+            {
+                Usuario user = this.matchmakingData.terminarBusquedaPartida(Id);
+                _logger.LogInformation("Se termino la busqueda de la partida correctamente");
+                return Ok(user);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("No se logro terminar " + Id + "la busqueda correctamente");
+
+                return BadRequest("No se logró finalizar la partida para el usuario.");
+            }
 
         }
 
@@ -228,11 +99,17 @@ namespace StarDeckAPI.Controllers
         [Route("finishGame/{Id}")]
         public IActionResult finishGame([FromRoute] string Id)
         {
-            Partida partida = apiDBContext.Partida.ToList().Where(x => x.Id == Id).First();
-            partida.Estado = 4;
-            apiDBContext.Update(partida);
-            apiDBContext.SaveChanges();
-            return Ok(partida);
+            try
+            {
+                Partida partida = this.matchmakingData.finalizarJuego(Id);
+                _logger.LogInformation("Se termino la partida correctamente");
+                return Ok(partida);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError($"Failed to finish game [{Id}]");
+                return BadRequest("No se logró finalizar la partida.");
+            }
 
         }
 
@@ -241,47 +118,74 @@ namespace StarDeckAPI.Controllers
 
         public IActionResult getPartida([FromRoute] string Id)
         {
-            Partida partida = apiDBContext.Partida.ToList().Where(x => x.Id == Id).First();
-            return Ok(partida);
+            try
+            {
+                if (Id != "null") 
+                {
+                    Partida partida = apiDBContext.Partida.ToList().Where(x => x.Id == Id).First();
+                    _logger.LogInformation("Se envio la informacion de la partida correctamente");
+                    return Ok(partida);
+                }
+                else
+                {
+                    return Ok();
+                }
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("La partida " + Id + "no existe");
+                return BadRequest("No se logró encontrar la partida.");
+            }
         }
 
         [HttpGet]
         [Route("getPlanetasPartida/{Id}")]
         public IActionResult getPlanetasPartida([FromRoute] string Id)
         {
-            List<PlanetasXPartida> pxps = apiDBContext.PlanetasXPartida.ToList().Where(x => x.Id_Partida == Id).ToList();
-            List<Planeta> planetas = new List<Planeta>();
-
-            foreach (PlanetasXPartida pxp in pxps)
+            try
             {
-                Planeta p = new Planeta()
-                {
-                    Id = pxp.Id_Planeta,
-                    Nombre = apiDBContext.Planeta.ToList().Where(x => x.Id == pxp.Id_Planeta).First().Nombre,
-                    Tipo = apiDBContext.Planeta.ToList().Where(x => x.Id == pxp.Id_Planeta).First().Tipo,
-                    Descripcion = apiDBContext.Planeta.ToList().Where(x => x.Id == pxp.Id_Planeta).First().Descripcion,
-                    Estado = apiDBContext.Planeta.ToList().Where(x => x.Id == pxp.Id_Planeta).First().Estado,
-                    Imagen = apiDBContext.Planeta.ToList().Where(x => x.Id == pxp.Id_Planeta).First().Imagen
-
-                };
-                planetas.Add(p);
+                List<Planeta> planetas = this.matchmakingData.getPlanetasPartida(Id);
+                _logger.LogInformation("Se envio la informacion de los planetas de la partida correctamente");
+                return Ok(planetas);
             }
-
-            return Ok(planetas);
-
+            catch (Exception e)
+            {
+                _logger.LogError("La partida "+ Id + " no existe");
+                return BadRequest("No se logró obtener la lista de planetas de la partida.");
+            }
         }
         [HttpGet]
         [Route("getRival/{Id_usuario}/{Id_Partida}")]
-        public IActionResult getRival(string Id_usuario, string Id_Partida)
+        public IActionResult getRival([FromRoute] string Id_usuario,[FromRoute] string Id_Partida)
         {
-            string rival = apiDBContext.UsuarioXPartida.ToList().Where(x => (x.Id_Partida == Id_Partida) && (x.Id_Usuario != Id_usuario)).First().Id_Usuario;
-            Usuario rivalUsuario = new Usuario();
-            if (rival != null)
+            try
             {
-                rivalUsuario = apiDBContext.Usuario.ToList().Where(x => x.Id == rival).First();
+                Usuario rivalUsuario = this.matchmakingData.getRival(Id_usuario, Id_Partida);
+                _logger.LogInformation("Se envio la informacion del rival correctamente");
+                return Ok(rivalUsuario);
             }
+            catch (Exception e)
+            {
+                _logger.LogError("El usuario "+Id_usuario+" o la partida "+Id_Partida+" no existe");
+                return BadRequest("No se logró obtener el rival.");
+            }
+        }
 
-            return Ok(rivalUsuario);
+        [HttpGet]
+        [Route("isInMatch/{Id_usuario}")]
+        public IActionResult getIsInMatch([FromRoute] string Id_usuario)
+        {
+            try
+            {   
+                Partida partida = this.matchmakingData.isInMatch(Id_usuario);
+                _logger.LogInformation("Se envio la informacion de las razas correctamente");
+                return Ok(partida);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("El usuario " + Id_usuario);
+                return BadRequest("No se logró verificar si el usuario está en partida.");
+            }
         }
     }
 }

@@ -18,16 +18,13 @@ namespace WebAPITesting.Utilities
             //Arrange
             var C = "C-";
            
-
-
             //Act
-            var id1 = GeneratorID.GenerateRandomId(C);
-            var id2 = GeneratorID.GenerateRandomId(C);
-            var id3 = GeneratorID.GenerateRandomId(C);
-            var id4 = GeneratorID.GenerateRandomId(C);
+            string id1 = GeneratorID.GenerateRandomId(C);
+            string id2 = GeneratorID.GenerateRandomId(C);
+            string id3 = GeneratorID.GenerateRandomId(C);
+            string id4 = GeneratorID.GenerateRandomId(C);
 
             //Assert
-
             id1.Should().NotBeNull();
             id2.Should().NotBeNull();
             id3.Should().NotBeNull();
@@ -41,6 +38,8 @@ namespace WebAPITesting.Utilities
             Assert.NotEqual(id2, id4);
 
             Assert.NotEqual(id3, id4);
+            
+            Assert.Equal(id1.Substring(0,2), "C-");
         }
     }
 }

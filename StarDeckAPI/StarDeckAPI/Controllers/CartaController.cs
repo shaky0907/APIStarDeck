@@ -12,12 +12,16 @@ namespace StarDeckAPI.Controllers
 
     public class CartaController : Controller
     {
-        private readonly APIDbContext apiDBContext;
-        private Random random = new Random();
+        private APIDbContext apiDBContext;
+        private CartaData cartaData;
 
-        public CartaController(APIDbContext apiDBContext)
+        private readonly ILogger<CartaController> _logger;
+
+        public CartaController(APIDbContext apiDBContext, ILogger<CartaController> logger)
         {
             this.apiDBContext = apiDBContext;
+            this.cartaData = new CartaData(apiDBContext);
+            _logger = logger;
         }
 
         [HttpGet]
@@ -25,42 +29,8 @@ namespace StarDeckAPI.Controllers
         public IActionResult Razas()
         {
             List<Raza> razas = apiDBContext.Raza.ToList();
-
+            _logger.LogInformation("Se envio la informacion de las razas correctamente");
             return Ok(razas);
-        }
-
-        private List<Carta> GenerateRandomCartas(List<Carta> inputCards, int count)
-        {
-            if (inputCards.Count() < count)
-            {
-                throw new ArgumentException("The input list must contain at least 15 cards.");
-            }
-
-            List<Carta> selectedCards = new List<Carta>();
-
-            while (selectedCards.Count() < count)
-            {
-                int randomIndex = random.Next(inputCards.Count());
-                Carta randomCard = inputCards[randomIndex];
-
-                if (!selectedCards.Contains(randomCard))
-                {
-                    selectedCards.Add(randomCard);
-                }
-            }
-
-            return selectedCards;
-        }
-
-        [HttpGet]
-        [Route("getCartasTest")]
-        public IActionResult testFunc()
-        {
-            List<Carta> cartas = apiDBContext.Carta.ToList();
-            return Ok(cartas);
-
-
-
         }
 
 
@@ -68,65 +38,17 @@ namespace StarDeckAPI.Controllers
         [Route("getnewDeck")]
         public IActionResult GetNewDeck()
         {
-            List<Carta> cartasBasicas = apiDBContext.Carta.ToList().Where(x => x.Tipo == 5).ToList();
-
-            List<Carta> cartasTotales = GenerateRandomCartas(cartasBasicas, 15);
-
-            List<Carta> cartasrn = apiDBContext.Carta.ToList().Where(x => (x.Tipo == 4) || (x.Tipo == 3)).ToList();
-
-            List<Carta> cartasrestantes = GenerateRandomCartas(cartasrn, 9);
-
-            cartasTotales.AddRange(cartasrestantes);
-
-            List<CartaAPI> cartasReturn = new List<CartaAPI>();
-
-            foreach (Carta carta in cartasTotales)
-            {
-                CartaAPI cApi = new CartaAPI()
-                {
-                    Id = carta.Id,
-                    Nombre = carta.N_Personaje,
-                    Energia = carta.Energia,
-                    Costo = carta.C_batalla,
-                    Imagen = carta.Imagen,
-                    Raza = apiDBContext.Raza.ToList().Where(x => x.Id == carta.Raza).First().Nombre,
-                    Tipo = apiDBContext.Tipo.ToList().Where(x => x.Id == carta.Tipo).First().Nombre,
-                    Estado = carta.Activa,
-                    Descripcion = carta.Descripcion
-                };
-
-                cartasReturn.Add(cApi);
-            }
-
+            List<CartaAPI> cartasReturn = this.cartaData.getCartasNuevoDeck();
+            _logger.LogInformation("Se envio la informacion del deck correctamente");
             return Ok(cartasReturn);
-
         }
 
         [HttpGet]
         [Route("lista")]
         public IActionResult GetAll()
         {
-            List<Carta> cartas = apiDBContext.Carta.ToList();
-            List<CartaAPI> cartasReturn = new List<CartaAPI>();
-
-            foreach (Carta carta in cartas)
-            {
-                CartaAPI cApi = new CartaAPI()
-                {
-                    Id = carta.Id,
-                    Nombre = carta.N_Personaje,
-                    Energia = carta.Energia,
-                    Costo = carta.C_batalla,
-                    Imagen = carta.Imagen,
-                    Raza = apiDBContext.Raza.ToList().Where(x => x.Id == carta.Raza).First().Nombre,
-                    Tipo = apiDBContext.Tipo.ToList().Where(x => x.Id == carta.Tipo).First().Nombre,
-                    Estado = carta.Activa,
-                    Descripcion = carta.Descripcion
-                };
-
-                cartasReturn.Add(cApi);
-            }
-
+            List<CartaAPI> cartasReturn = this.cartaData.getAllCartas();
+            _logger.LogInformation("Se envio la informacion de las cartas correctamente");
             return Ok(cartasReturn);
         }
         
@@ -134,53 +56,44 @@ namespace StarDeckAPI.Controllers
         [Route("lista/{Id}")]
         public IActionResult Get([FromRoute] string Id)
         {
-            Carta carta = apiDBContext.Carta.ToList().Where(x => x.Id == Id).First();
-            CartaAPI cApi = new CartaAPI()
+            try
             {
-                Id = carta.Id,
-                Nombre = carta.N_Personaje,
-                Energia = carta.Energia,
-                Costo = carta.C_batalla,
-                Imagen = carta.Imagen,
-                Raza = apiDBContext.Raza.ToList().Where(x => x.Id == carta.Raza).First().Nombre,
-                Tipo = apiDBContext.Tipo.ToList().Where(x => x.Id == carta.Tipo).First().Nombre,
-                Estado = carta.Activa,
-                Descripcion = carta.Descripcion
-            };
-
-            return Ok(cApi);
+                CartaAPI cApi = this.cartaData.getCartaDB(Id);
+                _logger.LogInformation("Se envio la informacion de la carta correctamente");
+                return Ok(cApi);
+            } 
+            catch (Exception e)
+            {
+                _logger.LogError("La carta " + Id + " no fue encontrada");
+                return BadRequest("No se logró encontrar la carta solicitada.");
+            }
         }
 
         [HttpPost]
         [Route("guardar")]
         public IActionResult saveCarta(CartaAPI cartaAPI)
         {
-            Carta carta = new Carta()
-            {
-                Id = GeneratorID.GenerateRandomId("C-"),
-                N_Personaje = cartaAPI.Nombre,
-                Energia = cartaAPI.Energia,
-                C_batalla = cartaAPI.Costo,
-                Imagen = cartaAPI.Imagen,
-                Raza = apiDBContext.Raza.ToList().Where(x => x.Nombre == cartaAPI.Raza).First().Id,
-                Tipo = apiDBContext.Tipo.ToList().Where(x => x.Nombre == cartaAPI.Tipo).First().Id,
-                Activa = cartaAPI.Estado,
-                Descripcion = cartaAPI.Descripcion
-            };
-            apiDBContext.Add(carta);
-            apiDBContext.SaveChanges();
-
-            return Ok(cartaAPI);
+            Carta cartaReturn = this.cartaData.guardarCartaDB(cartaAPI);
+            _logger.LogInformation("La carta fue guardada correctamente");
+            return Ok(cartaReturn);
         }
 
         [HttpDelete]
         [Route("delete/{Id}")]
         public IActionResult deleteCarta([FromRoute] string Id)
         {
-            Carta carta = apiDBContext.Carta.ToList().Where(x => x.Id == Id).First();
-            apiDBContext.Remove(carta);
-            apiDBContext.SaveChanges();
-            return Ok(carta);
+            try
+            {
+                Carta carta = this.cartaData.deleteCartaDB(Id);
+                _logger.LogInformation("La carta fue eliminada correctamente");
+
+                return Ok(carta);
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation("La carta" + Id +" no existe en la base de datos");
+                return BadRequest("No se pudo eliminar la carta.");
+            }
         }
         
     }

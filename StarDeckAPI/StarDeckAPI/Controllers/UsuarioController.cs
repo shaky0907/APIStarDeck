@@ -12,42 +12,23 @@ namespace StarDeckAPI.Controllers
 
     public class UsuarioController : Controller
     {
-        private readonly APIDbContext apiDBContext;
-        private Random random = new Random();
+        private APIDbContext apiDBContext;
+        private UsuarioData usuarioData;
+        private readonly ILogger<CartaController> _logger;
 
-        public UsuarioController(APIDbContext apiDBContext)
+        public UsuarioController(APIDbContext apiDBContext, ILogger<CartaController> logger)
         {
             this.apiDBContext = apiDBContext;
+            this.usuarioData = new UsuarioData(apiDBContext);
+            _logger = logger;
         }
 
         [HttpGet]
         [Route("lista")]
         public IActionResult GetAll()
         {
-            List<Usuario> list_usuario = apiDBContext.Usuario.ToList();
-            List<UsuarioAPI> list_return = new List<UsuarioAPI>();
-            foreach (Usuario usuario in list_usuario)
-            {
-                UsuarioAPI uApi = new UsuarioAPI()
-                {
-                    Id = usuario.Id,
-                    Administrador = usuario.Administrador,
-                    Nombre = usuario.Nombre,
-                    Username = usuario.Username,
-                    Contrasena = usuario.Contrasena,
-                    Correo = usuario.Correo,
-                    Nacionalidad = apiDBContext.Paises.ToList().Where(x => x.Id == usuario.Nacionalidad).First().Nombre,
-                    Estado = usuario.Estado,
-                    Avatar = apiDBContext.Avatar.ToList().Where(x => x.Id == usuario.Avatar).First().Imagen,
-                    Actividad = apiDBContext.Actividad.ToList().Where(x => x.Id == usuario.Id_actividad).First().Nombre_act,
-                    Ranking = usuario.Ranking,
-                    Monedas = usuario.Monedas
-
-                };
-
-                list_return.Add(uApi);
-            }
-
+            List<UsuarioAPI> list_return = this.usuarioData.getUsuarios();
+            _logger.LogInformation("Se envio la informacion de los usuarios correctamente");
             return Ok(list_return);
         }
 
@@ -55,30 +36,8 @@ namespace StarDeckAPI.Controllers
         [Route("lista/jugadores")]
         public IActionResult GetAllPlayers()
         {
-            List<Usuario> list_usuario = apiDBContext.Usuario.ToList().Where(x => x.Administrador == false).ToList();
-            List<UsuarioAPI> list_return = new List<UsuarioAPI>();
-            foreach (Usuario usuario in list_usuario)
-            {
-                UsuarioAPI uApi = new UsuarioAPI()
-                {
-                    Id = usuario.Id,
-                    Administrador = usuario.Administrador,
-                    Nombre = usuario.Nombre,
-                    Username = usuario.Username,
-                    Contrasena = usuario.Contrasena,
-                    Correo = usuario.Correo,
-                    Nacionalidad = apiDBContext.Paises.ToList().Where(x => x.Id == usuario.Nacionalidad).First().Nombre,
-                    Estado = usuario.Estado,
-                    Avatar = apiDBContext.Avatar.ToList().Where(x => x.Id == usuario.Avatar).First().Imagen,
-                    Actividad = apiDBContext.Actividad.ToList().Where(x => x.Id == usuario.Id_actividad).First().Nombre_act,
-                    Ranking = usuario.Ranking,
-                    Monedas = usuario.Monedas
-
-                };
-
-                list_return.Add(uApi);
-            }
-
+            List<UsuarioAPI> list_return = this.usuarioData.getJugadores();
+            _logger.LogInformation("Se envio la informacion de los jugadores correctamente");
             return Ok(list_return);
         }
 
@@ -86,61 +45,51 @@ namespace StarDeckAPI.Controllers
         [Route("get/{Id}")]
         public IActionResult Get([FromRoute] string Id)
         {
-            Usuario usuario = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
-            UsuarioAPI uApi = new UsuarioAPI()
+            try
             {
-                Id = usuario.Id,
-                Administrador = usuario.Administrador,
-                Nombre = usuario.Nombre,
-                Username = usuario.Username,
-                Contrasena = usuario.Contrasena,
-                Correo = usuario.Correo,
-                Nacionalidad = apiDBContext.Paises.ToList().Where(x => x.Id == usuario.Nacionalidad).First().Nombre,
-                Estado = usuario.Estado,
-                Avatar = apiDBContext.Avatar.ToList().Where(x => x.Id == usuario.Avatar).First().Imagen,
-                Actividad = apiDBContext.Actividad.ToList().Where(x => x.Id == usuario.Id_actividad).First().Nombre_act,
-                Ranking = usuario.Ranking,
-                Monedas = usuario.Monedas
-
-            };
-            return Ok(uApi);
+                UsuarioAPI uApi = this.usuarioData.getUsuario(Id);
+                _logger.LogInformation("Se envio la informacion del usuario correctamente");
+                return Ok(uApi);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("No se logró obtener la información de usuario.");
+                return BadRequest("No se logró obtener la información de usuario.");
+            }
         }
 
         [HttpPost]
         [Route("guardarJugador")]
         public IActionResult SaveUsuario(UsuarioAPI usuarioAPI)
         {
-            Usuario usuario = new Usuario()
+            try
             {
-                Id = GeneratorID.GenerateRandomId("U-"),
-                Administrador = false,
-                Nombre = usuarioAPI.Nombre,
-                Username = usuarioAPI.Username,
-                Contrasena = usuarioAPI.Contrasena,
-                Correo = usuarioAPI.Correo,
-                Nacionalidad = apiDBContext.Paises.ToList().Where(x => x.Nombre == usuarioAPI.Nacionalidad).First().Id,
-                Estado = true,
-                Avatar = 1,//apiDBContext.Avatar.ToList().Where(x => x.Imagen == usuarioAPI.Avatar).First().Id,
-                Ranking = usuarioAPI.Ranking,
-                Monedas = 20,
-                Id_actividad = 1
-            };
-
-            apiDBContext.Usuario.Add(usuario);
-
-            apiDBContext.SaveChanges();
-
-            return Ok(usuario);
+                Usuario usuario = this.usuarioData.addUsuario(usuarioAPI);
+                _logger.LogInformation("Se guardo el usuario correctamente");
+                return Ok(usuario);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError("No se logró guardar el jugador");
+                return BadRequest("No se logró guardar el jugador.");
+            }
         }
 
         [HttpDelete]
         [Route("delete/{Id}")]
-        public IActionResult DeleteUsario([FromRoute] string Id)
+        public IActionResult DeleteUsuario([FromRoute] string Id)
         {
-            Usuario usuarioDelete = apiDBContext.Usuario.ToList().Where(x => x.Id == Id).First();
-            apiDBContext.Usuario.Remove(usuarioDelete);
-            apiDBContext.SaveChanges();
-            return Ok(usuarioDelete);
+            try
+            {
+                Usuario usuarioDelete = this.usuarioData.deleteUsuario(Id);
+                _logger.LogInformation("Se borro el usuario correctamente");
+                return Ok(usuarioDelete);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.ToString());
+                return BadRequest("No se logró eliminar el usuario.");
+            }
         }
     }
 }

@@ -9,256 +9,149 @@ namespace StarDeckAPI.Controllers
     [Route("colection")]
     public class ColeccionController : Controller
     {
-        private readonly APIDbContext apiDBContext;
+        private APIDbContext apiDBContext;
+        private ColeccionData coleccionData;
+        private readonly ILogger<CartaController> _logger;
 
-        public ColeccionController(APIDbContext apiDBContext)
+        public ColeccionController(APIDbContext apiDBContext, ILogger<CartaController> logger)
         {
             this.apiDBContext = apiDBContext;
+            this.coleccionData = new ColeccionData(apiDBContext);
+            _logger = logger;
         }
 
         [HttpGet]
         [Route("getcolection/{Id_usuario}")]
         public IActionResult GetColectionUser([FromRoute] string Id_usuario)
         {
-            List<CartaXUsuario> colection = apiDBContext.CartaXUsuario.ToList();
-            List<CartaXUsuario> colectionUser = colection.Where(x => x.Id_usuario == Id_usuario).ToList();
-
-            List<Carta> cartas = apiDBContext.Carta.ToList();
-            List<Carta> cartasUser = new List<Carta>();
-
-            foreach (CartaXUsuario carta in colectionUser)
+            try 
             {
-                Carta cartaUser = cartas.Where(x => x.Id == carta.Id_carta).First();
-                cartasUser.Add(cartaUser);
+                List<CartaAPI> cartasReturn = this.coleccionData.getColeccionDelUsuario(Id_usuario);
+                _logger.LogInformation("La coleccion del usuario fue enviada correctamente");
+
+                return Ok(cartasReturn);
             }
-            
-
-            List<CartaAPI> cartasReturn = new List<CartaAPI>();
-
-            foreach (Carta carta in cartasUser)
+            catch (Exception e)
             {
-                CartaAPI cApi = new CartaAPI()
-                {
-                    Id = carta.Id,
-                    Nombre = carta.N_Personaje,
-                    Energia = carta.Energia,
-                    Costo = carta.C_batalla,
-                    Imagen = carta.Imagen,
-                    Raza = apiDBContext.Raza.ToList().Where(x => x.Id == carta.Raza).First().Nombre,
-                    Tipo = apiDBContext.Tipo.ToList().Where(x => x.Id == carta.Tipo).First().Nombre,
-                    Estado = carta.Activa,
-                    Descripcion = carta.Descripcion
-                };
-
-                cartasReturn.Add(cApi);
+                _logger.LogInformation("El usuario "+ Id_usuario+" no existe");
+                return BadRequest("No se logró obtener el usuario solicitado.");
             }
-
-            return Ok(cartasReturn);
         }
 
         [HttpGet]
         [Route("getdecks/{Id_usuario}")]
         public IActionResult GetDecksUser([FromRoute] string Id_usuario)
         {
-            List<Deck> decks = apiDBContext.Deck.ToList();
-            List<Deck> decksUser = decks.Where(x => x.Id_usuario == Id_usuario).ToList();
-
-            List<CartasXDeck> cartasXDeck = apiDBContext.CartasXDeck.ToList();
-            List<DeckAPIGET> deckAPI = new List<DeckAPIGET>();
-
-            CartaController cartas = new CartaController(apiDBContext);
-
-            
-
-            foreach (Deck deck in decksUser)
+            try
             {
-                List<CartaAPI> Cartas = new List<CartaAPI>();
-                List<String> ids = cartasXDeck.Where(x => x.Id_Deck == deck.Id).Select(x => x.Id_Carta).ToList();
-
-                foreach (String id in ids)
-                {
-                    Carta carta = apiDBContext.Carta.ToList().Where(x => x.Id == id).First();
-                    CartaAPI cApi = new CartaAPI()
-                    {
-                        Id = carta.Id,
-                        Nombre = carta.N_Personaje,
-                        Energia = carta.Energia,
-                        Costo = carta.C_batalla,
-                        Imagen = carta.Imagen,
-                        Raza = apiDBContext.Raza.ToList().Where(x => x.Id == carta.Raza).First().Nombre,
-                        Tipo = apiDBContext.Tipo.ToList().Where(x => x.Id == carta.Tipo).First().Nombre,
-                        Estado = carta.Activa,
-                        Descripcion = carta.Descripcion
-                    };
-                    Cartas.Add(cApi);
-                }
-
-                DeckAPIGET element = new DeckAPIGET()
-                {
-                    Id = deck.Id,
-                    Nombre = deck.Nombre,
-                    Estado = deck.Estado,
-                    Id_usuario = deck.Id,
-                    Cartas = Cartas
-                };
-                deckAPI.Add(element);
+                List<DeckAPIGET> decksAPI = this.coleccionData.getDecksUsuario(Id_usuario);
+                _logger.LogInformation("Los decks del usuario fueron enviados correctamente");
+                return Ok(decksAPI);
             }
-
-            return Ok(deckAPI);
+            catch (Exception e)
+            {
+                _logger.LogInformation("El usuario " + Id_usuario + " no existe");
+                return BadRequest("No se logró obtener la lista de decks.");
+            }
         }
 
         [HttpGet]
         [Route("getdeck/{Id}")]
         public IActionResult GetDeckUser([FromRoute] string Id)
         {
-            List<Deck> decks = apiDBContext.Deck.ToList();
-            Deck deckUser = decks.Where(x => x.Id == Id).First();
-
-            List<CartasXDeck> cartasXDeck = apiDBContext.CartasXDeck.ToList();
-
-            DeckAPIGET element = new DeckAPIGET()
+            try
             {
-                Id = deckUser.Id,
-                Nombre = deckUser.Nombre,
-                Estado = deckUser.Estado,
-                Id_usuario = deckUser.Id,
-                //id_cartas = cartasXDeck.Where(x => x.Id_Deck == deckUser.Id).Select(x => x.Id_Carta).ToList()
-            };
-            return Ok(element);
+                DeckAPIGET element = this.coleccionData.getDeckUsuario(Id);
+                _logger.LogInformation("El deck del usuario fue enviado correctamente");
+                return Ok(element);
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation("El deck " + Id + " no existe");
+                return BadRequest("No se logró obtener la información del Deck.");
+            }
         }
-
-        /*
-        [HttpGet]
-        [Route("getUser")]
-        public IActionResult GetUsers()
-        {
-            List<Usuario> users = apiDBContext.Usuario.ToList();
-            return Ok(users);
-        }
-        */
 
         [HttpPost]
         [Route("addDeck")]
         public IActionResult AddDeck(DeckAPI deckApi)
         {
-            string id = GeneratorID.GenerateRandomId("D-");
-            Deck deck = new Deck()
+            try
             {
-                Id = id,
-                Nombre = deckApi.Nombre,
-                Estado = deckApi.Estado,
-                Id_usuario = deckApi.Id_usuario
-            };
-            apiDBContext.Deck.Add(deck);
-            apiDBContext.SaveChanges();
-
-            foreach (CartaAPI carta in deckApi.Cartas)
-            {
-                CartasXDeck cxd = new CartasXDeck()
-                {
-                    Id_Carta = carta.Id,
-                    Id_Deck = id
-                };
-                apiDBContext.CartasXDeck.Add(cxd);
+                Deck deck = this.coleccionData.addDeckUsuario(deckApi);
+                _logger.LogInformation("El deck fue creado correctamente");
+                return Ok(deck);
             }
-            
-            apiDBContext.SaveChanges();
-            List<Deck> decks = apiDBContext.Deck.ToList();
-            List<Deck> decksToUpdate = decks.Where(x => x.Id != id).ToList();
-
-            foreach (Deck deckToUpdate in decksToUpdate)
+            catch (Exception e)
             {
-                deckToUpdate.Estado = false;
-
-                apiDBContext.Update(deckToUpdate);
+                _logger.LogInformation("El deck fue creado correctamente");
+                return BadRequest("No se logró añadir el Deck.");
             }
-
-            apiDBContext.SaveChanges();
-            return Ok(deck);
-
         }
 
         [HttpPost]
         [Route("addCartaUsuario")]
         public IActionResult AddCartaColeccion(CartaXUsuario cartaXUsuario)
         {
-
-            CartaXUsuario cxu = new CartaXUsuario()
+            try
             {
-                Id_usuario = cartaXUsuario.Id_usuario,
-                Id_carta = cartaXUsuario.Id_carta
-            };
-            apiDBContext.CartaXUsuario.Add(cxu);
-
-            apiDBContext.SaveChanges();
-
-            return Ok(cxu);
-
+                CartaXUsuario cxu = this.coleccionData.addCartaColeccion(cartaXUsuario);
+                _logger.LogInformation("El deck fue creado correctamente");
+                return Ok(cxu);
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation("El deck no se pudo crear");
+                return BadRequest("No se logró añadir la carta a la colección del usuario.");
+            }
         }
 
         [HttpPost]
         [Route("addCartaDeck")]
-        public IActionResult AddCartaColeccion(CartasXDeck cartasXDeck)
+        public IActionResult AddCartaDeck(CartasXDeck cartasXDeck)
         {
-
-            CartasXDeck cxd = new CartasXDeck()
+            try
             {
-                Id_Carta = cartasXDeck.Id_Carta,
-                Id_Deck = cartasXDeck.Id_Deck
-            };
-            apiDBContext.CartasXDeck.Add(cxd);
-
-            apiDBContext.SaveChanges();
-
-            return Ok(cxd);
-
+                CartasXDeck cxd = this.coleccionData.AddCartaDeck(cartasXDeck);
+                _logger.LogInformation("Se agrego la carta al deck correctamente");
+                return Ok(cxd);
+            }
+            catch (Exception e)
+            {
+                _logger.LogInformation("No se pudo agregar la carta correctamente");
+                return BadRequest("No se logró añadir la carta al deck.");
+            }
         }
 
         [HttpPut]
         [Route("update/{Id}")]
         public IActionResult UpdateDeck([FromRoute] string Id, Deck deckAPI)
         {
-            List<Deck> decks = apiDBContext.Deck.ToList();
-            Deck deckUser = decks.Where(x => x.Id == Id).First();
-
-            if (deckUser != null)
+            try
             {
-                deckUser.Estado = deckAPI.Estado;
-                
-                apiDBContext.Update(deckUser);
-                apiDBContext.SaveChanges();
-
+                Deck deckUser = this.coleccionData.actualizarDeck(Id, deckAPI);
                 return Ok(deckUser);
             }
-            return NotFound();
+            catch (Exception e)
+            {
+                return BadRequest("No se logró actualizar el deck solicitado.");
+            }
         }
 
         [HttpDelete]
         [Route("deleteDeck/{Id}")]
         public IActionResult DeleteDeck([FromRoute] string Id)
         {
-            List<Deck> decks = apiDBContext.Deck.ToList();
-            Deck deckUser = decks.Where(x => x.Id == Id).First();
-
-            List<CartasXDeck> cxdL = apiDBContext.CartasXDeck.ToList().Where(x => x.Id_Deck == Id).ToList();
-
-            if (cxdL.Any())
+            try
             {
-                foreach (CartasXDeck cxd in cxdL)
-                {
-                    apiDBContext.Remove(cxd);
-                }
-            }
-            apiDBContext.SaveChanges();
-
-            if (deckUser != null)
-            {
-                apiDBContext.Remove(deckUser);
-                apiDBContext.SaveChanges();
+                List<Deck> decks = apiDBContext.Deck.ToList();
+                Deck deckUser = this.coleccionData.deleteDeck(Id);
                 return Ok(deckUser);
             }
-
-            return NotFound();
+            catch (Exception e)
+            {
+                return BadRequest("No se logró eliminar el Deck.");            
+            }
 
         }
 
@@ -266,17 +159,15 @@ namespace StarDeckAPI.Controllers
         [Route("deleteCartaDeck/{Id_Deck}/{Id_Carta}")]
         public IActionResult DeleteCartaDeck([FromRoute] string Id_Deck, string Id_Carta)
         {
-            List<CartasXDeck> cxdL = apiDBContext.CartasXDeck.ToList();
-            CartasXDeck cxdFiltered = cxdL.Where(x => x.Id_Deck == Id_Deck).Where(x => x.Id_Carta == Id_Carta).First();
-
-            if (cxdFiltered != null)
+            try
             {
-                apiDBContext.Remove(cxdFiltered);
-                apiDBContext.SaveChanges();
+                CartasXDeck cxdFiltered = this.coleccionData.deleteCartaDeck(Id_Deck, Id_Carta);
                 return Ok(cxdFiltered);
             }
-
-            return NotFound();
+            catch (Exception e)
+            {
+                return BadRequest("No se logró eliminar la carta del deck.");
+            }
 
         }
 

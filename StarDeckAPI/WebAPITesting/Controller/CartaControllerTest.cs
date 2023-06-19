@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit;
@@ -18,52 +19,89 @@ namespace WebAPITesting.Controller
     {
         private async Task<APIDbContext> GetDatabaseContext()
         {
-            var options = new DbContextOptionsBuilder<APIDbContext>()
-                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-                .Options;
+            
+            MockUpDataBase mock = new MockUpDataBase();
+            var databaseContext = mock.GetDatabaseContext();
 
-            var databaseContext = new APIDbContext(options);
-
-            databaseContext.Database.EnsureCreated();
-
-            if(await databaseContext.Carta.CountAsync() <= 0)
-            {
-                for(int i = 0; i < 3; i++)
-                {
-                    databaseContext.Carta.Add(
-                    new Carta()
-                    {
-                        Id = "C-123141241"+i.ToString(),
-                        N_Personaje = "Carta"+i.ToString(),
-                        Energia =5,
-                        Imagen = "imagen"+i.ToString(),
-                        Raza = 1,
-                        Activa = true,
-                        Descripcion = "Carta Descripcion",
-                        Tipo = 1
-                    });
-                    await databaseContext.SaveChangesAsync();
-                }
-            }
             return databaseContext;
         }
 
 
         [Fact]
-        public async void CartaController_GetAllCartas_ReturnsCartas()
+        public async void GetAllCartas_ReturnsCartas()
         {
             //Arrange
             var dbContext = await GetDatabaseContext();
-            var cartaController = new CartaController(dbContext);
+            var cartaController = new CartaData(dbContext);
 
             //Act
-            var result = cartaController.testFunc();
-
-
+            var result = cartaController.getAllCartas();
+            
             //Assert
-            result.Should().NotBeNull();
+            Assert.NotNull(result);
+            Assert.Equal(18, result.Count());
         }
 
+        [Fact]
+        public async void GetCarta_ReturnCarta()
+        {
+            //Arrange
+            var dbContext = await GetDatabaseContext();
+            var cartaController = new CartaData(dbContext);
 
+            //Act
+            var result = cartaController.getCartaDB("1");
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal("1",result.Id);
+        }
+
+        [Fact]
+        public async void AddCarta()
+        {
+            //Arrange
+            var dbContext = await GetDatabaseContext();
+            var cartaController = new CartaData(dbContext);
+
+            //Act
+            cartaController.guardarCartaDB(new CartaAPI()
+            {
+                Id = "1",
+                Nombre = "Carta nueva",
+                Energia = 20,
+                Costo = 20,
+                Imagen = "1211313",
+                Raza = "1",
+                Tipo = "1",
+                Estado =true,
+                Descripcion = "1",
+            });
+
+
+            var result = cartaController.getAllCartas();
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal(19, result.Count());
+        }
+
+        [Fact]
+        public async void deleteCarta()
+        {
+            //Arrange
+            var dbContext = await GetDatabaseContext();
+            var cartaController = new CartaData(dbContext);
+
+            //Act
+            cartaController.deleteCartaDB("1");
+
+            var result = cartaController.getAllCartas();
+
+            //Assert
+            Assert.NotNull(result);
+            Assert.Equal(17, result.Count());
+
+        }
     }
 }
