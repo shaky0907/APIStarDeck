@@ -10,10 +10,12 @@ namespace StarDeckAPI.Controllers
     {
 
         private readonly APIDbContext apiDBContext;
+        private readonly ILogger<CartaController> _logger;
 
-        public LoginController(APIDbContext apiDBContext)
+        public LoginController(APIDbContext apiDBContext, ILogger<CartaController> logger)
         {
             this.apiDBContext = apiDBContext;
+            _logger = logger;
         }
         [HttpPost]
         [Route("login")]
@@ -42,6 +44,7 @@ namespace StarDeckAPI.Controllers
                 usuario = new Usuario()
             };
 
+            _logger.LogInformation("Se envio la informacion del login correctamente");
             return Ok(response);
             
         }

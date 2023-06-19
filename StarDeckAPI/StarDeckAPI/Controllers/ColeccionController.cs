@@ -11,10 +11,13 @@ namespace StarDeckAPI.Controllers
     {
         private APIDbContext apiDBContext;
         private ColeccionData coleccionData;
-        public ColeccionController(APIDbContext apiDBContext)
+        private readonly ILogger<CartaController> _logger;
+
+        public ColeccionController(APIDbContext apiDBContext, ILogger<CartaController> logger)
         {
             this.apiDBContext = apiDBContext;
             this.coleccionData = new ColeccionData(apiDBContext);
+            _logger = logger;
         }
 
         [HttpGet]
@@ -24,10 +27,13 @@ namespace StarDeckAPI.Controllers
             try 
             {
                 List<CartaAPI> cartasReturn = this.coleccionData.getColeccionDelUsuario(Id_usuario);
+                _logger.LogInformation("La coleccion del usuario fue enviada correctamente");
+
                 return Ok(cartasReturn);
             }
             catch (Exception e)
             {
+                _logger.LogInformation("El usuario "+ Id_usuario+" no existe");
                 return BadRequest("No se logró obtener el usuario solicitado.");
             }
         }
@@ -39,10 +45,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 List<DeckAPIGET> decksAPI = this.coleccionData.getDecksUsuario(Id_usuario);
+                _logger.LogInformation("Los decks del usuario fueron enviados correctamente");
                 return Ok(decksAPI);
             }
             catch (Exception e)
             {
+                _logger.LogInformation("El usuario " + Id_usuario + " no existe");
                 return BadRequest("No se logró obtener la lista de decks.");
             }
         }
@@ -54,10 +62,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 DeckAPIGET element = this.coleccionData.getDeckUsuario(Id);
+                _logger.LogInformation("El deck del usuario fue enviado correctamente");
                 return Ok(element);
             }
             catch (Exception e)
             {
+                _logger.LogInformation("El deck " + Id + " no existe");
                 return BadRequest("No se logró obtener la información del Deck.");
             }
         }
@@ -69,10 +79,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 Deck deck = this.coleccionData.addDeckUsuario(deckApi);
+                _logger.LogInformation("El deck fue creado correctamente");
                 return Ok(deck);
             }
             catch (Exception e)
             {
+                _logger.LogInformation("El deck fue creado correctamente");
                 return BadRequest("No se logró añadir el Deck.");
             }
         }
@@ -84,10 +96,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 CartaXUsuario cxu = this.coleccionData.addCartaColeccion(cartaXUsuario);
+                _logger.LogInformation("El deck fue creado correctamente");
                 return Ok(cxu);
             }
             catch (Exception e)
             {
+                _logger.LogInformation("El deck no se pudo crear");
                 return BadRequest("No se logró añadir la carta a la colección del usuario.");
             }
         }
@@ -99,10 +113,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 CartasXDeck cxd = this.coleccionData.AddCartaDeck(cartasXDeck);
+                _logger.LogInformation("Se agrego la carta al deck correctamente");
                 return Ok(cxd);
             }
             catch (Exception e)
             {
+                _logger.LogInformation("No se pudo agregar la carta correctamente");
                 return BadRequest("No se logró añadir la carta al deck.");
             }
         }

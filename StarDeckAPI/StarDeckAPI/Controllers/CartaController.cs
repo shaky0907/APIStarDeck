@@ -29,17 +29,8 @@ namespace StarDeckAPI.Controllers
         public IActionResult Razas()
         {
             List<Raza> razas = apiDBContext.Raza.ToList();
+            _logger.LogInformation("Se envio la informacion de las razas correctamente");
             return Ok(razas);
-        }
-
-        
-
-        [HttpGet]
-        [Route("getCartasTest")]
-        public IActionResult testFunc()
-        {
-            List<Carta> cartas = apiDBContext.Carta.ToList();
-            return Ok(cartas);
         }
 
 
@@ -48,6 +39,7 @@ namespace StarDeckAPI.Controllers
         public IActionResult GetNewDeck()
         {
             List<CartaAPI> cartasReturn = this.cartaData.getCartasNuevoDeck();
+            _logger.LogInformation("Se envio la informacion del deck correctamente");
             return Ok(cartasReturn);
         }
 
@@ -56,6 +48,7 @@ namespace StarDeckAPI.Controllers
         public IActionResult GetAll()
         {
             List<CartaAPI> cartasReturn = this.cartaData.getAllCartas();
+            _logger.LogInformation("Se envio la informacion de las cartas correctamente");
             return Ok(cartasReturn);
         }
         
@@ -66,10 +59,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 CartaAPI cApi = this.cartaData.getCartaDB(Id);
+                _logger.LogInformation("Se envio la informacion de la carta correctamente");
                 return Ok(cApi);
             } 
             catch (Exception e)
             {
+                _logger.LogError("La carta " + Id + " no fue encontrada");
                 return BadRequest("No se logró encontrar la carta solicitada.");
             }
         }
@@ -79,6 +74,7 @@ namespace StarDeckAPI.Controllers
         public IActionResult saveCarta(CartaAPI cartaAPI)
         {
             Carta cartaReturn = this.cartaData.guardarCartaDB(cartaAPI);
+            _logger.LogInformation("La carta fue guardada correctamente");
             return Ok(cartaReturn);
         }
 
@@ -89,10 +85,13 @@ namespace StarDeckAPI.Controllers
             try
             {
                 Carta carta = this.cartaData.deleteCartaDB(Id);
+                _logger.LogInformation("La carta fue eliminada correctamente");
+
                 return Ok(carta);
             }
             catch (Exception e)
             {
+                _logger.LogInformation("La carta" + Id +" no existe en la base de datos");
                 return BadRequest("No se pudo eliminar la carta.");
             }
         }

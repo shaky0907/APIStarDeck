@@ -8,9 +8,12 @@ namespace StarDeckAPI.Controllers
     public class ParametroController : Controller
     {
         private APIDbContext apiDBContext;
-        public ParametroController(APIDbContext apiDBContext)
+        private readonly ILogger<CartaController> _logger;
+
+        public ParametroController(APIDbContext apiDBContext, ILogger<CartaController> logger)
         {
             this.apiDBContext = apiDBContext;
+            _logger = logger;
         }
         [HttpGet]
         [Route("getParametros")]
@@ -18,10 +21,12 @@ namespace StarDeckAPI.Controllers
         {
             try
             {
+                _logger.LogInformation("Se envio la informacion de los parametros correctamente");
                 return Ok(this.apiDBContext.Parametros.ToList());
             }
             catch (Exception e)
             {
+                _logger.LogError("No se lograron enviar los parametros");
                 return BadRequest("No se logró obtener los parametros.");
             }
         }

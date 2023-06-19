@@ -11,10 +11,13 @@ namespace StarDeckAPI.Controllers
     {
         private APIDbContext apiDBContext;
         private TurnoData turnoData;
-        public TurnoController(APIDbContext apiDBContext)
+        private readonly ILogger<CartaController> _logger;
+
+        public TurnoController(APIDbContext apiDBContext, ILogger<CartaController> logger)
         {
             this.apiDBContext = apiDBContext;
             this.turnoData = new TurnoData(apiDBContext);
+            _logger = logger;
         }
 
         [HttpGet]
@@ -24,10 +27,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 List<CartaAPI> cartas_Ids = this.turnoData.getUserMano(Id_usuario, Id_turno);
+                _logger.LogInformation("Se envio la informacion de la mano del usuario correctamente");
                 return Ok(cartas_Ids);
             }
             catch (Exception e)
             {
+                _logger.LogError("No se logro obtener la mano del usuario: " + Id_usuario);
                 return BadRequest("No se logro obtener la mano del usuario solicitado.");
             }
         }
@@ -39,10 +44,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 List<CartaAPI> cartas_Ids = this.turnoData.getUserDeck(Id_usuario, Id_turno);
+                _logger.LogInformation("Se envio la informacion del deck correctamente");
                 return Ok(cartas_Ids);
             }
             catch (Exception e)
             {
+                _logger.LogError("No se logro obtener el deck del usuario en el turno solicitado.");
                 return BadRequest("No se logro obtener el deck del usuario en el turno solicitado.");
             }
         }
@@ -54,10 +61,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 List<CartaAPI> cartas_Ids = this.turnoData.getPlanetaCartas(Id_planeta, Id_turno, Id_usuario);
+                _logger.LogInformation("Se envio la informacion de las cartas de cada planeta correctamente");
                 return Ok(cartas_Ids);
             }
             catch (Exception e)
             {
+                _logger.LogError("No se logró obtener las cartas del planeta solicitado");
                 return BadRequest("No se logró obtener las cartas del planeta solicitado.");
             }
         }
@@ -69,10 +78,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 List<CartaAPI> cartas_Ids = this.turnoData.getPlanetaCartasPartida(Id_planeta, Id_partida, Id_usuario);
+                _logger.LogInformation("Se envio la informacion de las cartas de cada planeta correctamente");
                 return Ok(cartas_Ids);
             }
             catch (Exception e)
             {
+                _logger.LogError($"{e.Message}");
                 return BadRequest("No se logró obtener las cartas del planeta en la partida solicitada.");
             }
             
@@ -85,10 +96,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 WinnerAPI ganador = this.turnoData.getGanadorPartida(Id_partida, Id_usuario);
+                _logger.LogInformation("Se envio la informacion del ganador de cada planeta correctamente");
                 return Ok(ganador);
             }
             catch (Exception e)
             {
+                _logger.LogError("No se logró obtener el ganador de la partida solicitada");
                 return BadRequest("No se logró obtener el ganador de la partida solicitada.");
             }
         }
@@ -100,11 +113,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 TurnoCompletoAPI turnoCompleto = await this.turnoData.getInfoCompletaUltimoTurno(Id_partida, Id_usuario);
+                _logger.LogInformation("Se envio la informacion del turno correctamente");
                 return Ok(turnoCompleto);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e.ToString());
                 return BadRequest("No se logró obtener la información completa del turno.");
             }
         }
@@ -116,11 +130,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 TurnoCompletoAPI turnoCompletoUpdated = await this.turnoData.updateInfoCompletaTurno(Id_partida, Id_usuario, turnoCompleto);
+                _logger.LogInformation("Se actualizo la informacion del turno correctamente");
                 return Ok(turnoCompletoUpdated);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e.ToString());
                 return BadRequest("No se logró actualizar la informacion del turno.");
             }
         }
@@ -132,11 +147,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 UsuarioXPartida usuarioXPartida = this.turnoData.giveUpMatch(Id_partida, Id_usuario);
+                _logger.LogInformation("Se rindio de la partida correctamente");
                 return Ok(usuarioXPartida);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError("No se logró rendirse de la partida.");
                 return BadRequest("No se logró rendirse de la partida.");
             }
         }
@@ -148,11 +164,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 TurnoCompletoAPI turnoCompletoNuevo = await this.turnoData.CrearNuevoTurnoCompleto(Id_partida, Id_usuario, turnoCompleto);
+                _logger.LogInformation("Se creo el turno nuevo de la partida correctamente");
                 return Ok(turnoCompletoNuevo);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError(e.ToString());
                 return BadRequest("No se logró crear el nuevo turno.");
             }
         }
@@ -164,11 +181,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 TurnoCompletoAPI turnoCompletoNuevo = this.turnoData.AddTurnoCompleto(Id_partida, Id_usuario, turnoCompleto);
+                _logger.LogInformation("Se creo el turno nuevo de la partida correctamente");
                 return Ok(turnoCompletoNuevo);
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _logger.LogError("No se logró crear el turno incial");
                 return BadRequest("No se logró crear el turno incial.");
             }
         }
@@ -180,10 +198,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 CartasXTurnoXManoXUsuario cxtxmxu = this.turnoData.addCartaMano(cartasxturnoxmanoxusuario);
+                _logger.LogInformation("Se anadio la carta en la mano correctamente");
                 return Ok(cxtxmxu);
             }
             catch (Exception e)
             {
+                _logger.LogError($"{e.Message}", e);
                 return BadRequest("No se logró añadir la carta a la mano del usuario.");
             }
         }
@@ -195,10 +215,12 @@ namespace StarDeckAPI.Controllers
             try
             {   
                 CartasXTurnoXDeckXUsuario cxtxdxu = this.turnoData.AddCartaDeck(cartasxturnoxdeckxusuario);
+                _logger.LogInformation("Se anadio la carta al deck de la partida correctamente");
                 return Ok(cartasxturnoxdeckxusuario);
             }
             catch (Exception e)
             {
+                _logger.LogError($"{e.Message}", e);
                 return BadRequest("No se logró añadir la carta al deck del usuario.");
             }
         }
@@ -210,10 +232,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 CartasXTurnoXPlanetaXUsuario cxtxdxu = this.turnoData.AddCartaPlaneta(cartasXTurnoXPlanetaXUsuario);
+                _logger.LogInformation("Se anadio la carta al planeta correctamente");
                 return Ok(cartasXTurnoXPlanetaXUsuario);
             }
             catch (Exception e)
             {
+                _logger.LogError($"{e.Message}", e);
                 return BadRequest("");
             }
         }
@@ -225,10 +249,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 CartasXTurnoXManoXUsuario deletedCartas = this.turnoData.deleteCartaMano(Id_Usuario, Id_Turno, Id_Carta);
+                _logger.LogInformation("Se borro la carta en la mano correctamente");
                 return Ok(deletedCartas);
             }
             catch (Exception e)
             {
+                _logger.LogError(e.ToString(), e);
                 return BadRequest("");
             }
         }
@@ -240,10 +266,12 @@ namespace StarDeckAPI.Controllers
             try
             {    
                 CartasXTurnoXDeckXUsuario deletedCartas = this.turnoData.deleteCartaDeck(Id_Usuario, Id_Turno, Id_Carta);
+                _logger.LogInformation("Se borro la carta del deck correctamente");
                 return Ok(deletedCartas);
             }
             catch (Exception e)
             {
+                _logger.LogError("No se logró eliminar la carta del deck.");
                 return BadRequest("No se logró eliminar la carta del deck.");
             }
         }
@@ -255,10 +283,12 @@ namespace StarDeckAPI.Controllers
             try
             {   
                 CartasXTurnoXPlanetaXUsuario deletedCartas = this.turnoData.deleteCartaPlaneta(Id_Usuario, Id_Turno, Id_Carta);
+                _logger.LogInformation("Se borro la carta del planeta correctamente");
                 return Ok(deletedCartas);
             }
             catch (Exception e)
             {
+                _logger.LogError($"{e.Message}");
                 return BadRequest("No se logró eliminar la carta.");
             }
         }
@@ -270,10 +300,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 TurnoXUsuario turno = this.turnoData.addTurno(turnoApi);
+                _logger.LogInformation("Se anadio el turno correctamente");
                 return Ok(turno);
             }
             catch (Exception e)
             {
+                _logger.LogError("No se logró añadir el turno.");
                 return BadRequest("No se logró añadir el turno.");
             }
 
@@ -286,10 +318,12 @@ namespace StarDeckAPI.Controllers
             try
             {   
                 TurnoXUsuario turno = this.turnoData.getLastTurno(Id_Partida, Id_Usuario);
+                _logger.LogInformation("Se envio la informacion del ultimo turno correctamente");
                 return Ok(turno);
             }
             catch (Exception e)
             {
+                _logger.LogError("No se logró obtener el último turno");
                 return BadRequest("No se logró obtener el último turno.");
             }
         }
@@ -301,10 +335,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 TurnoXUsuario turno = this.turnoData.getLastTurnoNumero(Id_Partida, Id_Usuario, Numero_Turno);
+                _logger.LogInformation("Se envio la informacion del ultimo turno correctamente");
                 return Ok(turno);
             }
             catch (Exception e)
             {
+                _logger.LogError("No se logró obtener el turno " + Numero_Turno.ToString());
                 return BadRequest("No se logró obtener el turno " + Numero_Turno.ToString());
             }
         }
@@ -315,10 +351,12 @@ namespace StarDeckAPI.Controllers
         {
             try
             {
+                _logger.LogInformation("Se envio la informacion del turno correctamente");
                 return Ok(this.turnoData.getTurno(Id));
             }
             catch (Exception e)
             {
+                _logger.LogError("No se logró obtener el turno");
                 return BadRequest("No se logró obtener el turno.");
             }
         }
@@ -329,11 +367,13 @@ namespace StarDeckAPI.Controllers
         {
             try
             {
-                TurnoXUsuario turno = this.turnoData.actualizarTurno(Id, turnoApi); 
+                TurnoXUsuario turno = this.turnoData.actualizarTurno(Id, turnoApi);
+                _logger.LogInformation("Se actualizo el turno correctamente");
                 return Ok(turno);
             }
             catch (Exception e)
             {
+                _logger.LogError(e.ToString());
                 return BadRequest("No se logró actualizar el turno.");
             }
         }
@@ -345,10 +385,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 TurnoXUsuario turno = this.turnoData.actualizarEnergia(Id, Id_Usuario, energia);
+                _logger.LogInformation("Se actualizo la energia correctamente");
                 return Ok(turno);
             }
             catch (Exception e)
             {
+                _logger.LogError(e.ToString());
                 return BadRequest("No se logró actualizar la energía.");
             }
         }

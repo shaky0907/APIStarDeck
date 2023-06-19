@@ -13,10 +13,13 @@ namespace StarDeckAPI.Controllers
         private APIDbContext apiDBContext;
         //private List<Planeta> planetas_partida;
         private MatchmakingData matchmakingData;
-        public MatchmakingController(APIDbContext apiDBContext)
+        private readonly ILogger<CartaController> _logger;
+
+        public MatchmakingController(APIDbContext apiDBContext, ILogger<CartaController> logger)
         {
             this.apiDBContext = apiDBContext;
             this.matchmakingData = new MatchmakingData(apiDBContext);
+            _logger = logger;
         }
 
         [HttpGet]
@@ -26,10 +29,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 MatchmakingResponse matchmakingResponse =  this.matchmakingData.matchmakingCheck(Id);
+                _logger.LogInformation("Se envio la informacion del matchmaking correctamente");
                 return Ok(matchmakingResponse);
             }
             catch (Exception e)
             {
+                _logger.LogError("Se envio la informacion de las razas correctamente"); 
                 return BadRequest("No se logró encontrar el usuario solicitado en la partida.");
             }
         }
@@ -42,10 +47,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 Usuario user = this.matchmakingData.buscarPartida(Id);
+                _logger.LogInformation("Se empezo la busqueda de la partida correctamente");
                 return Ok(user);
             }
             catch (Exception e)
             {
+                _logger.LogError("No se logro buscar la partida");
                 return BadRequest("No se logró encontrar la partida.");
             }
 
@@ -58,10 +65,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 Usuario user = this.matchmakingData.terminarPartida(Id, matchId);
+                _logger.LogInformation("Se termino la partida para el usuario " + Id + " correctamente");
                 return Ok(user);
             }
             catch (Exception e)
             {
+                _logger.LogError("No se logro terminar la partida correctamente");
                 return BadRequest("No se logró finalizar la partida para el usuario.");
             }
 
@@ -74,10 +83,13 @@ namespace StarDeckAPI.Controllers
             try
             {
                 Usuario user = this.matchmakingData.terminarBusquedaPartida(Id);
+                _logger.LogInformation("Se termino la busqueda de la partida correctamente");
                 return Ok(user);
             }
             catch (Exception e)
             {
+                _logger.LogError("No se logro terminar " + Id + "la busqueda correctamente");
+
                 return BadRequest("No se logró finalizar la partida para el usuario.");
             }
 
@@ -90,10 +102,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 Partida partida = this.matchmakingData.finalizarJuego(Id);
+                _logger.LogInformation("Se termino la partida correctamente");
                 return Ok(partida);
             }
             catch (Exception e)
             {
+                _logger.LogError($"Failed to finish game [{Id}]");
                 return BadRequest("No se logró finalizar la partida.");
             }
 
@@ -109,6 +123,7 @@ namespace StarDeckAPI.Controllers
                 if (Id != "null") 
                 {
                     Partida partida = apiDBContext.Partida.ToList().Where(x => x.Id == Id).First();
+                    _logger.LogInformation("Se envio la informacion de la partida correctamente");
                     return Ok(partida);
                 }
                 else
@@ -118,6 +133,7 @@ namespace StarDeckAPI.Controllers
             }
             catch (Exception e)
             {
+                _logger.LogError("La partida " + Id + "no existe");
                 return BadRequest("No se logró encontrar la partida.");
             }
         }
@@ -128,11 +144,13 @@ namespace StarDeckAPI.Controllers
         {
             try
             {
-            List<Planeta> planetas = this.matchmakingData.getPlanetasPartida(Id);
-            return Ok(planetas);
+                List<Planeta> planetas = this.matchmakingData.getPlanetasPartida(Id);
+                _logger.LogInformation("Se envio la informacion de los planetas de la partida correctamente");
+                return Ok(planetas);
             }
             catch (Exception e)
             {
+                _logger.LogError("La partida "+ Id + " no existe");
                 return BadRequest("No se logró obtener la lista de planetas de la partida.");
             }
         }
@@ -143,10 +161,12 @@ namespace StarDeckAPI.Controllers
             try
             {
                 Usuario rivalUsuario = this.matchmakingData.getRival(Id_usuario, Id_Partida);
+                _logger.LogInformation("Se envio la informacion del rival correctamente");
                 return Ok(rivalUsuario);
             }
             catch (Exception e)
             {
+                _logger.LogError("El usuario "+Id_usuario+" o la partida "+Id_Partida+" no existe");
                 return BadRequest("No se logró obtener el rival.");
             }
         }
@@ -158,10 +178,12 @@ namespace StarDeckAPI.Controllers
             try
             {   
                 Partida partida = this.matchmakingData.isInMatch(Id_usuario);
+                _logger.LogInformation("Se envio la informacion de las razas correctamente");
                 return Ok(partida);
             }
             catch (Exception e)
             {
+                _logger.LogError("El usuario " + Id_usuario);
                 return BadRequest("No se logró verificar si el usuario está en partida.");
             }
         }
